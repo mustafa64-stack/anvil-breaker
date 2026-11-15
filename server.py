@@ -697,6 +697,9 @@ def health_check():
         "status": "healthy",
         "service": settings.PROJECT_NAME,
         "version": settings.VERSION,
+        "domain": settings.DOMAIN,
+        "base_url": settings.BASE_URL,
+        "founder": settings.FOUNDER,
         "timestamp": datetime.now().isoformat()
     }
 

@@ -5,8 +5,21 @@ class Settings:
     PROJECT_NAME: str = "Anvil Breaker™"
     PROJECT_SUBTITLE: str = "Break the Tutorial Anvil. 15 Minutes or Move On."
     FOUNDER: str = "Mustafa Marjani"
-    VERSION: str = "2.3.0-scaling"
+    VERSION: str = "2.3.1"
+    DOMAIN: str = "anvilbreaker.dev"
+    BASE_URL: str = "https://anvilbreaker.dev"
     API_V1_STR: str = "/api"
+    
+    # Allowed CORS Origins
+    CORS_ORIGINS: list = [
+        "https://anvilbreaker.dev",
+        "http://anvilbreaker.dev",
+        "https://www.anvilbreaker.dev",
+        "http://www.anvilbreaker.dev",
+        "https://anvil-breaker.onrender.com",
+        "http://localhost:8765",
+        "http://127.0.0.1:8765"
+    ]
     
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     DATA_DIR: str = os.path.join(BASE_DIR, "data")

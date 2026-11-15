@@ -29,23 +29,22 @@ def generate_user_badge(username: str):
   <defs>
     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#f59e0b"/>
-      <stop offset="50%" stop-color="#ef4444"/>
-      <stop offset="100%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#d97706"/>
     </linearGradient>
     <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="100%" stop-color="#0b0f19"/>
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#09090b"/>
     </linearGradient>
   </defs>
-  <rect width="330" height="34" rx="8" fill="url(#bg)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <rect width="330" height="34" rx="8" fill="url(#bg)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
   
   <!-- Left Shield Badge -->
-  <rect x="3" y="3" width="148" height="28" rx="6" fill="url(#grad)"/>
-  <text x="10" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="900" fill="#ffffff" letter-spacing="0.5">⚒️ ANVIL BREAKER</text>
+  <rect x="3" y="3" width="148" height="28" rx="6" fill="#000000" stroke="#f59e0b" stroke-width="1"/>
+  <text x="12" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="900" fill="#ffffff" letter-spacing="0.5">ANVIL BREAKER</text>
   
   <!-- Right Stats Section -->
-  <text x="160" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#94a3b8">
-    🔥 <tspan fill="#f59e0b" font-weight="700">{streak}d streak</tspan> · <tspan fill="#10b981" font-weight="700">{total_solved} solved</tspan>
+  <text x="160" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#a1a1aa">
+    <tspan fill="#f59e0b" font-weight="700">{streak}d streak</tspan> · <tspan fill="#ffffff" font-weight="700">{total_solved} solved</tspan>
   </text>
 </svg>"""
 

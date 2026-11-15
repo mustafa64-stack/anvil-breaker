@@ -352,6 +352,16 @@ async function initApp() {
     selectProblem(state.currentProblemId, false);
     setupEventListeners();
     await loadSheetsList();
+
+    // Initialize Deep-Link Routing or Default Roadmap State
+    if (window.location.hash && window.location.hash !== '#/roadmap') {
+      handleHashRouting(false);
+    } else {
+      if (window.history && window.history.replaceState) {
+        history.replaceState({ view: 'curriculum', sheet: state.activeSheetSlug }, '', '#/roadmap');
+      }
+      switchView('curriculum', false);
+    }
   } catch (err) {
     console.error("Failed to load initial data:", err);
   }
@@ -632,7 +642,7 @@ function updateTimerUI() {
 }
 
 // Problem Selection & Workspace Update
-function selectProblem(problemId, autoScroll = true) {
+function selectProblem(problemId, autoScroll = true, updateHistory = false) {
   const prob = state.problems.find(p => p.id === problemId);
   if (!prob) return;
 
@@ -723,6 +733,14 @@ function selectProblem(problemId, autoScroll = true) {
 
   // Save current problem ID to settings
   saveSetting({ current_problem_id: prob.id });
+
+  // Update URL hash and history state if requested
+  if (updateHistory) {
+    const targetHash = `#/problem/${prob.id}`;
+    if (window.location.hash !== targetHash && window.history && window.history.pushState) {
+      history.pushState({ view: 'solver', problemId: prob.id, sheet: state.activeSheetSlug }, '', targetHash);
+    }
+  }
 }
 
 // Universal Browser Launch Handler (Brave, Chrome, Edge, Firefox, or Default)
@@ -983,7 +1001,7 @@ function renderSidebar() {
     chapterSection.querySelectorAll('.problem-item').forEach(item => {
       item.addEventListener('click', () => {
         const id = parseInt(item.dataset.id);
-        selectProblem(id);
+        selectProblem(id, true, true);
       });
     });
 
@@ -1103,7 +1121,7 @@ function renderStats() {
 }
 
 // Dual-Mode View Switcher: TakeUForward Sheet Roadmap vs 15m Protocol Solver HUD
-function switchView(viewName) {
+function switchView(viewName, pushHistory = true) {
   const curriculumView = document.getElementById('view-curriculum');
   const solverView = document.getElementById('view-solver');
   const navCurriculum = document.getElementById('nav-btn-curriculum');
@@ -1122,6 +1140,14 @@ function switchView(viewName) {
       navSolver.classList.remove('text-zinc-200');
     }
     renderSidebar();
+
+    const currId = state.currentProblemId || 1;
+    const targetHash = `#/problem/${currId}`;
+    if (pushHistory && window.location.hash !== targetHash) {
+      if (window.history && window.history.pushState) {
+        history.pushState({ view: 'solver', problemId: currId, sheet: state.activeSheetSlug }, '', targetHash);
+      }
+    }
   } else {
     // viewName === 'curriculum'
     if (curriculumView) curriculumView.classList.remove('hidden');
@@ -1137,13 +1163,51 @@ function switchView(viewName) {
     }
     renderCurriculumTable();
     renderStats();
+
+    const targetHash = '#/roadmap';
+    if (pushHistory && window.location.hash !== targetHash) {
+      if (window.history && window.history.pushState) {
+        history.pushState({ view: 'curriculum', sheet: state.activeSheetSlug }, '', targetHash);
+      }
+    }
+  }
+}
+
+// Global Navigation Controller
+function navigateTo(viewName, options = {}, pushHistory = true) {
+  if (viewName === 'solver') {
+    if (options.problemId) {
+      selectProblem(options.problemId, false);
+    }
+    switchView('solver', pushHistory);
+  } else {
+    switchView('curriculum', pushHistory);
+  }
+}
+
+// Deep-Link & Browser Hash Router
+function handleHashRouting(pushHistory = false) {
+  const hash = window.location.hash || '';
+  const problemMatch = hash.match(/^#\/?problem\/(\d+)/i);
+  const roadmapMatch = hash.match(/^#\/?(roadmap|curriculum|sheet)/i);
+
+  if (problemMatch) {
+    const probId = parseInt(problemMatch[1], 10);
+    if (probId) {
+      if (state.problems && state.problems.some(p => p.id === probId)) {
+        selectProblem(probId, false);
+      }
+      switchView('solver', pushHistory);
+    }
+  } else if (roadmapMatch || hash === '' || hash === '#') {
+    switchView('curriculum', pushHistory);
   }
 }
 
 // Resume Current Problem in 15m Protocol Solver
 function resumeCurrentProblem() {
   selectProblem(state.currentProblemId || 1);
-  switchView('solver');
+  switchView('solver', true);
 }
 
 // Pick a Random Unsolved Problem
@@ -1154,7 +1218,7 @@ function pickRandomProblem() {
   const chosen = pool[Math.floor(Math.random() * pool.length)];
   if (chosen) {
     selectProblem(chosen.id);
-    switchView('solver');
+    switchView('solver', true);
     showNotification(`Random problem selected: #${chosen.id} ${chosen.title}`);
   }
 }
@@ -1344,8 +1408,8 @@ function renderCurriculumTable() {
                       <button class="btn-open-solver-title text-left font-medium ${isSolved ? 'text-zinc-200' : 'text-white'} hover:text-amber-400 transition" data-id="${p.id}">
                         ${escapeHtml(p.title)}
                       </button>
-                      <button class="btn-open-preview p-1 text-zinc-500 hover:text-amber-400 transition rounded" data-id="${p.id}" title="Quick Problem Preview Pop-up" aria-label="Preview Problem">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      <button class="btn-open-preview p-1 text-zinc-400 hover:text-amber-400 hover:bg-surface3 transition rounded-md border border-transparent hover:border-borderDefault shrink-0" data-id="${p.id}" title="Quick Problem Preview Pop-up" aria-label="Preview Problem">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                       </button>
                       ${(p.lists && p.lists.length > 0) ? `
                         <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.2 rounded bg-surface3 text-zinc-400 font-mono border border-borderSubtle">
@@ -1430,8 +1494,8 @@ function renderCurriculumTable() {
     chCard.querySelectorAll('.btn-open-solver-title').forEach(btn => {
       btn.addEventListener('click', () => {
         const pId = parseInt(btn.dataset.id);
-        selectProblem(pId);
-        switchView('solver');
+        selectProblem(pId, false);
+        switchView('solver', true);
       });
     });
 
@@ -1439,8 +1503,8 @@ function renderCurriculumTable() {
     chCard.querySelectorAll('.btn-launch-15m').forEach(btn => {
       btn.addEventListener('click', () => {
         const pId = parseInt(btn.dataset.id);
-        selectProblem(pId);
-        switchView('solver');
+        selectProblem(pId, false);
+        switchView('solver', true);
         if (!state.timerRunning) {
           toggleTimer();
         }
@@ -1506,7 +1570,7 @@ function setupEventListeners() {
   // Prev / Next Problem buttons
   document.getElementById('btn-prev-problem').addEventListener('click', () => {
     if (state.currentProblemId > 1) {
-      selectProblem(state.currentProblemId - 1);
+      selectProblem(state.currentProblemId - 1, true, true);
     }
   });
   document.getElementById('btn-next-problem').addEventListener('click', advanceNext);
@@ -1812,12 +1876,12 @@ function setupEventListeners() {
   // View Switcher (TakeUForward Sheet Roadmap vs 15m Protocol Solver)
   const navCurriculumBtn = document.getElementById('nav-btn-curriculum');
   if (navCurriculumBtn) {
-    navCurriculumBtn.addEventListener('click', () => switchView('curriculum'));
+    navCurriculumBtn.addEventListener('click', () => switchView('curriculum', true));
   }
 
   const navSolverBtn = document.getElementById('nav-btn-solver');
   if (navSolverBtn) {
-    navSolverBtn.addEventListener('click', () => switchView('solver'));
+    navSolverBtn.addEventListener('click', () => switchView('solver', true));
   }
 
   // Hero Action Buttons
@@ -1883,16 +1947,17 @@ function setupEventListeners() {
 
   const btnOpenWorkspace = document.getElementById('btn-open-workspace');
   if (btnOpenWorkspace) {
-    btnOpenWorkspace.addEventListener('click', () => switchView('solver'));
+    btnOpenWorkspace.addEventListener('click', () => switchView('solver', true));
   }
 
-  // Back to Curriculum Roadmap button from solver
+  // Back to Curriculum Roadmap button from solver (Mirrors Browser Native Back)
   const btnBackCurriculum = document.getElementById('btn-back-to-curriculum');
   if (btnBackCurriculum) {
     btnBackCurriculum.addEventListener('click', () => {
-      switchView('curriculum');
-      if (window.history && window.history.pushState) {
-        history.pushState({ view: 'curriculum' }, 'Sheet Roadmap', '#roadmap');
+      if (window.history && window.history.length > 1) {
+        window.history.back();
+      } else {
+        switchView('curriculum', true);
       }
     });
   }
@@ -1955,14 +2020,26 @@ function setupEventListeners() {
     });
   });
 
-  // Handle Browser Back / Forward buttons seamlessly
+  // Footer Shortcuts button
+  const btnFooterShortcuts = document.getElementById('btn-footer-shortcuts');
+  if (btnFooterShortcuts) {
+    btnFooterShortcuts.addEventListener('click', () => openModal('modal-shortcuts'));
+  }
+
+  // Handle Browser Back / Forward buttons seamlessly (HTML5 History API)
   window.addEventListener('popstate', (e) => {
     if (e.state && e.state.view === 'solver' && e.state.problemId) {
       selectProblem(e.state.problemId, false);
       switchView('solver', false);
-    } else {
+    } else if (e.state && e.state.view === 'curriculum') {
       switchView('curriculum', false);
+    } else {
+      handleHashRouting(false);
     }
+  });
+
+  window.addEventListener('hashchange', () => {
+    handleHashRouting(false);
   });
 }
 
@@ -2146,9 +2223,15 @@ async function handleCreateCustomSheet() {
 
 // GitHub Dynamic Badge Modal Handlers
 function openBadgeModal() {
+  const userKey = (state.user && state.user.username) || 'local_user';
   const img = document.getElementById('badge-preview-img');
   if (img) {
-    img.src = `/api/badge/local_user.svg?t=${Date.now()}`;
+    img.src = `/api/badge/${encodeURIComponent(userKey)}.svg?t=${Date.now()}`;
+  }
+  const input = document.getElementById('badge-markdown-input');
+  if (input) {
+    const origin = (window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')) ? window.location.origin : 'https://anvilbreaker.dev';
+    input.value = `[![Anvil Breaker](${origin}/api/badge/${encodeURIComponent(userKey)}.svg)](${origin})`;
   }
   openModal('modal-badge-share');
 }
@@ -2167,7 +2250,7 @@ function copyBadgeMarkdown() {
 
 function advanceNext() {
   if (state.currentProblemId < state.problems.length) {
-    selectProblem(state.currentProblemId + 1);
+    selectProblem(state.currentProblemId + 1, true, true);
   }
 }
 
@@ -2213,8 +2296,8 @@ function openProblemPreview(problemId) {
   if (solveBtn) {
     solveBtn.onclick = () => {
       closeModals();
-      selectProblem(prob.id);
-      switchView('solver');
+      selectProblem(prob.id, false);
+      switchView('solver', true);
       if (!state.timerRunning) toggleTimer();
     };
   }
@@ -2505,7 +2588,8 @@ async function openReviewsModal() {
       b.addEventListener('click', () => {
         const id = parseInt(b.dataset.id);
         closeModals();
-        selectProblem(id);
+        selectProblem(id, true, true);
+        switchView('solver', true);
       });
     });
 
