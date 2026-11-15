@@ -1,162 +1,138 @@
 <div align="center">
 
-<img src="static/hero_logo.jpg" alt="Anvil Breaker Logo" width="160" style="border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);" />
+<img src="static/hero_logo.jpg" alt="Anvil Breaker Logo" width="140" style="border-radius: 20px; box-shadow: 0 16px 36px rgba(0,0,0,0.7);" />
 
 # ⚒️ ANVIL BREAKER™
-### Break the Tutorial Anvil. 15 Minutes or Move On.
+### Break the LeetCode Anvil. 15 Minutes or Move On.
 
-[![Live on anvilbreaker.is-a.dev](https://img.shields.io/badge/Domain-anvilbreaker.is--a.dev-F59E0B.svg?logo=googlechrome&logoColor=white)](https://anvilbreaker.is-a.dev)
-[![Render Mirror](https://img.shields.io/badge/Render-Live%20Deploy-46E3B7.svg?logo=render&logoColor=white)](https://anvil-breaker.onrender.com)
-[![Tests Passing](https://img.shields.io/badge/Tests-10%2F10%20Passed-emerald.svg?logo=pytest&logoColor=white)](tests/)
-[![GitHub](https://img.shields.io/badge/GitHub-mustafa64--stack%2Fanvil--breaker-181717.svg?logo=github)](https://github.com/mustafa64-stack/anvil-breaker)
-[![Author](https://img.shields.io/badge/Author-Mustafa%20Marjani-FFFFFF.svg?logo=github)](https://github.com/mustafa64-stack)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Version](https://img.shields.io/badge/Version-v2.5.0-amber.svg)](https://github.com/mustafa64-stack/anvil-breaker/releases)
-[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-zinc.svg)](LICENSE)
+[![Live App](https://img.shields.io/badge/Live%20App-anvilbreaker.is--a.dev-F59E0B.svg?style=for-the-badge&logo=googlechrome&logoColor=white)](https://anvilbreaker.is-a.dev)
+[![Curriculum](https://img.shields.io/badge/Curriculum-610%2B%20Problems-white.svg?style=for-the-badge)](https://anvilbreaker.is-a.dev)
+[![Protocol](https://img.shields.io/badge/Protocol-15m%20%7C%2025m%20%7C%2045m-amber.svg?style=for-the-badge)](https://anvilbreaker.is-a.dev)
+[![Author](https://img.shields.io/badge/By-Mustafa%20Marjani-18181B.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mustafa64-stack)
 
-**A high-performance algorithmic engineering system by Mustafa Marjani.**  
-Enforces strict protocol timeboxing (15m, 25m, 45m, adaptive), browser native history routing, live DOM injection HUD inside LeetCode, multi-sheet curriculum, universal multi-browser engine, and private developer vaults.
+<br>
 
-[🚀 **Live Cloud App**](https://anvil-breaker.onrender.com) • [🌐 **Free Domain (anvilbreaker.is-a.dev)**](#-7-free-domain-anvilbreakeris-adev--deployment) • [📖 **Protocol Spec**](#-1-the-15-minute-protocol) • [🧠 **SM-2 & Adaptive Engine**](#-4-persisted-sm-2-decay--adaptive-cognitive-protocol) • [🧩 **Browser Extension**](#-2-floating-mini-hud--chrome-extension)
+**A high-velocity algorithmic engineering platform designed to eliminate tutorial hell and interview anxiety.**  
+Strict 4-phase timeboxing, SuperMemo-2 retention decay curves, unified curriculum roadmaps (Striver, NeetCode, Blind 75, CSES), floating Picture-in-Picture timer, and private developer vaults.
+
+[🚀 **Launch Anvil Breaker**](https://anvilbreaker.is-a.dev) • [📖 **The 15m Protocol**](#-the-15-minute-protocol) • [🧠 **Spaced Repetition (SM-2)**](#-spaced-repetition-retention-sm-2) • [📚 **Curriculum Sheets**](#-unified-curriculum-roadmaps) • [⌨️ **Keyboard Shortcuts**](#-keyboard-shortcuts)
 
 </div>
 
 ---
 
-## ⚡ 1. The 15-Minute Protocol
+## ⚡ The 15-Minute Protocol
 
-Spending 90 minutes stuck on a single LeetCode problem is not learning—it is cognitive fatigue and disguised procrastination. **Anvil Breaker** stops tutorial hell by enforcing disciplined execution:
+Spending 90 minutes stuck on one coding problem is not learning—it is cognitive friction and an ego trap. If you don't spot the invariant within 15 minutes, grinding longer only reinforces bad habits.
 
-| Phase | Timebox | Objective & Cognitive Guardrails |
-|---|---|---|
-| **Phase 1: Read & Trace** | `00:00 – 03:00` | Read constraints & dry-run small inputs on pen & paper. Check duplicates, empty, negatives. |
-| **Phase 2: Pick a Pattern** | `03:00 – 07:00` | Map problem to standard patterns (Two Pointers, Sliding Window, Monotonic Stack, BFS/DFS, DP). Formulate brute-force baseline. |
-| **Phase 3: Code & Test** | `07:00 – 13:00` | Write clean production code without copy-pasting or leaning on AI chat completions. Dry-run sample edge cases before submitting. |
-| **Phase 4: Cut Losses** | `13:00 – 15:00` | If still stuck at minute 13: **STOP**. Open editorial hints, understand the invariant proof, and type the working solution from scratch. |
+**Anvil Breaker** enforces strict timeboxing into 4 deliberate phases:
 
----
+| Phase | Timebox | Cognitive Goal | What To Do |
+|---|---|---|---|
+| **Phase 1: Read & Trace** | `00:00 – 03:00` | Constraint Clarity | Read inputs/outputs, find edge cases (empty, negative, duplicates), and dry-run small examples manually. |
+| **Phase 2: Pick a Pattern** | `03:00 – 07:00` | Architectural Blueprint | Identify core technique (Two Pointers, Sliding Window, Monotonic Stack, BFS/DFS, DP). State brute-force baseline. |
+| **Phase 3: Code & Dry-Run** | `07:00 – 13:00` | Clean Implementation | Write clean, idiomatically sound code. Check pointer boundaries and off-by-one errors before submitting. |
+| **Phase 4: Cut Your Losses** | `13:00 – 15:00` | Invariant Extraction | **Stop struggling.** If not solved, reveal the technique hint, understand the proof of correctness, and re-code from memory. |
 
-## 🧠 4. Persisted SM-2 Decay & Adaptive Cognitive Protocol
-
-```
-[ Problem Input ]
-       │
-       ▼
-[ Adaptive Cognitive Protocol (ACP) ] ──► Dynamically adjusts budget based on difficulty + topic fail rate
-       │
-       ▼
-[ 5-Tier Failure Diagnostics ] ──► Pinpoints root cause failure:
-       │                             1. Mental Model / Pattern Blindspot
-       │                             2. Algorithmic Invariant Failure
-       │                             3. Boundary / Off-By-One Bug
-       │                             4. Asymptotic Inefficiency / TLE
-       │                             5. Language / API Gotcha
-       ▼
-[ Persisted SuperMemo-2 Engine ] ──► Calculates retention decay curves stored in SQLite
-```
-
-### A. Persisted SuperMemo-2 (SM-2) Interval Growth
-Retention parameters are persistently tracked per user per problem in `user_progress`:
-* **Repetitions ($n$)**: Number of consecutive successful solves.
-* **Easiness Factor ($EF$)**: Calibrated difficulty multiplier initialized at $2.5$ ($EF \ge 1.3$).
-* **Interval Growth Schedule**:
-  * Solve 1 (clean): Interval = **1 day**, Reps = **1**
-  * Solve 2 (clean): Interval = **6 days**, Reps = **2**
-  * Solve 3+ (clean): Interval = $\mathrm{round}(\mathrm{interval}_{prev} \times EF)$
-* **Failure Stand-Down**: Quality $< 3$ resets repetitions to 0 and schedules a mandatory review for the next day.
-* **Deduplication**: Automatically skips redundant review entries for the same problem and due date.
-
-### B. Adaptive Cognitive Budget Engine
-The protocol timer queries your historical performance on the problem's specific algorithmic topic:
-$$\mathrm{Fail\ Rate}_{\mathrm{topic}} = \frac{\mathrm{Failed\ Attempts}_{\mathrm{topic}}}{\mathrm{Total\ Attempts}_{\mathrm{topic}}}$$
-* When $\mathrm{Fail\ Rate}_{\mathrm{topic}} \le 0.4$: Standard budget is applied (Medium = 25 mins: 4m Read, 6m Pattern, 12m Code, 3m Cut).
-* When $\mathrm{Fail\ Rate}_{\mathrm{topic}} > 0.4$: Cognitive friction detected. Phase 1 (Read) is allocated **+1 min** and Phase 2 (Pattern) is allocated **+2 mins** (Medium expands to 28 mins), giving you extra time to grasp invariants before writing code.
+> **Presets Supported:** **15m Speedrun** (quick daily sets), **25m Standard** (balanced prep), **45m FAANG Mock** (full interview simulation), and **Custom Time** (configure each phase).
 
 ---
 
-## 🔒 5. Security & Multi-Tenant Architecture
+## 🧠 Spaced Repetition Retention (SM-2)
 
-* **PBKDF2 Password Hashing**: Cryptographically slow HMAC-SHA256 with 100,000 iterations and 16-byte random salts.
-* **Bearer Session Tokens**: Mutating routes require `Authorization: Bearer <session_token>`. Header impersonation (`X-User`) is strictly rejected.
-* **Multi-Tenant Isolation**: Custom sheets and progress data are scoped to the authenticated `user_id`. Strangers cannot view or mutate another account's sheets.
-* **Scrubbed Backups**: `/api/export` strips all `password_hash` and `session_token` fields from JSON exports.
-* **Sanitized Browser Launcher**: `/api/open-browser` validates protocol schemes, permitting only `http://` and `https://`.
-* **Tighter Extension Permissions**: Chrome/Brave extension host permissions are scoped exclusively to `leetcode.com` and `cses.fi`.
+Most engineers solve 300 problems, yet forget the solutions 3 weeks later. Anvil Breaker integrates an automated **SuperMemo-2 (SM-2)** spaced repetition engine directly into your practice loop:
 
----
-
-## 📚 3. Multi-Sheet Curriculum Engine
-
-Problem counts are driven dynamically from loaded curriculum collections:
-* **The Core Path (610 Problems)**: Complete 32-chapter algorithmic mastery sequence.
-* **Striver's SDE Sheet (95 Problems)**: High-yield roadmap for FAANG/tier-1 software engineering rounds.
-* **NeetCode 150 (151 Problems)**: Pattern-driven comprehensive interview syllabus.
-* **Blind 75 (75 Problems)**: High-velocity sprint roadmap.
-* **Self-Made Custom Sheets**: Curate personal sheets on the fly with multi-tenant privacy.
+* **Clean Solve:** Problem is marked mastered; the review interval expands exponentially ($1\text{ day} \rightarrow 6\text{ days} \rightarrow 16\text{ days} \dots$).
+* **Solve with Hints:** Retained in the queue for near-term re-testing to solidify the intuition.
+* **Failed / Time Cap Reached:** Diagnostic error logged (Pattern Blindspot, Invariant Flaw, Boundary Bug, TLE); reset to Day 1 review until mastered.
+* **Smart Review Queue:** Anvil Breaker alerts you exactly when a problem is due for review, guaranteeing long-term retention before your real interviews.
 
 ---
 
-## 🪟 2. Floating Mini HUD & Chrome/Brave Extension
+## 📚 Unified Curriculum Roadmaps
 
-Solve directly inside LeetCode without switching tabs:
-* **Always-On-Top Mini HUD (Picture-in-Picture)**:
-  Press <kbd>H</kbd> to launch a detached floating window that hovers over your editor via Chromium's Document Picture-in-Picture API. Real-time bi-directional sync via `BroadcastChannel`.
-* **Native LeetCode DOM Injection**:
-  The included Manifest V3 extension (`extension/`) injects a draggable floating HUD directly into `https://leetcode.com/problems/*`.
-* **Automatic Submission Sniffer**:
-  Listens for the LeetCode "Accepted" green toast and triggers background progress sync to your SQLite database.
+Never wonder *"what should I solve next?"*. Access world-class curated roadmaps in one unified interface:
+
+* **The Core Path (610 Problems):** Comprehensive 32-chapter algorithmic journey covering every foundational and advanced data structure.
+* **Striver's SDE Sheet (95 Problems):** The definitive, battle-tested interview roadmap for tier-1 tech companies.
+* **NeetCode 150:** Curated pattern-based progression covering all core coding interview archetypes.
+* **Blind 75:** The classic high-velocity sprint sheet for tight deadlines.
+* **Self-Made Custom Sheets:** Paste any list of problem titles or URLs to create your own private study playlist.
 
 ---
 
-## 🚀 6. Getting Started Locally & Running Tests
+## 🌐 Multi-Platform Engine
+
+Practice where problems actually live. Anvil Breaker automatically resolves problem titles and URLs across:
+* **LeetCode**
+* **CSES Problem Set** (Finland Olympiad in Informatics)
+* **Codeforces**
+* **GeeksforGeeks**
+* **InterviewBit** & **HackerRank**
+
+Click **Open Problem** (or press <kbd>B</kbd>) to instantly launch the challenge directly on the target platform in your preferred browser (**Chrome, Brave, Edge, or Firefox**).
+
+---
+
+## 🪟 Always-On-Top Floating Mini HUD
+
+Solve on LeetCode or CSES without switching tabs or losing focus:
+
+* **Picture-in-Picture Floating Window:** Press <kbd>H</kbd> to pop out an ultra-compact, always-on-top HUD window that sits beside your browser or IDE.
+* **Bi-Directional Sync:** Timer ticks, pause/play, phase transitions, and audio alerts sync in real time between the floating HUD and the main dashboard.
+* **Optional Browser Extension:** Inject the 15-Minute Protocol HUD directly onto LeetCode problem pages (`extension/`).
+
+---
+
+## 🔐 Private Developer Vault
+
+Every engineer gets an isolated, private vault:
+* **Email & Password Authentication:** Your streaks, notes, solve history, and review dates belong strictly to you.
+* **Connected Handles:** Link your GitHub and LeetCode usernames to showcase your activity.
+* **Dynamic GitHub Readme Badge:** Embed your real-time solve counter and streak directly into your GitHub profile README.
+* **Data Portability:** Export your complete study history anytime in clean JSON.
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+Speed through your practice sessions without touching the mouse:
+
+| Key | Action |
+|---|---|
+| <kbd>Space</kbd> | Start / Pause Protocol Timer |
+| <kbd>R</kbd> | Reset Timer to Beginning of Preset |
+| <kbd>B</kbd> | Open Problem on Platform (LeetCode / CSES / CF) |
+| <kbd>H</kbd> | Pop-out Floating Mini HUD (Picture-in-Picture) |
+| <kbd>N</kbd> | Advance to Next Problem in Sheet |
+| <kbd>P</kbd> | Go to Previous Problem |
+| <kbd>1</kbd> – <kbd>4</kbd> | Jump directly to Phase 1, 2, 3, or 4 |
+| <kbd>+</kbd> | Add +1 minute to current timer phase |
+| <kbd>M</kbd> | Cycle timer presets (15m $\rightarrow$ 25m $\rightarrow$ 45m) |
+| <kbd>Esc</kbd> | Close any open modal or pop-up |
+
+---
+
+## 💻 Running Locally
 
 ```bash
-# Clone the repository
+# 1. Clone repository
 git clone https://github.com/mustafa64-stack/anvil-breaker.git
 cd anvil-breaker
 
-# Install dependencies
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# Run pytest validation suite (10/10 tests pass)
-python -m pytest tests/
-
-# Launch development server
+# 3. Launch local vault
 python server.py
 ```
-Open **`http://localhost:8765`** in Brave, Chrome, Edge, or Firefox.
-
----
-
-## 🌐 7. Free Domain (`anvilbreaker.is-a.dev`) & Deployment
-
-### A. Free Domain Registration (`anvilbreaker.is-a.dev`)
-`is-a.dev` provides 100% free developer subdomains:
-* Pre-configured record: [`domains/anvilbreaker.json`](domains/anvilbreaker.json)
-* PR #61445 submitted to `is-a-dev/register` pointing `anvilbreaker.is-a.dev` CNAME directly to `anvil-breaker.onrender.com`.
-
-### B. One-Click Cloud Deployment (Render Blueprint)
-Deploy or replicate instantly to **Render.com** via [`render.yaml`](render.yaml):
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mustafa64-stack/anvil-breaker)
-
-Live Cloud App: **`https://anvil-breaker.onrender.com`** (and `https://anvilbreaker.is-a.dev`).
-
----
-
-## ⌨️ 8. Keyboard Shortcuts
-
-| Shortcut | Action |
-|---|---|
-| <kbd>Space</kbd> | Start / Pause Active Protocol Timer |
-| <kbd>R</kbd> | Reset Protocol Timer |
-| <kbd>H</kbd> | Pop-out Floating Mini HUD (Picture-in-Picture) |
-| <kbd>B</kbd> | Open Current Problem in Platform Browser |
-| <kbd>Alt</kbd> + <kbd>C</kbd> | Switch to Curriculum Roadmap View |
-| <kbd>Alt</kbd> + <kbd>S</kbd> | Switch to 15m Protocol Solver View |
+Open **`http://localhost:8765`** in your browser.
 
 ---
 
 <div align="center">
-  <sub>Architected with obsessive focus by <strong>Mustafa Marjani</strong> • Anvil Breaker™ v2.5.0</sub>
+
+**Built for serious algorithmic engineers.**  
+Created by [Mustafa Marjani](https://github.com/mustafa64-stack) • [Anvil Breaker™](https://anvilbreaker.is-a.dev)
+
 </div>
