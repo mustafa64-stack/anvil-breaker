@@ -14,6 +14,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Instant Auto-Redirect for Logged-In Sessions -->
+  <script>
+    (function() {
+      const search = window.location.search || '';
+      if (search.includes('switch=true') || search.includes('logout=true')) return;
+      const token = localStorage.getItem('anvil_token');
+      if (token) {
+        const hash = window.location.hash || '';
+        window.location.replace('/app' + hash);
+      }
+    })();
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -485,6 +498,15 @@
 
   <!-- ==================== AUTH LOGIC & DYNAMIC VAULT CONTROLLER ==================== -->
   <script>
+    // IMMEDIATE AUTO-REDIRECT: If session exists, immediately redirect to /app (preserving problem hash like #/problem/38)
+    (function() {
+      const token = localStorage.getItem('anvil_token');
+      if (token) {
+        const hash = window.location.hash || '';
+        window.location.replace('/app' + hash);
+      }
+    })();
+
     let authMode = 'register'; // 'register' or 'login'
 
     const form = document.getElementById('home-auth-form');
@@ -539,187 +561,10 @@
         if (res.ok) {
           const data = await res.json();
           const user = data.user;
-          // Show active logged in box
-          form.classList.add('hidden');
-          btnTabRegister.parentElement.classList.add('hidden');
-          boxTitle.textContent = "Vault Unlocked";
-          boxSub.textContent = "Your private database session is active.";
-          loggedInBox.classList.remove('hidden');
-
-          document.getElementById('active-user-name').textContent = `@${user.username}`;
-          document.getElementById('active-user-email').textContent = user.email || `${user.username}@anvilbreaker.is-a.dev`;
-          document.getElementById('active-user-avatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
-
-          // Header button
-          headerAuthContainer.innerHTML = `
-            <a href="/app" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition flex items-center gap-1.5">
-              <span>My Workspace ➔</span>
-            </a>
-          `;
-        } else {
-          localStorage.removeItem('anvil_token');
-          localStorage.removeItem('anvil_user');
-        }
-      } catch (e) {
-        console.warn("Session check error:", e);
-      }
-    }
-
-    // Switch account / Sign out button on home page
-    const btnSwitch = document.getElementById('btn-switch-account');
-    if (btnSwitch) {
-      btnSwitch.addEventListener('click', () => {
-        localStorage.removeItem('anvil_token');
-        localStorage.removeItem('anvil_user');
-        loggedInBox.classList.add('hidden');
-        form.classList.remove('hidden');
-        btnTabRegister.parentElement.classList.remove('hidden');
-        switchMode('login');
-      });
-    }
-
-    // Handle Form Submit (Register or Login)
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      alertBox.classList.add('hidden');
-
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
-      const username = document.getElementById('auth-username').value.trim();
-
-      const submitBtn = document.getElementById('btn-auth-submit');
-      const origText = btnSubmitText.textContent;
-      submitBtn.disabled = true;
-      btnSubmitText.textContent = "Connecting to Vault...";
-
-      try {
-        const url = authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
-        const body = authMode === 'register' ? { email, password, username } : { email, password };
-
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.detail || "Authentication failed");
-        }
-
-        // Save session
-        localStorage.setItem('anvil_token', data.token);
-        localStorage.setItem('anvil_user', JSON.stringify(data.user));
-
-        showAlert(authMode === 'register' ? "Private Vault Created! Launching..." : "Welcome back! Launching...", false);
-
-        // Forward to private workspace (with target sheet if selected)
-        const targetSheet = localStorage.getItem('anvil_target_sheet');
-        localStorage.removeItem('anvil_target_sheet');
-        const targetUrl = targetSheet ? `/app#${targetSheet}` : '/app';
-        setTimeout(() => {
-          window.location.href = targetUrl;
-        }, 500);
-
-      } catch (err) {
-        showAlert(err.message, true);
-      } finally {
-        submitBtn.disabled = false;
-        btnSubmitText.textContent = origText;
-      }
-    });
-
-    // Handle clicks on curriculum sheet cards
-    document.querySelectorAll('.sheet-launch-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        const sheetSlug = card.dataset.sheet;
-        const token = localStorage.getItem('anvil_token');
-        if (!token) {
-          e.preventDefault();
-          localStorage.setItem('anvil_target_sheet', sheetSlug);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          showAlert(`Please sign in or create an account to load the ${card.querySelector('h4')?.textContent || 'sheet'}.`, false);
-          document.getElementById('auth-email').focus();
-        }
-      });
-    });
-
-    checkExistingSession();
-  </script>
-
-  <!-- ==================== AUTH LOGIC & DYNAMIC VAULT CONTROLLER ==================== -->
-  <script>
-    let authMode = 'register'; // 'register' or 'login'
-
-    const form = document.getElementById('home-auth-form');
-    const btnTabRegister = document.getElementById('btn-tab-register');
-    const btnTabLogin = document.getElementById('btn-tab-login');
-    const boxTitle = document.getElementById('auth-box-title');
-    const boxSub = document.getElementById('auth-box-sub');
-    const fieldUsername = document.getElementById('field-group-username');
-    const btnSubmitText = document.getElementById('btn-submit-text');
-    const alertBox = document.getElementById('auth-alert');
-    const loggedInBox = document.getElementById('logged-in-box');
-    const headerAuthContainer = document.getElementById('header-auth-container');
-
-    function showAlert(msg, isError = true) {
-      alertBox.textContent = msg;
-      alertBox.className = `p-3 rounded-xl text-xs font-medium border ${isError ? 'bg-rose-500/10 text-rose-300 border-rose-500/30' : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'}`;
-      alertBox.classList.remove('hidden');
-    }
-
-    function switchMode(mode) {
-      authMode = mode;
-      alertBox.classList.add('hidden');
-      if (mode === 'register') {
-        btnTabRegister.className = "py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm";
-        btnTabLogin.className = "py-2 rounded-lg text-zinc-400 hover:text-white transition";
-        boxTitle.textContent = "Create Private Vault";
-        boxSub.textContent = "Sign up with your email to unlock your private database.";
-        fieldUsername.classList.remove('hidden');
-        btnSubmitText.textContent = "Create Private Vault & Enter ➔";
-      } else {
-        btnTabLogin.className = "py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm";
-        btnTabRegister.className = "py-2 rounded-lg text-zinc-400 hover:text-white transition";
-        boxTitle.textContent = "Sign In to Vault";
-        boxSub.textContent = "Enter your credentials to access your private problems.";
-        fieldUsername.classList.add('hidden');
-        btnSubmitText.textContent = "Sign In & Enter Command Center ➔";
-      }
-    }
-
-    btnTabRegister.addEventListener('click', () => switchMode('register'));
-    btnTabLogin.addEventListener('click', () => switchMode('login'));
-
-    // Check existing login session on home page load
-    async function checkExistingSession() {
-      const token = localStorage.getItem('anvil_token');
-      if (!token) return;
-
-      try {
-        const res = await fetch('/api/auth/me', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const user = data.user;
-          // Show active logged in box
-          form.classList.add('hidden');
-          btnTabRegister.parentElement.classList.add('hidden');
-          boxTitle.textContent = "Vault Unlocked";
-          boxSub.textContent = "Your private database session is active.";
-          loggedInBox.classList.remove('hidden');
-
-          document.getElementById('active-user-name').textContent = `@${user.username}`;
-          document.getElementById('active-user-email').textContent = user.email || `${user.username}@anvilbreaker.is-a.dev`;
-          document.getElementById('active-user-avatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
-
-          // Header button
-          headerAuthContainer.innerHTML = `
-            <a href="/app" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition flex items-center gap-1.5">
-              <span>My Workspace ➔</span>
-            </a>
-          `;
+          // Session is valid — immediately route to private workspace preserving deep link
+          const hash = window.location.hash || '';
+          window.location.replace('/app' + hash);
+          return;
         } else {
           localStorage.removeItem('anvil_token');
           localStorage.removeItem('anvil_user');

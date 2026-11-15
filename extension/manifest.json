@@ -10,8 +10,13 @@
   ],
   "host_permissions": [
     "*://*.leetcode.com/*",
+    "*://*.cses.fi/*",
+    "*://*.codeforces.com/*",
+    "*://*.geeksforgeeks.org/*",
     "http://localhost:8765/*",
-    "https://*/*"
+    "http://127.0.0.1:8765/*",
+    "https://anvilbreaker.is-a.dev/*",
+    "https://anvil-breaker.onrender.com/*"
   ],
   "action": {
     "default_popup": "popup.html",

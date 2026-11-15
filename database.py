@@ -4,6 +4,7 @@ import os
 import json
 from datetime import datetime, timedelta
 import hashlib
+import secrets
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.getenv("DATA_DIR", os.path.join(BASE_DIR, "data"))
@@ -20,8 +21,28 @@ def get_connection():
     conn.execute("PRAGMA foreign_keys=ON;")
     return conn
 
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode('utf-8')).hexdigest()
+# Slow PBKDF2 Password Hashing with 100,000 iterations & unique random salt
+def hash_password(password: str, salt: str = None) -> str:
+    if not salt:
+        salt = secrets.token_hex(16)
+    key = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000)
+    return f"pbkdf2:sha256:100000${salt}${key.hex()}"
+
+def verify_password(stored_hash: str, password: str) -> bool:
+    if not stored_hash or not password:
+        return False
+    if stored_hash.startswith("pbkdf2:sha256:"):
+        try:
+            parts = stored_hash.split("$")
+            salt = parts[1]
+            expected_hex = parts[2]
+            key = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), 100000)
+            return secrets.compare_digest(key.hex(), expected_hex)
+        except Exception:
+            return False
+    # Backward compatibility with legacy SHA-256
+    legacy = hashlib.sha256(password.encode('utf-8')).hexdigest()
+    return secrets.compare_digest(stored_hash, legacy)
 
 def init_db():
     conn = get_connection()
@@ -111,6 +132,26 @@ def init_db():
     )
     """)
 
+    # Ensure optional columns exist if user_progress was previously created
+    for col_name, col_type in [
+        ("repetitions", "INTEGER DEFAULT 0"),
+        ("easiness_factor", "REAL DEFAULT 2.5"),
+        ("interval_days", "INTEGER DEFAULT 1"),
+        ("due_date", "TEXT")
+    ]:
+        try:
+            c.execute(f"ALTER TABLE user_progress ADD COLUMN {col_name} {col_type}")
+        except sqlite3.OperationalError:
+            pass
+
+    # System Metadata & One-Time Migration Tracking Table
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS _system_meta (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    )
+    """)
+
     # Default / Local user creation
     c.execute("SELECT id FROM users WHERE username = 'local_user'")
     row = c.fetchone()
@@ -124,21 +165,31 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Migration helper from user_progress.json if it exists
+# Migration helper from user_progress.json - Runs safely exactly once
 def migrate_json_to_sqlite():
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS _system_meta (key TEXT PRIMARY KEY, value TEXT)")
+    c.execute("SELECT value FROM _system_meta WHERE key = 'json_migrated'")
+    if c.fetchone():
+        conn.close()
+        return
+
     json_path = os.path.join(DATA_DIR, "user_progress.json")
     if not os.path.exists(json_path):
+        c.execute("INSERT OR REPLACE INTO _system_meta (key, value) VALUES ('json_migrated', '1')")
+        conn.commit()
+        conn.close()
         return
 
     try:
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        conn = get_connection()
-        c = conn.cursor()
         c.execute("SELECT id FROM users WHERE username = 'local_user'")
         u = c.fetchone()
         if not u:
+            conn.close()
             return
         user_id = u["id"]
 
@@ -192,10 +243,12 @@ def migrate_json_to_sqlite():
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 ))
 
+        c.execute("INSERT OR REPLACE INTO _system_meta (key, value) VALUES ('json_migrated', '1')")
         conn.commit()
         conn.close()
-        print("Successfully migrated user_progress.json to SQLite database!")
+        print("Successfully migrated user_progress.json to SQLite database (one-time)!")
     except Exception as e:
+        conn.close()
         print(f"Error migrating JSON to SQLite: {e}")
 
 def save_custom_sheet(user_id: int, slug: str, title: str, description: str, problems: list):
@@ -222,10 +275,13 @@ def get_custom_sheets(user_id: int):
     conn.close()
     return rows
 
-def get_custom_sheet_by_slug(slug: str):
+def get_custom_sheet_by_slug(slug: str, user_id: int = None):
     conn = get_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM custom_sheets WHERE slug = ?", (slug,))
+    if user_id is not None:
+        c.execute("SELECT * FROM custom_sheets WHERE slug = ? AND user_id = ?", (slug, user_id))
+    else:
+        c.execute("SELECT * FROM custom_sheets WHERE slug = ?", (slug,))
     row = c.fetchone()
     conn.close()
     if row:
@@ -256,8 +312,8 @@ def register_user(email: str, password: str, username: str = None):
 
     today_str = datetime.now().strftime("%Y-%m-%d")
     pwd_hash = hash_password(password)
-    # Generate random session token
-    token = hashlib.sha256(f"{email_clean}:{datetime.now().isoformat()}:{os.urandom(16).hex()}".encode('utf-8')).hexdigest()
+    # Generate cryptographically secure 256-bit session token
+    token = secrets.token_hex(32)
 
     c.execute("""
     INSERT INTO users (username, email, password_hash, session_token, daily_goal, streak, last_active_date, today_solved_count, created_at)
@@ -276,17 +332,25 @@ def authenticate_user(email_or_username: str, password: str):
     conn = get_connection()
     c = conn.cursor()
     clean_identifier = email_or_username.strip().lower()
-    pwd_hash = hash_password(password)
 
-    c.execute("SELECT * FROM users WHERE (email = ? OR username = ?) AND password_hash = ?", (clean_identifier, clean_identifier, pwd_hash))
+    c.execute("SELECT * FROM users WHERE email = ? OR username = ?", (clean_identifier, clean_identifier))
     user_row = c.fetchone()
     if not user_row:
         conn.close()
         return None, "Invalid email or password"
 
     user = dict(user_row)
-    # Refresh session token
-    token = hashlib.sha256(f"{user['id']}:{datetime.now().isoformat()}:{os.urandom(16).hex()}".encode('utf-8')).hexdigest()
+    if not verify_password(user["password_hash"], password):
+        conn.close()
+        return None, "Invalid email or password"
+
+    # Automatically upgrade legacy unsalted SHA-256 hashes to PBKDF2
+    if not user["password_hash"].startswith("pbkdf2:sha256:"):
+        new_hash = hash_password(password)
+        c.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hash, user['id']))
+
+    # Refresh cryptographically secure session token
+    token = secrets.token_hex(32)
     c.execute("UPDATE users SET session_token = ? WHERE id = ?", (token, user['id']))
     conn.commit()
     user["session_token"] = token

@@ -62,10 +62,30 @@ let state = {
 // Authenticated API Fetch Helper
 async function apiFetch(url, options = {}) {
   const headers = Object.assign({}, options.headers || {});
-  if (state.token) {
-    headers['Authorization'] = `Bearer ${state.token}`;
+  const token = state.token || localStorage.getItem('anvil_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
-  return fetch(url, Object.assign({}, options, { headers }));
+  if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+  try {
+    const res = await fetch(url, Object.assign({}, options, { headers }));
+    if (res.status === 401) {
+      console.warn("API call returned 401 Unauthorized - clearing token");
+      localStorage.removeItem('anvil_token');
+      localStorage.removeItem('anvil_user');
+      state.token = '';
+      state.user = null;
+      if (window.location.pathname.startsWith('/app')) {
+        window.location.replace('/?session_expired=true');
+      }
+    }
+    return res;
+  } catch (err) {
+    console.error(`Fetch error on ${url}:`, err);
+    throw err;
+  }
 }
 
 // Dynamic Platform Resolver (CSES, LeetCode, Codeforces, HackerRank, GeeksforGeeks, InterviewBit)
@@ -888,9 +908,8 @@ function handleScratchpadChange() {
   saveNotesTimeout = setTimeout(async () => {
     const text = document.getElementById('scratchpad-input').value;
     try {
-      await fetch('/api/progress/notes', {
+      await apiFetch('/api/progress/notes', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ problem_id: state.currentProblemId, scratchpad: text })
       });
       statusEl.textContent = "Auto-saved";
@@ -2298,9 +2317,8 @@ async function handleCreateCustomSheet() {
   saveBtn.textContent = "Saving...";
 
   try {
-    const res = await fetch('/api/sheets/custom', {
+    const res = await apiFetch('/api/sheets/custom', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: title,
         description: desc,
@@ -2489,6 +2507,14 @@ function updateUserUI(user) {
 
 async function initAuth() {
   const token = localStorage.getItem('anvil_token');
+  const cachedUser = localStorage.getItem('anvil_user');
+  if (cachedUser) {
+    try {
+      state.user = JSON.parse(cachedUser);
+      updateUserUI(state.user);
+    } catch(e) {}
+  }
+
   if (!token) {
     const path = window.location.pathname.toLowerCase();
     if (path.includes('/app') || path.includes('/workspace') || path.includes('/solver') || path.includes('/dashboard')) {
@@ -2504,8 +2530,10 @@ async function initAuth() {
     if (res.ok) {
       const data = await res.json();
       state.user = data.user;
+      localStorage.setItem('anvil_user', JSON.stringify(data.user));
       updateUserUI(data.user);
-    } else {
+    } else if (res.status === 401) {
+      // Explicit unauthorized response from server — session expired
       localStorage.removeItem('anvil_token');
       localStorage.removeItem('anvil_user');
       state.token = '';
@@ -2513,7 +2541,7 @@ async function initAuth() {
       window.location.href = '/';
     }
   } catch (err) {
-    console.warn("Auth check failed:", err);
+    console.warn("Auth check failed (network/offline):", err);
   }
 }
 
@@ -2688,7 +2716,7 @@ async function openReviewsModal() {
   openModal('modal-reviews');
 
   try {
-    const res = await fetch('/api/init');
+    const res = await apiFetch('/api/init');
     const data = await res.json();
     const reviews = data.due_reviews || [];
     
