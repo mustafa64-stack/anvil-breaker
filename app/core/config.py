@@ -5,7 +5,7 @@ class Settings:
     PROJECT_NAME: str = "Anvil Breaker™"
     PROJECT_SUBTITLE: str = "Break the Tutorial Anvil. 15 Minutes or Move On."
     FOUNDER: str = "Mustafa Marjani"
-    VERSION: str = "2.2.0-checkpoint"
+    VERSION: str = "2.3.0-scaling"
     API_V1_STR: str = "/api"
     
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,6 +27,11 @@ class Settings:
     EDGE_PATHS = [
         r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
         r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"
+    ]
+    FIREFOX_PATHS = [
+        r"C:\Program Files\Mozilla Firefox\firefox.exe",
+        r"C:\Program Files (x86)\Mozilla Firefox\firefox.exe",
+        os.path.expandvars(r"%LOCALAPPDATA%\Mozilla Firefox\firefox.exe")
     ]
 
     # Cognitive Failure Taxonomy (Defensible Moat)

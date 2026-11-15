@@ -53,12 +53,22 @@ def save_json(filepath, data):
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-def get_current_user_id(username: Any = "local_user") -> int:
-    if not isinstance(username, str):
-        username = "local_user"
+def get_current_user_id(authorization: Optional[str] = None, x_user: Optional[str] = None) -> int:
+    token = None
+    if authorization and isinstance(authorization, str) and authorization.startswith("Bearer "):
+        token = authorization.split(" ", 1)[1].strip()
+    elif x_user and isinstance(x_user, str) and len(x_user) == 64:
+        token = x_user
+    
+    if token:
+        user = database.get_user_by_token(token)
+        if user:
+            return user["id"]
+
+    username = x_user if (isinstance(x_user, str) and x_user and len(x_user) != 64) else "local_user"
     conn = database.get_connection()
     c = conn.cursor()
-    c.execute("SELECT id FROM users WHERE username = ?", (username,))
+    c.execute("SELECT id FROM users WHERE username = ? OR email = ?", (username, username))
     row = c.fetchone()
     if row:
         uid = row["id"]
@@ -66,29 +76,53 @@ def get_current_user_id(username: Any = "local_user") -> int:
         return uid
     today_str = datetime.now().strftime("%Y-%m-%d")
     c.execute("""
-    INSERT INTO users (username, password_hash, daily_goal, streak, last_active_date, today_solved_count, created_at)
-    VALUES (?, ?, 3, 1, ?, 0, ?)
-    """, (username, database.hash_password('default'), today_str, today_str))
+    INSERT INTO users (username, email, password_hash, daily_goal, streak, last_active_date, today_solved_count, created_at)
+    VALUES (?, ?, ?, 3, 1, ?, 0, ?)
+    """, (username, f"{username}@anvilbreaker.dev", database.hash_password('default'), today_str, today_str))
     uid = c.lastrowid
     conn.commit()
     conn.close()
     return uid
 
-# Detect Brave or browser path
-def detect_browser_path(browser: str = "brave"):
-    if browser == "brave":
+# Detect browser executable path across platforms
+def detect_browser_path(browser: str = "auto"):
+    b = (browser or "auto").lower().strip()
+    if b == "brave":
         for p in settings.BRAVE_PATHS:
             if os.path.exists(p):
                 return p
-    elif browser == "chrome":
+    elif b == "chrome":
         for p in settings.CHROME_PATHS:
             if os.path.exists(p):
                 return p
-    elif browser == "edge":
+    elif b == "edge":
         for p in settings.EDGE_PATHS:
             if os.path.exists(p):
                 return p
+    elif b == "firefox":
+        for p in getattr(settings, "FIREFOX_PATHS", []):
+            if os.path.exists(p):
+                return p
+    elif b == "auto":
+        for p_list in [settings.CHROME_PATHS, settings.BRAVE_PATHS, settings.EDGE_PATHS, getattr(settings, "FIREFOX_PATHS", [])]:
+            for p in p_list:
+                if os.path.exists(p):
+                    return p
     return None
+
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    username: Optional[str] = None
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class ConnectAccountsRequest(BaseModel):
+    github_username: Optional[str] = None
+    leetcode_username: Optional[str] = None
+    preferred_browser: Optional[str] = "auto"
 
 class StatusUpdateRequest(BaseModel):
     problem_id: int
@@ -128,9 +162,8 @@ class CustomSheetCreateRequest(BaseModel):
 
 # Multi-Sheet Registry Endpoint
 @app.get("/api/sheets")
-def list_sheets(x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def list_sheets(authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
 
     system_sheets = [
         {
@@ -186,9 +219,8 @@ def list_sheets(x_user: Optional[str] = Header(None)):
 
 # Get Specific Sheet & Problems
 @app.get("/api/sheets/{slug}")
-def get_sheet_details(slug: str, x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def get_sheet_details(slug: str, authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
 
     problems = []
     chapters = []
@@ -198,25 +230,37 @@ def get_sheet_details(slug: str, x_user: Optional[str] = Header(None)):
         chapters = load_json(os.path.join(settings.DATA_DIR, "chapters.json"), [])
     elif slug == "striver-sde":
         problems = sheets_loader.get_striver_sde_sheet()
-        # Group into topics
         topics = list(dict.fromkeys([p["chapter_name"] for p in problems]))
+        topic_to_id = {t: i+1 for i, t in enumerate(topics)}
+        for p in problems:
+            p["chapter_id"] = topic_to_id.get(p.get("chapter_name", "General"), 1)
         chapters = [{"id": i+1, "name": t, "count": len([p for p in problems if p["chapter_name"] == t])} for i, t in enumerate(topics)]
     elif slug == "neetcode-150":
         problems = sheets_loader.get_neetcode_150_sheet()
         topics = list(dict.fromkeys([p.get("chapter_name", "General") for p in problems]))
-        chapters = [{"id": i+1, "name": t, "count": len([p for p in problems if p.get("chapter_name") == t])} for i, t in enumerate(topics)]
+        topic_to_id = {t: i+1 for i, t in enumerate(topics)}
+        for p in problems:
+            p["chapter_id"] = topic_to_id.get(p.get("chapter_name", "General"), 1)
+        chapters = [{"id": i+1, "name": t, "count": len([p for p in problems if p.get("chapter_name", "General") == t])} for i, t in enumerate(topics)]
     elif slug == "blind-75":
         problems = sheets_loader.get_blind_75_sheet()
         topics = list(dict.fromkeys([p.get("chapter_name", "General") for p in problems]))
-        chapters = [{"id": i+1, "name": t, "count": len([p for p in problems if p.get("chapter_name") == t])} for i, t in enumerate(topics)]
+        topic_to_id = {t: i+1 for i, t in enumerate(topics)}
+        for p in problems:
+            p["chapter_id"] = topic_to_id.get(p.get("chapter_name", "General"), 1)
+        chapters = [{"id": i+1, "name": t, "count": len([p for p in problems if p.get("chapter_name", "General") == t])} for i, t in enumerate(topics)]
     else:
         # Custom sheet
         custom = database.get_custom_sheet_by_slug(slug)
         if not custom:
             raise HTTPException(status_code=404, detail="Sheet not found")
         problems = custom.get("problems", [])
-        topics = list(dict.fromkeys([p.get("chapter_name", "Custom Topic") for p in problems]))
-        chapters = [{"id": i+1, "name": t, "count": len([p for p in problems if p.get("chapter_name") == t])} for i, t in enumerate(topics)]
+        topics = list(dict.fromkeys([p.get("chapter_name") or p.get("topic") or "General Practice" for p in problems]))
+        topic_to_id = {t: i+1 for i, t in enumerate(topics)}
+        for p in problems:
+            p["chapter_name"] = p.get("chapter_name") or p.get("topic") or "General Practice"
+            p["chapter_id"] = topic_to_id.get(p["chapter_name"], 1)
+        chapters = [{"id": i+1, "name": t, "count": len([p for p in problems if p["chapter_name"] == t])} for i, t in enumerate(topics)]
 
     # Fetch User Progress from DB
     conn = database.get_connection()
@@ -271,14 +315,110 @@ def get_sheet_details(slug: str, x_user: Optional[str] = Header(None)):
             "problems": progress_map
         },
         "due_reviews": due_reviews,
-        "brave_available": os.path.exists(detect_browser_path("brave") or "")
+        "brave_available": os.path.exists(detect_browser_path("brave") or ""),
+        "preferred_browser": user.get("preferred_browser") or "auto",
+        "github_username": user.get("github_username") or "",
+        "leetcode_username": user.get("leetcode_username") or ""
+    }
+
+# ==================== AUTHENTICATION & CONNECTED ACCOUNTS ====================
+
+@app.post("/api/auth/register")
+def auth_register(payload: RegisterRequest):
+    email = payload.email.strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Valid email is required")
+    if not payload.password or len(payload.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    user, err = database.register_user(email=email, password=payload.password, username=payload.username)
+    if err:
+        raise HTTPException(status_code=400, detail=err)
+    
+    return {
+        "status": "ok",
+        "token": user["session_token"],
+        "user": {
+            "id": user["id"],
+            "username": user["username"],
+            "email": user["email"],
+            "github_username": user.get("github_username") or "",
+            "leetcode_username": user.get("leetcode_username") or "",
+            "preferred_browser": user.get("preferred_browser") or "auto"
+        }
+    }
+
+@app.post("/api/auth/login")
+def auth_login(payload: LoginRequest):
+    email = payload.email.strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    if not payload.password:
+        raise HTTPException(status_code=400, detail="Password is required")
+        
+    user, err = database.authenticate_user(email, payload.password)
+    if err or not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+    return {
+        "status": "ok",
+        "token": user["session_token"],
+        "user": {
+            "id": user["id"],
+            "username": user["username"],
+            "email": user["email"],
+            "github_username": user.get("github_username") or "",
+            "leetcode_username": user.get("leetcode_username") or "",
+            "preferred_browser": user.get("preferred_browser") or "auto"
+        }
+    }
+
+@app.get("/api/auth/me")
+def auth_me(authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
+    user = database.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "status": "ok",
+        "user": {
+            "id": user["id"],
+            "username": user["username"],
+            "email": user.get("email") or f"{user['username']}@anvilbreaker.dev",
+            "github_username": user.get("github_username") or "",
+            "leetcode_username": user.get("leetcode_username") or "",
+            "preferred_browser": user.get("preferred_browser") or "auto",
+            "daily_goal": user.get("daily_goal", 3),
+            "streak": user.get("streak", 1),
+            "active_sheet": user.get("active_sheet", "core-path")
+        }
+    }
+
+@app.post("/api/auth/connect")
+def auth_connect(payload: ConnectAccountsRequest, authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
+    updated_user = database.update_user_connections(
+        user_id=user_id,
+        github_username=payload.github_username,
+        leetcode_username=payload.leetcode_username,
+        preferred_browser=payload.preferred_browser
+    )
+    return {
+        "status": "ok",
+        "user": {
+            "id": updated_user["id"],
+            "username": updated_user["username"],
+            "email": updated_user.get("email") or f"{updated_user['username']}@anvilbreaker.dev",
+            "github_username": updated_user.get("github_username") or "",
+            "leetcode_username": updated_user.get("leetcode_username") or "",
+            "preferred_browser": updated_user.get("preferred_browser") or "auto"
+        }
     }
 
 # Initialization endpoint
 @app.get("/api/init")
-def api_init(x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def api_init(authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
     conn = database.get_connection()
     c = conn.cursor()
     c.execute("SELECT active_sheet FROM users WHERE id = ?", (user_id,))
@@ -287,13 +427,12 @@ def api_init(x_user: Optional[str] = Header(None)):
     if row and row["active_sheet"]:
         active_sheet = row["active_sheet"]
     conn.close()
-    return get_sheet_details(active_sheet, x_user)
+    return get_sheet_details(active_sheet, authorization, x_user)
 
 # Create / Import Custom Self-Made Sheet
 @app.post("/api/sheets/custom")
-def create_custom_sheet(payload: CustomSheetCreateRequest, x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def create_custom_sheet(payload: CustomSheetCreateRequest, authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
 
     title = sanitize_title(payload.title)
     if not title:
@@ -330,9 +469,8 @@ def create_custom_sheet(payload: CustomSheetCreateRequest, x_user: Optional[str]
 
 # Delete Custom Sheet
 @app.delete("/api/sheets/custom/{slug}")
-def delete_custom_sheet(slug: str, x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def delete_custom_sheet(slug: str, authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
     database.delete_custom_sheet(user_id, slug)
     return {"status": "ok", "deleted": slug}
 
@@ -355,9 +493,8 @@ def get_adaptive_protocol(difficulty: str = "M", topic: str = "General"):
 
 # Status Update with SM-2 Memory Engine
 @app.post("/api/progress/status")
-def update_status(payload: StatusUpdateRequest, x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def update_status(payload: StatusUpdateRequest, authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
     today_str = datetime.now().strftime("%Y-%m-%d")
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -417,9 +554,8 @@ def update_status(payload: StatusUpdateRequest, x_user: Optional[str] = Header(N
 
 # Notes Auto-save
 @app.post("/api/progress/notes")
-def update_notes(payload: NotesUpdateRequest, x_user: Optional[str] = Header(None)):
-    username = x_user or "local_user"
-    user_id = get_current_user_id(username)
+def update_notes(payload: NotesUpdateRequest, authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     conn = database.get_connection()
@@ -435,49 +571,53 @@ def update_notes(payload: NotesUpdateRequest, x_user: Optional[str] = Header(Non
     conn.close()
     return {"status": "ok"}
 
-# Launch Browser Dynamically (Brave, Chrome, Edge, or Default)
+# Launch Browser Dynamically (Brave, Chrome, Edge, Firefox, or System Default)
 @app.post("/api/open-browser")
 def open_browser_endpoint(payload: OpenBrowserRequest):
     url = payload.url
     if not url:
         raise HTTPException(status_code=400, detail="Target URL required")
 
-    chosen_browser = payload.browser or "brave"
+    chosen_browser = payload.browser or "auto"
     browser_exe = detect_browser_path(chosen_browser)
+    is_cloud = bool(os.getenv("RENDER") or os.getenv("PORT") or os.name != "nt")
 
     launched_direct = False
-    if browser_exe and os.path.exists(browser_exe):
+    if not is_cloud and browser_exe and os.path.exists(browser_exe):
         try:
             subprocess.Popen([browser_exe, url], shell=False)
             launched_direct = True
         except Exception as e:
             print(f"Failed to launch {chosen_browser} directly: {e}")
 
-    if not launched_direct:
+    if not is_cloud and not launched_direct:
         try:
             webbrowser.open(url)
+            launched_direct = True
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to launch browser: {e}")
+            pass
 
     return {
         "status": "ok",
         "url": url,
         "browser": chosen_browser,
+        "is_cloud": is_cloud,
         "launched_direct": launched_direct,
         "browser_path": browser_exe
     }
 
 # Update Settings
 @app.post("/api/settings")
-def update_settings(payload: SettingsUpdateRequest, x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def update_settings(payload: SettingsUpdateRequest, authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
     conn = database.get_connection()
     c = conn.cursor()
     if payload.daily_goal is not None:
         c.execute("UPDATE users SET daily_goal = ? WHERE id = ?", (payload.daily_goal, user_id))
     if payload.brave_path is not None:
         c.execute("UPDATE users SET brave_path = ? WHERE id = ?", (payload.brave_path, user_id))
+    if payload.preferred_browser is not None:
+        c.execute("UPDATE users SET preferred_browser = ? WHERE id = ?", (payload.preferred_browser, user_id))
     if payload.current_problem_id is not None:
         c.execute("UPDATE users SET current_problem_id = ? WHERE id = ?", (payload.current_problem_id, user_id))
     if payload.active_sheet is not None:
@@ -490,9 +630,8 @@ def update_settings(payload: SettingsUpdateRequest, x_user: Optional[str] = Head
 
 # Export Progress Backup
 @app.get("/api/export")
-def export_backup(x_user: Optional[str] = Header(None)):
-    username = x_user if isinstance(x_user, str) else "local_user"
-    user_id = get_current_user_id(username)
+def export_backup(authorization: Optional[str] = Header(None), x_user: Optional[str] = Header(None)):
+    user_id = get_current_user_id(authorization, x_user)
     conn = database.get_connection()
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE id = ?", (user_id,))

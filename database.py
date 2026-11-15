@@ -50,7 +50,12 @@ def init_db():
         ("current_problem_id", "INTEGER DEFAULT 1"),
         ("active_sheet", "TEXT DEFAULT 'core-path'"),
         ("sound_enabled", "INTEGER DEFAULT 1"),
-        ("brave_path", "TEXT")
+        ("brave_path", "TEXT"),
+        ("email", "TEXT"),
+        ("github_username", "TEXT"),
+        ("leetcode_username", "TEXT"),
+        ("preferred_browser", "TEXT DEFAULT 'auto'"),
+        ("session_token", "TEXT")
     ]:
         try:
             c.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}")
@@ -235,6 +240,91 @@ def delete_custom_sheet(user_id: int, slug: str):
     c.execute("DELETE FROM custom_sheets WHERE user_id = ? AND slug = ?", (user_id, slug))
     conn.commit()
     conn.close()
+
+def register_user(email: str, password: str, username: str = None):
+    conn = get_connection()
+    c = conn.cursor()
+    email_clean = email.strip().lower()
+    if not username:
+        username = email_clean.split('@')[0]
+    
+    # Check if user already exists
+    c.execute("SELECT id FROM users WHERE email = ? OR username = ?", (email_clean, username))
+    if c.fetchone():
+        conn.close()
+        return None, "User with this email or username already exists"
+
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    pwd_hash = hash_password(password)
+    # Generate random session token
+    token = hashlib.sha256(f"{email_clean}:{datetime.now().isoformat()}:{os.urandom(16).hex()}".encode('utf-8')).hexdigest()
+
+    c.execute("""
+    INSERT INTO users (username, email, password_hash, session_token, daily_goal, streak, last_active_date, today_solved_count, created_at)
+    VALUES (?, ?, ?, ?, 3, 1, ?, 0, ?)
+    """, (username, email_clean, pwd_hash, token, today_str, today_str))
+    
+    user_id = c.lastrowid
+    conn.commit()
+    
+    c.execute("SELECT id, username, email, github_username, leetcode_username, preferred_browser, session_token FROM users WHERE id = ?", (user_id,))
+    row = dict(c.fetchone())
+    conn.close()
+    return row, None
+
+def authenticate_user(email_or_username: str, password: str):
+    conn = get_connection()
+    c = conn.cursor()
+    clean_identifier = email_or_username.strip().lower()
+    pwd_hash = hash_password(password)
+
+    c.execute("SELECT * FROM users WHERE (email = ? OR username = ?) AND password_hash = ?", (clean_identifier, clean_identifier, pwd_hash))
+    user_row = c.fetchone()
+    if not user_row:
+        conn.close()
+        return None, "Invalid email or password"
+
+    user = dict(user_row)
+    # Refresh session token
+    token = hashlib.sha256(f"{user['id']}:{datetime.now().isoformat()}:{os.urandom(16).hex()}".encode('utf-8')).hexdigest()
+    c.execute("UPDATE users SET session_token = ? WHERE id = ?", (token, user['id']))
+    conn.commit()
+    user["session_token"] = token
+    conn.close()
+    return user, None
+
+def get_user_by_token(token: str):
+    if not token:
+        return None
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("SELECT id, username, email, github_username, leetcode_username, preferred_browser, daily_goal, streak, active_sheet FROM users WHERE session_token = ?", (token,))
+    row = c.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def get_user_by_id(user_id: int):
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("SELECT id, username, email, github_username, leetcode_username, preferred_browser, daily_goal, streak, active_sheet FROM users WHERE id = ?", (user_id,))
+    row = c.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def update_user_connections(user_id: int, github_username: str = None, leetcode_username: str = None, preferred_browser: str = None):
+    conn = get_connection()
+    c = conn.cursor()
+    if github_username is not None:
+        c.execute("UPDATE users SET github_username = ? WHERE id = ?", (github_username.strip(), user_id))
+    if leetcode_username is not None:
+        c.execute("UPDATE users SET leetcode_username = ? WHERE id = ?", (leetcode_username.strip(), user_id))
+    if preferred_browser is not None:
+        c.execute("UPDATE users SET preferred_browser = ? WHERE id = ?", (preferred_browser.strip(), user_id))
+    conn.commit()
+    c.execute("SELECT id, username, email, github_username, leetcode_username, preferred_browser, daily_goal, streak, active_sheet FROM users WHERE id = ?", (user_id,))
+    row = dict(c.fetchone())
+    conn.close()
+    return row
 
 def get_platform_stats():
     conn = get_connection()

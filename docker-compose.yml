@@ -1,14 +1,46 @@
 version: '3.8'
 
 services:
-  dsa-protocol-app:
+  app:
     build: .
-    container_name: dsa_core_path_app
-    ports:
-      - "8765:8765"
-    volumes:
-      - ./data:/app/data
-    restart: unless-stopped
+    container_name: anvil_breaker_app
+    restart: always
     environment:
       - PORT=8765
+      - HOST=0.0.0.0
+      - IS_CLOUD=true
+      - DATA_DIR=/app/data
+    volumes:
+      - anvil_data:/app/data
+    networks:
+      - anvil_net
+    expose:
+      - "8765"
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: anvil_caddy_ssl
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
+    command: >
+      caddy reverse-proxy --from ${APP_DOMAIN:-localhost} --to app:8765
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - anvil_net
+    depends_on:
+      - app
+
+networks:
+  anvil_net:
+    driver: bridge
+
+volumes:
+  anvil_data:
+  caddy_data:
+  caddy_config:

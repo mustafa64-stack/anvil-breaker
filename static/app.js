@@ -52,8 +52,43 @@ let state = {
   activePhase: 1,
   soundEnabled: true,
   audioCtx: null,
-  isCompactHud: false
+  isCompactHud: false,
+  user: null,
+  token: localStorage.getItem('anvil_token') || '',
+  preferredBrowser: localStorage.getItem('anvil_browser') || 'auto',
+  authMode: 'login'
 };
+
+// Authenticated API Fetch Helper
+async function apiFetch(url, options = {}) {
+  const headers = Object.assign({}, options.headers || {});
+  if (state.token) {
+    headers['Authorization'] = `Bearer ${state.token}`;
+  }
+  return fetch(url, Object.assign({}, options, { headers }));
+}
+
+// Dynamic Platform Resolver (CSES, LeetCode, Codeforces, HackerRank, GeeksforGeeks)
+function getProblemPlatform(prob) {
+  if (!prob) return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25" };
+  const url = (prob.url || "").toLowerCase();
+  const title = (prob.title || "").toLowerCase();
+  const rawPlatform = (prob.platform || "").toUpperCase();
+
+  if (rawPlatform === "CSES" || url.includes("cses.fi") || title.includes("[cses]")) {
+    return { name: "CSES", color: "cyan", short: "CSES", class: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/25" };
+  }
+  if (rawPlatform === "CODEFORCES" || url.includes("codeforces.com") || title.includes("[cf]") || title.includes("[codeforces]")) {
+    return { name: "Codeforces", color: "sky", short: "CF", class: "bg-sky-500/15 text-sky-400 border border-sky-500/25" };
+  }
+  if (rawPlatform === "GFG" || rawPlatform === "GEEKSFORGEEKS" || url.includes("geeksforgeeks.org")) {
+    return { name: "GeeksforGeeks", color: "emerald", short: "GFG", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" };
+  }
+  if (rawPlatform === "HACKERRANK" || url.includes("hackerrank.com")) {
+    return { name: "HackerRank", color: "emerald", short: "HR", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" };
+  }
+  return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25" };
+}
 
 // Bi-directional BroadcastChannel for Always-On-Top Mini HUD
 const miniHudChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('dsa_mini_hud_channel') : null;
@@ -267,7 +302,9 @@ function toggleCompactHud() {
 // Initialize Application
 async function initApp() {
   try {
-    const res = await fetch('/api/init');
+    await initAuth();
+
+    const res = await apiFetch('/api/init');
     const data = await res.json();
     state.activeSheetSlug = data.sheet_slug || 'core-path';
     state.problems = data.problems || [];
@@ -288,6 +325,16 @@ async function initApp() {
         'blind-75': 'Blind 75'
       };
       activeSheetNameEl.textContent = titles[state.activeSheetSlug] || (data.sheet_title || state.activeSheetSlug);
+    }
+
+    // Sync preferred browser
+    if (data.preferred_browser) {
+      state.preferredBrowser = data.preferred_browser;
+      localStorage.setItem('anvil_browser', data.preferred_browser);
+    }
+    const browserSelect = document.getElementById('setting-browser-select');
+    if (browserSelect) {
+      browserSelect.value = state.preferredBrowser || 'auto';
     }
 
     // Load saved HUD preset or default 15m
@@ -620,8 +667,18 @@ function selectProblem(problemId, autoScroll = true) {
     listContainer.appendChild(pill);
   });
 
-  // Platform badge
-  document.getElementById('prob-platform-badge').textContent = prob.platform;
+  // Dynamic Platform detection (CSES, LeetCode, Codeforces, etc.)
+  const plat = getProblemPlatform(prob);
+  const platBadge = document.getElementById('prob-platform-badge');
+  if (platBadge) {
+    platBadge.textContent = plat.name;
+    platBadge.className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider ${plat.class}`;
+  }
+
+  const btnOpenPlatText = document.getElementById('btn-open-platform-text');
+  if (btnOpenPlatText) {
+    btnOpenPlatText.textContent = `Open on ${plat.name}`;
+  }
 
   // Subhint / Core takeaway
   document.getElementById('prob-subhint-text').textContent = prob.hint;
@@ -629,7 +686,7 @@ function selectProblem(problemId, autoScroll = true) {
   // Phase 4 Hint box (hidden initially)
   const hintBox = document.getElementById('hint-display-box');
   hintBox.classList.add('hidden');
-  hintBox.innerHTML = `<strong>Technique / Insight:</strong> ${escapeHtml(prob.hint)}<br><span class="text-zinc-400 text-[11px] mt-1 block">Rule 2: Close this window, open a blank editor in Brave, and re-solve from memory!</span>`;
+  hintBox.innerHTML = `<strong>Technique / Insight:</strong> ${escapeHtml(prob.hint)}<br><span class="text-zinc-400 text-[11px] mt-1 block">Rule 2: Close this window, open a blank editor in your browser, and re-solve from memory!</span>`;
   document.getElementById('btn-reveal-hint').textContent = "👁 Reveal Hint & Technique";
 
   // Scratchpad
@@ -668,32 +725,36 @@ function selectProblem(problemId, autoScroll = true) {
   saveSetting({ current_problem_id: prob.id });
 }
 
-// Open In Brave Handler
+// Universal Browser Launch Handler (Brave, Chrome, Edge, Firefox, or Default)
 async function openCurrentInBrave() {
   const prob = state.problems.find(p => p.id === state.currentProblemId);
   if (!prob) return;
 
-  const btn = document.getElementById('btn-open-brave');
-  const origText = btn.innerHTML;
-  btn.innerHTML = `<span class="animate-spin text-white">⏳</span><span>Opening Brave...</span>`;
+  const plat = getProblemPlatform(prob);
+  const targetUrl = prob.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title)}`;
+  const chosenBrowser = state.preferredBrowser || localStorage.getItem('anvil_browser') || 'auto';
+
+  const btnText = document.getElementById('btn-open-platform-text');
+  const origText = btnText ? btnText.textContent : `Open on ${plat.name}`;
+  if (btnText) btnText.textContent = `Opening ${plat.name}...`;
 
   try {
-    const res = await fetch('/api/open-brave', {
+    const res = await apiFetch('/api/open-browser', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ problem_id: prob.id, url: prob.url })
+      body: JSON.stringify({ problem_id: prob.id, url: targetUrl, browser: chosenBrowser })
     });
     const result = await res.json();
-    if (!result.launched_in_brave) {
-      // Fallback: open directly via window.open
-      window.open(prob.url, '_blank');
+    if (result.is_cloud || !result.launched_direct) {
+      // Fallback or Cloud mode: open directly via window.open
+      window.open(targetUrl, '_blank');
     }
   } catch (err) {
     console.warn("Backend open error, using direct browser link:", err);
-    window.open(prob.url, '_blank');
+    window.open(targetUrl, '_blank');
   } finally {
     setTimeout(() => {
-      btn.innerHTML = origText;
+      if (btnText) btnText.textContent = origText;
     }, 600);
   }
 }
@@ -722,7 +783,7 @@ async function saveStatus(status, errorType = "", errorNote = "", targetProbId =
   };
 
   try {
-    const res = await fetch('/api/progress/status', {
+    const res = await apiFetch('/api/progress/status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -1161,24 +1222,31 @@ function renderCurriculumTable() {
     return true;
   });
 
-  // Group filtered problems by chapter_id
+  // Group filtered problems by chapter_id (with fallback to chapter_name matching)
   const chapterGroups = {};
   filteredProblems.forEach(p => {
-    if (!chapterGroups[p.chapter_id]) {
-      chapterGroups[p.chapter_id] = [];
+    let cId = p.chapter_id;
+    if (!cId && state.chapters) {
+      const match = state.chapters.find(c => c.name === p.chapter_name);
+      if (match) cId = match.id;
     }
-    chapterGroups[p.chapter_id].push(p);
+    if (!cId) cId = 1;
+    if (!chapterGroups[cId]) {
+      chapterGroups[cId] = [];
+    }
+    chapterGroups[cId].push(p);
   });
 
   let visibleChapters = 0;
 
-  state.chapters.forEach((ch) => {
-    const probs = chapterGroups[ch.id] || [];
+  state.chapters.forEach((ch, chIdx) => {
+    const chId = ch.id !== undefined ? ch.id : (chIdx + 1);
+    const probs = chapterGroups[chId] || [];
     if (probs.length === 0 && (query || filter !== 'all')) return;
     visibleChapters++;
 
     // Calculate chapter stats
-    const allChProbs = state.problems.filter(p => p.chapter_id === ch.id);
+    const allChProbs = state.problems.filter(p => (p.chapter_id === chId || p.chapter_name === ch.name));
     const totalInCh = allChProbs.length || ch.count || 1;
     const solvedInCh = allChProbs.filter(p => isProblemSolved(p.id)).length;
     const chPct = Math.round((solvedInCh / totalInCh) * 100);
@@ -1187,7 +1255,7 @@ function renderCurriculumTable() {
     // Chapter Accordion Card
     const chCard = document.createElement('div');
     chCard.className = "bg-surface1 border border-borderDefault rounded-xl overflow-hidden transition shadow-sm mb-4";
-    chCard.dataset.chapterId = ch.id;
+    chCard.dataset.chapterId = chId;
 
     const isExpanded = state.allAccordionsExpanded !== false || query !== '';
 
@@ -1197,7 +1265,7 @@ function renderCurriculumTable() {
         
         <div class="flex items-center space-x-3 truncate">
           <span class="px-2.5 py-1 rounded bg-surface3 text-zinc-200 font-mono text-xs font-semibold shrink-0 border border-white/10">
-            Step ${ch.id < 10 ? '0' + ch.id : ch.id}
+            Step ${chId < 10 ? '0' + chId : chId}
           </span>
           <h3 class="text-sm sm:text-base font-bold text-white truncate">
             ${escapeHtml(ch.name)}
@@ -1234,7 +1302,7 @@ function renderCurriculumTable() {
               <th class="py-2.5 px-3 w-24">Difficulty</th>
               <th class="py-2.5 px-4 hidden md:table-cell">Pattern / Technique</th>
               <th class="py-2.5 px-4 w-36 text-center">15m Protocol</th>
-              <th class="py-2.5 px-4 w-24 text-right">Practice</th>
+              <th class="py-2.5 px-4 w-28 text-right">Practice</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-borderSubtle">
@@ -1253,6 +1321,7 @@ function renderCurriculumTable() {
               }
 
               const isCurrent = p.id === state.currentProblemId;
+              const plat = getProblemPlatform(p);
 
               return `
                 <tr class="curriculum-prob-row hover:bg-surface2/40 transition group ${isSolved ? 'bg-emerald-500/[0.02]' : ''} ${isCurrent ? 'bg-amber-500/[0.05]' : ''}" data-id="${p.id}">
@@ -1269,11 +1338,14 @@ function renderCurriculumTable() {
                     #${p.id}
                   </td>
 
-                  <!-- Title & Tags -->
+                  <!-- Title & Quick Preview Pop-up -->
                   <td class="py-2.5 px-4">
                     <div class="flex items-center space-x-2">
                       <button class="btn-open-solver-title text-left font-medium ${isSolved ? 'text-zinc-200' : 'text-white'} hover:text-amber-400 transition" data-id="${p.id}">
                         ${escapeHtml(p.title)}
+                      </button>
+                      <button class="btn-open-preview p-1 text-zinc-500 hover:text-amber-400 transition rounded" data-id="${p.id}" title="Quick Problem Preview Pop-up" aria-label="Preview Problem">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                       </button>
                       ${(p.lists && p.lists.length > 0) ? `
                         <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.2 rounded bg-surface3 text-zinc-400 font-mono border border-borderSubtle">
@@ -1301,10 +1373,11 @@ function renderCurriculumTable() {
                     </button>
                   </td>
 
-                  <!-- Practice Link -->
+                  <!-- Practice Link with Dynamic Platform (CSES, LeetCode, Codeforces) -->
                   <td class="py-2.5 px-4 text-right shrink-0">
-                    <a href="${p.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(p.title)}`}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-zinc-400 hover:text-amber-400 font-medium transition text-[11px]" title="Open on LeetCode">
-                      <span>LeetCode</span>
+                    <a href="${p.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(p.title)}`}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 text-zinc-400 hover:text-white font-medium transition text-[11px]" title="Open on ${plat.name}">
+                      <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold ${plat.class}">${plat.short}</span>
+                      <span>${plat.name}</span>
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                   </td>
@@ -1341,6 +1414,15 @@ function renderCurriculumTable() {
         e.stopPropagation();
         const pId = parseInt(btn.dataset.id);
         toggleProblemCheckbox(pId, e);
+      });
+    });
+
+    // Attach Quick Preview Pop-up Handlers
+    chCard.querySelectorAll('.btn-open-preview').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const pId = parseInt(btn.dataset.id);
+        openProblemPreview(pId);
       });
     });
 
@@ -1803,12 +1885,91 @@ function setupEventListeners() {
   if (btnOpenWorkspace) {
     btnOpenWorkspace.addEventListener('click', () => switchView('solver'));
   }
+
+  // Back to Curriculum Roadmap button from solver
+  const btnBackCurriculum = document.getElementById('btn-back-to-curriculum');
+  if (btnBackCurriculum) {
+    btnBackCurriculum.addEventListener('click', () => {
+      switchView('curriculum');
+      if (window.history && window.history.pushState) {
+        history.pushState({ view: 'curriculum' }, 'Sheet Roadmap', '#roadmap');
+      }
+    });
+  }
+
+  // Keyboard Shortcuts modal button
+  const btnShortcuts = document.getElementById('btn-open-shortcuts');
+  if (btnShortcuts) {
+    btnShortcuts.addEventListener('click', () => openModal('modal-shortcuts'));
+  }
+
+  // Auth & Cloud Vault Modal buttons
+  const btnAuthUser = document.getElementById('btn-auth-user');
+  if (btnAuthUser) {
+    btnAuthUser.addEventListener('click', () => openAuthModal(state.user ? 'connect' : 'login'));
+  }
+
+  const btnOpenConnect = document.getElementById('btn-open-connect-modal');
+  if (btnOpenConnect) {
+    btnOpenConnect.addEventListener('click', () => {
+      closeModals();
+      openAuthModal('connect');
+    });
+  }
+
+  const tabLogin = document.getElementById('tab-auth-login');
+  if (tabLogin) tabLogin.addEventListener('click', () => switchAuthTab('login'));
+
+  const tabRegister = document.getElementById('tab-auth-register');
+  if (tabRegister) tabRegister.addEventListener('click', () => switchAuthTab('register'));
+
+  const formAuth = document.getElementById('form-auth');
+  if (formAuth) formAuth.addEventListener('submit', handleAuthSubmit);
+
+  const btnSaveConn = document.getElementById('btn-save-connections');
+  if (btnSaveConn) btnSaveConn.addEventListener('click', handleSaveConnections);
+
+  const btnLogout = document.getElementById('btn-logout-user');
+  if (btnLogout) btnLogout.addEventListener('click', handleLogout);
+
+  const btnGuest = document.getElementById('btn-auth-guest');
+  if (btnGuest) btnGuest.addEventListener('click', () => closeModals());
+
+  // Preferred Browser Selector change
+  const browserSelect = document.getElementById('setting-browser-select');
+  if (browserSelect) {
+    browserSelect.addEventListener('change', (e) => {
+      state.preferredBrowser = e.target.value;
+      localStorage.setItem('anvil_browser', e.target.value);
+      saveSetting({ preferred_browser: e.target.value });
+      showNotification(`Preferred browser set to: ${e.target.value}`);
+    });
+  }
+
+  // Close modals on clicking backdrop
+  document.querySelectorAll('.fixed.inset-0').forEach(m => {
+    m.addEventListener('click', (e) => {
+      if (e.target === m) {
+        m.classList.add('hidden');
+      }
+    });
+  });
+
+  // Handle Browser Back / Forward buttons seamlessly
+  window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.view === 'solver' && e.state.problemId) {
+      selectProblem(e.state.problemId, false);
+      switchView('solver', false);
+    } else {
+      switchView('curriculum', false);
+    }
+  });
 }
 
 // Multi-Sheet Management Logic
 async function loadSheetsList() {
   try {
-    const res = await fetch('/api/sheets');
+    const res = await apiFetch('/api/sheets');
     const data = await res.json();
     const sheets = data.sheets || [];
     const container = document.getElementById('sheet-list-container');
@@ -1848,7 +2009,7 @@ async function loadSheetsList() {
 async function switchSheet(slug) {
   try {
     showNotification("Loading Sheet...");
-    const res = await fetch(`/api/sheets/${slug}`);
+    const res = await apiFetch(`/api/sheets/${slug}`);
     if (!res.ok) throw new Error("Sheet fetch failed");
     const data = await res.json();
 
@@ -2010,8 +2171,274 @@ function advanceNext() {
   }
 }
 
+// Quick Problem Detail Popup Modal
+function openProblemPreview(problemId) {
+  const prob = state.problems.find(p => p.id === problemId);
+  if (!prob) return;
+
+  const plat = getProblemPlatform(prob);
+  const probIdEl = document.getElementById('preview-prob-id');
+  if (probIdEl) probIdEl.textContent = `#${prob.id}`;
+  
+  const titleEl = document.getElementById('preview-prob-title');
+  if (titleEl) titleEl.textContent = prob.title;
+
+  const chEl = document.getElementById('preview-prob-chapter');
+  if (chEl) chEl.textContent = `Chapter ${prob.chapter_id || 1} · ${prob.chapter_name || 'General'}`;
+
+  const diffEl = document.getElementById('preview-prob-diff');
+  if (diffEl) {
+    if (prob.level === 'E') {
+      diffEl.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25";
+      diffEl.textContent = "EASY";
+    } else if (prob.level === 'M') {
+      diffEl.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-500/15 text-amber-400 border border-amber-500/25";
+      diffEl.textContent = "MED";
+    } else {
+      diffEl.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-500/15 text-rose-400 border border-rose-500/25";
+      diffEl.textContent = "HARD";
+    }
+  }
+
+  const platBadge = document.getElementById('preview-prob-platform');
+  if (platBadge) {
+    platBadge.textContent = plat.name;
+    platBadge.className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${plat.class}`;
+  }
+
+  const hintEl = document.getElementById('preview-prob-hint');
+  if (hintEl) hintEl.textContent = prob.hint || 'Standard technique and invariants.';
+
+  const solveBtn = document.getElementById('btn-preview-solve');
+  if (solveBtn) {
+    solveBtn.onclick = () => {
+      closeModals();
+      selectProblem(prob.id);
+      switchView('solver');
+      if (!state.timerRunning) toggleTimer();
+    };
+  }
+
+  const extLink = document.getElementById('btn-preview-external');
+  if (extLink) {
+    extLink.href = prob.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title)}`;
+  }
+  const extLabel = document.getElementById('preview-external-label');
+  if (extLabel) extLabel.textContent = `Open on ${plat.name}`;
+
+  openModal('modal-problem-preview');
+}
+
+// User Vault & Dynamic Authentication Management
+function updateUserUI(user) {
+  const nameEl = document.getElementById('user-display-name');
+  const avatarEl = document.getElementById('user-avatar-badge');
+  const pillEl = document.getElementById('user-connected-pill');
+  const ghStatus = document.getElementById('setting-gh-status');
+  const lcStatus = document.getElementById('setting-lc-status');
+
+  if (user) {
+    if (nameEl) nameEl.textContent = user.username || user.email.split('@')[0];
+    if (avatarEl) {
+      if (user.github_username) {
+        avatarEl.innerHTML = `<img src="https://github.com/${escapeHtml(user.github_username)}.png?size=40" class="w-full h-full rounded-full object-cover" onerror="this.innerText='${(user.username || 'U')[0].toUpperCase()}'">`;
+      } else {
+        avatarEl.textContent = (user.username || user.email || 'U')[0].toUpperCase();
+      }
+    }
+    const hasGH = !!user.github_username;
+    const hasLC = !!user.leetcode_username;
+    if (pillEl) {
+      if (hasGH && hasLC) {
+        pillEl.textContent = 'GH+LC';
+        pillEl.className = 'hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      } else if (hasGH) {
+        pillEl.textContent = 'GH Sync';
+        pillEl.className = 'hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono bg-indigo-500/20 text-indigo-400 border border-indigo-500/30';
+      } else {
+        pillEl.textContent = 'Cloud Vault';
+        pillEl.className = 'hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono bg-amber-500/20 text-amber-400 border border-amber-500/30';
+      }
+    }
+    if (ghStatus) ghStatus.textContent = user.github_username ? `GitHub: @${user.github_username}` : 'GitHub: Not connected';
+    if (lcStatus) lcStatus.textContent = user.leetcode_username ? `LeetCode: @${user.leetcode_username}` : 'LeetCode: Not connected';
+
+    const welcomeUser = document.getElementById('connect-welcome-user');
+    if (welcomeUser) welcomeUser.textContent = user.email || user.username;
+    const ghInput = document.getElementById('connect-github-input');
+    if (ghInput) ghInput.value = user.github_username || '';
+    const lcInput = document.getElementById('connect-leetcode-input');
+    if (lcInput) lcInput.value = user.leetcode_username || '';
+  } else {
+    if (nameEl) nameEl.textContent = 'Sign In';
+    if (avatarEl) avatarEl.textContent = 'U';
+    if (pillEl) {
+      pillEl.textContent = 'Vault';
+      pillEl.className = 'hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono bg-surface3 text-zinc-400 border border-borderSubtle';
+    }
+    if (ghStatus) ghStatus.textContent = 'GitHub: Not connected';
+    if (lcStatus) lcStatus.textContent = 'LeetCode: Not connected';
+  }
+}
+
+async function initAuth() {
+  const token = localStorage.getItem('anvil_token');
+  if (!token) {
+    updateUserUI(null);
+    return;
+  }
+  state.token = token;
+  try {
+    const res = await apiFetch('/api/auth/me');
+    if (res.ok) {
+      const data = await res.json();
+      state.user = data.user;
+      updateUserUI(data.user);
+    } else {
+      localStorage.removeItem('anvil_token');
+      state.token = '';
+      updateUserUI(null);
+    }
+  } catch (err) {
+    console.warn("Auth check failed:", err);
+  }
+}
+
+function openAuthModal(mode = 'login') {
+  state.authMode = mode;
+  const formState = document.getElementById('auth-state-form');
+  const connectState = document.getElementById('auth-state-connect');
+
+  if (state.user) {
+    if (formState) formState.classList.add('hidden');
+    if (connectState) connectState.classList.remove('hidden');
+  } else {
+    if (formState) formState.classList.remove('hidden');
+    if (connectState) connectState.classList.add('hidden');
+    switchAuthTab(mode);
+  }
+  openModal('modal-auth');
+}
+
+function switchAuthTab(tab) {
+  state.authMode = tab;
+  const loginTab = document.getElementById('tab-auth-login');
+  const regTab = document.getElementById('tab-auth-register');
+  const submitBtnText = document.getElementById('btn-submit-auth-text');
+  const errBox = document.getElementById('auth-error-msg');
+  if (errBox) errBox.classList.add('hidden');
+
+  if (tab === 'login') {
+    if (loginTab) {
+      loginTab.className = "flex-1 py-1.5 font-bold rounded-md bg-surface3 text-amber-400 transition text-center shadow-sm";
+    }
+    if (regTab) {
+      regTab.className = "flex-1 py-1.5 font-medium text-zinc-400 hover:text-white rounded-md transition text-center";
+    }
+    if (submitBtnText) submitBtnText.textContent = "Sign In to Vault";
+  } else {
+    if (regTab) {
+      regTab.className = "flex-1 py-1.5 font-bold rounded-md bg-surface3 text-amber-400 transition text-center shadow-sm";
+    }
+    if (loginTab) {
+      loginTab.className = "flex-1 py-1.5 font-medium text-zinc-400 hover:text-white rounded-md transition text-center";
+    }
+    if (submitBtnText) submitBtnText.textContent = "Create Account & Start Vault";
+  }
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('auth-email-input').value.trim();
+  const password = document.getElementById('auth-password-input').value;
+  const errBox = document.getElementById('auth-error-msg');
+  const submitBtn = document.getElementById('btn-submit-auth');
+
+  if (!email || !password) return;
+  if (errBox) errBox.classList.add('hidden');
+  submitBtn.disabled = true;
+
+  const endpoint = state.authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (errBox) {
+        errBox.textContent = data.detail || 'Authentication failed. Please check credentials.';
+        errBox.classList.remove('hidden');
+      }
+      return;
+    }
+
+    state.token = data.token;
+    state.user = data.user;
+    localStorage.setItem('anvil_token', data.token);
+    updateUserUI(data.user);
+    showNotification(`Welcome, ${data.user.username || data.user.email}!`);
+
+    // Transition to Connected Accounts Wizard
+    document.getElementById('auth-state-form').classList.add('hidden');
+    document.getElementById('auth-state-connect').classList.remove('hidden');
+
+    // Reload private user data
+    await initApp();
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = 'Network error. Please try again.';
+      errBox.classList.remove('hidden');
+    }
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
+async function handleSaveConnections() {
+  if (!state.user) return;
+  const ghUsername = document.getElementById('connect-github-input').value.trim();
+  const lcUsername = document.getElementById('connect-leetcode-input').value.trim();
+  const browser = state.preferredBrowser || 'auto';
+
+  try {
+    const res = await apiFetch('/api/auth/connect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        github_username: ghUsername,
+        leetcode_username: lcUsername,
+        preferred_browser: browser
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      state.user = data.user;
+      updateUserUI(data.user);
+      closeModals();
+      showNotification("Profiles connected & synchronized!");
+    }
+  } catch (err) {
+    showNotification("Failed to save profile connections.");
+  }
+}
+
+function handleLogout() {
+  localStorage.removeItem('anvil_token');
+  state.token = '';
+  state.user = null;
+  updateUserUI(null);
+  closeModals();
+  showNotification("Signed out of private vault.");
+  initApp();
+}
+
 function openModal(id) {
-  document.getElementById(id).classList.remove('hidden');
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
 }
 
 function closeModals() {
@@ -2089,7 +2516,7 @@ async function openReviewsModal() {
 
 async function saveSetting(patch) {
   try {
-    await fetch('/api/settings', {
+    await apiFetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patch)
