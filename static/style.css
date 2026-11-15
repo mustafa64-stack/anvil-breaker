@@ -2,20 +2,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg-canvas: #070b14;
-  --bg-surface-1: #0e1526;
-  --bg-surface-2: #141d33;
-  --bg-surface-3: #1c2742;
-  --bg-surface-4: #253354;
+  --bg-canvas: #000000;
+  --bg-surface-1: #09090b;
+  --bg-surface-2: #121215;
+  --bg-surface-3: #18181b;
+  --bg-surface-4: #27272a;
   
   --border-default: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.05);
   --border-hover: rgba(255, 255, 255, 0.15);
   --border-focus: #f59e0b;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-primary: #ffffff;
+  --text-secondary: #d4d4d8;
+  --text-muted: #71717a;
 
   --accent-amber: #f59e0b;
   --accent-amber-hover: #d97706;
@@ -55,11 +55,11 @@ body {
   background: var(--bg-canvas);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #27272a;
   border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #3f3f46;
 }
 
 .scrollbar-none::-webkit-scrollbar {
@@ -186,7 +186,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   appearance: none;
   width: 17px;
   height: 17px;
-  border: 1.5px solid #475569;
+  border: 1.5px solid #52525b;
   border-radius: 4px;
   background-color: transparent;
   display: inline-grid;
@@ -195,7 +195,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   transition: all 120ms ease;
 }
 .custom-checkbox:hover {
-  border-color: #94a3b8;
+  border-color: #d4d4d8;
 }
 .custom-checkbox:checked {
   background-color: var(--accent-emerald);
@@ -205,7 +205,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   content: "";
   width: 9px;
   height: 9px;
-  background-color: #070b14;
+  background-color: #000000;
   clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 }
 

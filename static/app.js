@@ -196,7 +196,7 @@ function applyHudPreset(presetKey, customObj = null, resetClock = true) {
     if (btn.dataset.preset === presetKey) {
       btn.className = "hud-preset-btn active px-3 py-1.5 rounded-md bg-surface3 text-amber-400 border border-borderMedium font-bold transition text-xs shadow-sm";
     } else {
-      btn.className = "hud-preset-btn px-3 py-1.5 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium transition text-xs";
+      btn.className = "hud-preset-btn px-3 py-1.5 rounded-md bg-surface2 text-zinc-200 hover:text-white font-medium transition text-xs";
     }
   });
 
@@ -206,7 +206,7 @@ function applyHudPreset(presetKey, customObj = null, resetClock = true) {
       customBtn.className = "px-2.5 py-1.5 rounded-md bg-surface3 text-amber-400 font-bold border border-amber-500/50 transition text-xs";
       customBtn.innerHTML = `<span>Custom (${presetData.totalMinutes}m)</span>`;
     } else {
-      customBtn.className = "px-2.5 py-1.5 rounded-md bg-surface2 text-slate-300 hover:text-amber-400 font-medium transition border border-dashed border-borderMedium text-xs";
+      customBtn.className = "px-2.5 py-1.5 rounded-md bg-surface2 text-zinc-200 hover:text-amber-400 font-medium transition border border-dashed border-borderMedium text-xs";
       customBtn.innerHTML = `<span>Custom</span>`;
     }
   }
@@ -217,7 +217,7 @@ function applyHudPreset(presetKey, customObj = null, resetClock = true) {
       customCurrBtn.className = "px-2.5 py-1 rounded-md bg-surface3 text-amber-400 font-bold border border-amber-500/50 font-mono text-xs transition";
       customCurrBtn.innerHTML = `<span>Custom (${presetData.totalMinutes}m)</span>`;
     } else {
-      customCurrBtn.className = "px-2.5 py-1 rounded-md bg-surface2 hover:bg-surface3 text-slate-300 hover:text-amber-400 font-mono text-xs font-medium transition border border-dashed border-white/20 flex items-center gap-1";
+      customCurrBtn.className = "px-2.5 py-1 rounded-md bg-surface2 hover:bg-surface3 text-zinc-200 hover:text-amber-400 font-mono text-xs font-medium transition border border-dashed border-white/20 flex items-center gap-1";
       customCurrBtn.innerHTML = `<svg class="w-3 h-3 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg><span>Custom Time</span>`;
     }
   }
@@ -629,7 +629,7 @@ function selectProblem(problemId, autoScroll = true) {
   // Phase 4 Hint box (hidden initially)
   const hintBox = document.getElementById('hint-display-box');
   hintBox.classList.add('hidden');
-  hintBox.innerHTML = `<strong>Technique / Insight:</strong> ${escapeHtml(prob.hint)}<br><span class="text-slate-400 text-[11px] mt-1 block">Rule 2: Close this window, open a blank editor in Brave, and re-solve from memory!</span>`;
+  hintBox.innerHTML = `<strong>Technique / Insight:</strong> ${escapeHtml(prob.hint)}<br><span class="text-zinc-400 text-[11px] mt-1 block">Rule 2: Close this window, open a blank editor in Brave, and re-solve from memory!</span>`;
   document.getElementById('btn-reveal-hint').textContent = "👁 Reveal Hint & Technique";
 
   // Scratchpad
@@ -860,14 +860,14 @@ function renderSidebar() {
       <div class="chapter-header px-3.5 py-2.5 bg-surface1 hover:bg-surface2 cursor-pointer flex items-center justify-between text-xs transition select-none border-b border-borderSubtle">
         <div class="flex items-center space-x-2 truncate">
           <span class="text-amber-400 font-bold font-mono text-[11px] bg-surface3 px-1.5 py-0.5 rounded">Ch ${ch.id}</span>
-          <span class="font-semibold text-slate-200 truncate">${escapeHtml(ch.name)}</span>
+          <span class="font-semibold text-zinc-100 truncate">${escapeHtml(ch.name)}</span>
         </div>
         <div class="flex items-center space-x-2 text-[11px] font-mono shrink-0">
           <div class="w-10 h-1.5 bg-surface3 rounded-full overflow-hidden hidden sm:block">
             <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${chPct}%"></div>
           </div>
-          <span class="${solvedCount === ch.count ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${solvedCount}/${ch.count}</span>
-          <svg class="w-3.5 h-3.5 text-slate-500 transform transition-transform ${isExpanded ? 'rotate-90' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          <span class="${solvedCount === ch.count ? 'text-emerald-400 font-bold' : 'text-zinc-400'}">${solvedCount}/${ch.count}</span>
+          <svg class="w-3.5 h-3.5 text-zinc-500 transform transition-transform ${isExpanded ? 'rotate-90' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </div>
       </div>
       <div class="problem-sublist divide-y divide-borderSubtle ${isExpanded ? '' : 'hidden'}">
@@ -875,7 +875,7 @@ function renderSidebar() {
           const pData = (state.progress.problems && state.progress.problems[String(p.id)]) || {};
           const status = pData.status || 'unsolved';
           
-          let statusIcon = `<span class="w-3.5 h-3.5 rounded-full border border-slate-600 inline-block"></span>`;
+          let statusIcon = `<span class="w-3.5 h-3.5 rounded-full border border-zinc-700 inline-block"></span>`;
           if (status === 'clean') {
             statusIcon = `<span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></span>`;
           } else if (status === 'help') {
@@ -897,11 +897,11 @@ function renderSidebar() {
             <div class="problem-item px-3.5 py-2 cursor-pointer flex items-center justify-between text-xs transition ${isCurrent ? 'active' : ''}" data-id="${p.id}">
               <div class="flex items-center space-x-2.5 truncate mr-2">
                 <span class="w-4 flex justify-center shrink-0">${statusIcon}</span>
-                <span class="font-mono text-slate-500 text-[11px] shrink-0">#${p.id}</span>
-                <span class="text-slate-200 truncate ${isCurrent ? 'font-bold text-white' : 'hover:text-slate-100'}">${escapeHtml(p.title)}</span>
+                <span class="font-mono text-zinc-500 text-[11px] shrink-0">#${p.id}</span>
+                <span class="text-zinc-100 truncate ${isCurrent ? 'font-bold text-white' : 'hover:text-white'}">${escapeHtml(p.title)}</span>
               </div>
               <div class="flex items-center space-x-1.5 shrink-0">
-                ${(p.lists && p.lists.length > 0) ? `<span class="text-[9px] px-1 rounded bg-surface3 text-slate-300 font-mono border border-borderSubtle">${p.lists[0].includes('75') ? 'B75' : 'NC'}</span>` : ''}
+                ${(p.lists && p.lists.length > 0) ? `<span class="text-[9px] px-1 rounded bg-surface3 text-zinc-200 font-mono border border-borderSubtle">${p.lists[0].includes('75') ? 'B75' : 'NC'}</span>` : ''}
                 ${lvlBadge}
               </div>
             </div>
@@ -1054,11 +1054,11 @@ function switchView(viewName) {
 
     if (navCurriculum) {
       navCurriculum.classList.remove('active', 'bg-surface3', 'text-amber-400');
-      navCurriculum.classList.add('text-slate-300');
+      navCurriculum.classList.add('text-zinc-200');
     }
     if (navSolver) {
       navSolver.classList.add('active', 'bg-surface3', 'text-amber-400');
-      navSolver.classList.remove('text-slate-300');
+      navSolver.classList.remove('text-zinc-200');
     }
     renderSidebar();
   } else {
@@ -1068,11 +1068,11 @@ function switchView(viewName) {
 
     if (navCurriculum) {
       navCurriculum.classList.add('active', 'bg-surface3', 'text-amber-400');
-      navCurriculum.classList.remove('text-slate-300');
+      navCurriculum.classList.remove('text-zinc-200');
     }
     if (navSolver) {
       navSolver.classList.remove('active', 'bg-surface3', 'text-amber-400');
-      navSolver.classList.add('text-slate-300');
+      navSolver.classList.add('text-zinc-200');
     }
     renderCurriculumTable();
     renderStats();
@@ -1128,7 +1128,7 @@ function renderCurriculumTable() {
   if (!state.problems || state.problems.length === 0) {
     container.innerHTML = `
       <div class="text-center py-16 bg-surface1 rounded-xl border border-borderDefault">
-        <p class="text-slate-400 text-sm">No curriculum problems loaded for this sheet.</p>
+        <p class="text-zinc-400 text-sm">No curriculum problems loaded for this sheet.</p>
       </div>
     `;
     return;
@@ -1196,10 +1196,10 @@ function renderCurriculumTable() {
       <div class="curriculum-accordion-header px-4 sm:px-6 py-4 bg-surface1 hover:bg-surface2/60 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none transition border-b border-borderDefault">
         
         <div class="flex items-center space-x-3 truncate">
-          <span class="px-2.5 py-1 rounded bg-surface3 text-slate-300 font-mono text-xs font-semibold shrink-0 border border-white/10">
+          <span class="px-2.5 py-1 rounded bg-surface3 text-zinc-200 font-mono text-xs font-semibold shrink-0 border border-white/10">
             Step ${ch.id < 10 ? '0' + ch.id : ch.id}
           </span>
-          <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate">
+          <h3 class="text-sm sm:text-base font-bold text-white truncate">
             ${escapeHtml(ch.name)}
           </h3>
         </div>
@@ -1209,12 +1209,12 @@ function renderCurriculumTable() {
             <div class="w-24 sm:w-32 h-2 bg-surface3 rounded-full overflow-hidden">
               <div class="h-full ${isAllSolved ? 'bg-emerald-400' : 'bg-amber-500'} transition-all duration-300" style="width: ${chPct}%"></div>
             </div>
-            <span class="font-mono text-[11px] ${isAllSolved ? 'text-emerald-400 font-bold' : 'text-slate-400'}">
+            <span class="font-mono text-[11px] ${isAllSolved ? 'text-emerald-400 font-bold' : 'text-zinc-400'}">
               ${solvedInCh}/${totalInCh} (${chPct}%)
             </span>
           </div>
 
-          <button class="accordion-arrow-btn p-1 text-slate-400 hover:text-white transition" aria-label="Toggle Topic">
+          <button class="accordion-arrow-btn p-1 text-zinc-400 hover:text-white transition" aria-label="Toggle Topic">
             <svg class="w-4 h-4 transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -1226,11 +1226,11 @@ function renderCurriculumTable() {
       <!-- Accordion Table Body -->
       <div class="curriculum-accordion-body ${isExpanded ? '' : 'hidden'} overflow-x-auto">
         <table class="w-full text-left text-xs border-collapse">
-          <thead class="bg-surface2/60 text-slate-400 font-mono text-[10px] uppercase tracking-wider border-b border-borderSubtle">
+          <thead class="bg-surface2/60 text-zinc-400 font-mono text-[10px] uppercase tracking-wider border-b border-borderSubtle">
             <tr>
               <th class="py-2.5 px-4 w-14 text-center">Status</th>
-              <th class="py-2.5 px-3 w-16 text-slate-500 font-mono">#</th>
-              <th class="py-2.5 px-4 font-semibold text-slate-300">Problem Title</th>
+              <th class="py-2.5 px-3 w-16 text-zinc-500 font-mono">#</th>
+              <th class="py-2.5 px-4 font-semibold text-zinc-200">Problem Title</th>
               <th class="py-2.5 px-3 w-24">Difficulty</th>
               <th class="py-2.5 px-4 hidden md:table-cell">Pattern / Technique</th>
               <th class="py-2.5 px-4 w-36 text-center">15m Protocol</th>
@@ -1259,24 +1259,24 @@ function renderCurriculumTable() {
                   
                   <!-- Status Checkbox -->
                   <td class="py-2.5 px-4 text-center shrink-0">
-                    <button type="button" class="prob-checkbox-btn w-5 h-5 rounded-md border ${isSolved ? 'bg-emerald-500 border-emerald-400 text-slate-950 font-bold' : 'border-slate-600 bg-surface2 hover:border-amber-500'} flex items-center justify-center transition mx-auto" data-id="${p.id}" title="${isSolved ? 'Mark as Unsolved' : 'Mark as Solved'}">
+                    <button type="button" class="prob-checkbox-btn w-5 h-5 rounded-md border ${isSolved ? 'bg-emerald-500 border-emerald-400 text-black font-bold' : 'border-zinc-700 bg-surface2 hover:border-amber-500'} flex items-center justify-center transition mx-auto" data-id="${p.id}" title="${isSolved ? 'Mark as Unsolved' : 'Mark as Solved'}">
                       ${isSolved ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
                     </button>
                   </td>
 
                   <!-- Problem ID -->
-                  <td class="py-2.5 px-3 font-mono text-slate-500 text-[11px]">
+                  <td class="py-2.5 px-3 font-mono text-zinc-500 text-[11px]">
                     #${p.id}
                   </td>
 
                   <!-- Title & Tags -->
                   <td class="py-2.5 px-4">
                     <div class="flex items-center space-x-2">
-                      <button class="btn-open-solver-title text-left font-medium ${isSolved ? 'text-slate-300' : 'text-slate-100'} hover:text-amber-400 transition" data-id="${p.id}">
+                      <button class="btn-open-solver-title text-left font-medium ${isSolved ? 'text-zinc-200' : 'text-white'} hover:text-amber-400 transition" data-id="${p.id}">
                         ${escapeHtml(p.title)}
                       </button>
                       ${(p.lists && p.lists.length > 0) ? `
-                        <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.2 rounded bg-surface3 text-slate-400 font-mono border border-borderSubtle">
+                        <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.2 rounded bg-surface3 text-zinc-400 font-mono border border-borderSubtle">
                           ${p.lists[0].includes('75') ? 'Blind 75' : (p.lists[0].includes('150') ? 'NC 150' : p.lists[0])}
                         </span>
                       ` : ''}
@@ -1289,21 +1289,21 @@ function renderCurriculumTable() {
                   </td>
 
                   <!-- Pattern / Technique -->
-                  <td class="py-2.5 px-4 hidden md:table-cell text-slate-400 font-mono text-[11px] truncate max-w-xs" title="${escapeHtml(p.hint || '')}">
+                  <td class="py-2.5 px-4 hidden md:table-cell text-zinc-400 font-mono text-[11px] truncate max-w-xs" title="${escapeHtml(p.hint || '')}">
                     ${escapeHtml(p.hint || 'Standard approach')}
                   </td>
 
                   <!-- 15m Protocol Execution Launcher -->
                   <td class="py-2.5 px-4 text-center shrink-0">
-                    <button class="btn-launch-15m w-full px-2.5 py-1.5 rounded-lg bg-surface2 hover:bg-amber-500 hover:text-slate-950 text-slate-300 font-medium font-mono text-[11px] border border-white/10 transition-all flex items-center justify-center space-x-1.5 shadow-sm active:scale-95 group/btn" data-id="${p.id}" title="Launch 15m Protocol HUD for #${p.id}">
-                      <svg class="w-3.5 h-3.5 text-amber-400 group-hover/btn:text-slate-950 transition-colors" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                    <button class="btn-launch-15m w-full px-2.5 py-1.5 rounded-lg bg-surface2 hover:bg-amber-500 hover:text-black text-zinc-200 font-medium font-mono text-[11px] border border-white/10 transition-all flex items-center justify-center space-x-1.5 shadow-sm active:scale-95 group/btn" data-id="${p.id}" title="Launch 15m Protocol HUD for #${p.id}">
+                      <svg class="w-3.5 h-3.5 text-amber-400 group-hover/btn:text-black transition-colors" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
                       <span>15m Protocol</span>
                     </button>
                   </td>
 
                   <!-- Practice Link -->
                   <td class="py-2.5 px-4 text-right shrink-0">
-                    <a href="${p.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(p.title)}`}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-slate-400 hover:text-amber-400 font-medium transition text-[11px]" title="Open on LeetCode">
+                    <a href="${p.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(p.title)}`}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-zinc-400 hover:text-amber-400 font-medium transition text-[11px]" title="Open on LeetCode">
                       <span>LeetCode</span>
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
@@ -1371,11 +1371,11 @@ function renderCurriculumTable() {
   if (visibleChapters === 0) {
     container.innerHTML = `
       <div class="text-center py-16 bg-surface1 rounded-xl border border-borderDefault">
-        <div class="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center mx-auto mb-3 text-slate-500">
+        <div class="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center mx-auto mb-3 text-zinc-500">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
-        <h3 class="text-slate-200 font-bold text-sm">No problems found</h3>
-        <p class="text-slate-400 text-xs mt-1">Try clearing your search query or switching filters.</p>
+        <h3 class="text-zinc-100 font-bold text-sm">No problems found</h3>
+        <p class="text-zinc-400 text-xs mt-1">Try clearing your search query or switching filters.</p>
       </div>
     `;
   }
@@ -1387,7 +1387,7 @@ function showNotification(msg) {
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'app-toast';
-    toast.className = 'fixed bottom-6 right-6 px-4 py-2.5 rounded-xl bg-surface2 text-slate-100 border border-borderMedium shadow-2xl text-xs font-semibold z-50 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none flex items-center space-x-2';
+    toast.className = 'fixed bottom-6 right-6 px-4 py-2.5 rounded-xl bg-surface2 text-white border border-borderMedium shadow-2xl text-xs font-semibold z-50 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none flex items-center space-x-2';
     document.body.appendChild(toast);
   }
   toast.textContent = msg;
@@ -1474,11 +1474,11 @@ function setupEventListeners() {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
-        b.classList.add('bg-surface2', 'text-slate-300', 'font-medium');
+        b.classList.remove('active', 'bg-amber-500', 'text-black', 'font-bold');
+        b.classList.add('bg-surface2', 'text-zinc-200', 'font-medium');
       });
-      btn.classList.add('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
-      btn.classList.remove('bg-surface2', 'text-slate-300', 'font-medium');
+      btn.classList.add('active', 'bg-amber-500', 'text-black', 'font-bold');
+      btn.classList.remove('bg-surface2', 'text-zinc-200', 'font-medium');
       state.activeFilter = btn.dataset.filter;
       renderSidebar();
     });
@@ -1523,10 +1523,10 @@ function setupEventListeners() {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.error-cat-btn').forEach(b => {
         b.classList.remove('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400');
-        b.classList.add('bg-surface1', 'border-borderDefault', 'text-slate-300');
+        b.classList.add('bg-surface1', 'border-borderDefault', 'text-zinc-200');
       });
       btn.classList.add('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400');
-      btn.classList.remove('bg-surface1', 'border-borderDefault', 'text-slate-300');
+      btn.classList.remove('bg-surface1', 'border-borderDefault', 'text-zinc-200');
     });
   });
 
@@ -1546,10 +1546,10 @@ function setupEventListeners() {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.goal-opt-btn').forEach(b => {
         b.classList.remove('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
-        b.classList.add('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
+        b.classList.add('bg-surface1', 'border-borderDefault', 'text-zinc-200', 'font-medium');
       });
       btn.classList.add('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
-      btn.classList.remove('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
+      btn.classList.remove('bg-surface1', 'border-borderDefault', 'text-zinc-200', 'font-medium');
     });
   });
 
@@ -1762,11 +1762,11 @@ function setupEventListeners() {
   document.querySelectorAll('.curriculum-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.curriculum-filter-btn').forEach(b => {
-        b.classList.remove('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
-        b.classList.add('bg-surface2', 'text-slate-300', 'font-medium');
+        b.classList.remove('active', 'bg-amber-500', 'text-black', 'font-bold');
+        b.classList.add('bg-surface2', 'text-zinc-200', 'font-medium');
       });
-      btn.classList.add('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
-      btn.classList.remove('bg-surface2', 'text-slate-300', 'font-medium');
+      btn.classList.add('active', 'bg-amber-500', 'text-black', 'font-bold');
+      btn.classList.remove('bg-surface2', 'text-zinc-200', 'font-medium');
       state.curriculumFilter = btn.dataset.filter;
       renderCurriculumTable();
     });
@@ -1816,15 +1816,15 @@ async function loadSheetsList() {
     
     container.innerHTML = sheets.map(s => {
       const isActive = s.slug === (state.activeSheetSlug || 'core-path');
-      const badgeClass = s.is_system ? 'bg-surface3 text-slate-300 border border-borderSubtle' : 'bg-surface3 text-amber-400 border border-amber-500/30';
+      const badgeClass = s.is_system ? 'bg-surface3 text-zinc-200 border border-borderSubtle' : 'bg-surface3 text-amber-400 border border-amber-500/30';
       const badgeText = s.is_system ? 'Curated' : 'Custom';
       return `
-        <button class="sheet-select-btn w-full px-2.5 py-2 rounded-md text-left text-xs transition flex items-center justify-between ${isActive ? 'bg-surface3 text-amber-400 border border-amber-500/40 font-semibold' : 'hover:bg-surface2 text-slate-300'}" data-slug="${s.slug}">
+        <button class="sheet-select-btn w-full px-2.5 py-2 rounded-md text-left text-xs transition flex items-center justify-between ${isActive ? 'bg-surface3 text-amber-400 border border-amber-500/40 font-semibold' : 'hover:bg-surface2 text-zinc-200'}" data-slug="${s.slug}">
           <div class="truncate mr-2">
-            <div class="font-medium text-slate-200 truncate flex items-center gap-1.5">
+            <div class="font-medium text-zinc-100 truncate flex items-center gap-1.5">
               <span>${escapeHtml(s.title)}</span>
             </div>
-            <div class="text-[10px] text-slate-400 truncate">${escapeHtml(s.author || '')} · ${s.problem_count} problems</div>
+            <div class="text-[10px] text-zinc-400 truncate">${escapeHtml(s.author || '')} · ${s.problem_count} problems</div>
           </div>
           <span class="text-[9px] px-1.5 py-0.5 rounded font-mono uppercase shrink-0 ${badgeClass}">${badgeText}</span>
         </button>
@@ -2024,10 +2024,10 @@ function openSettingsModal() {
   document.querySelectorAll('.goal-opt-btn').forEach(b => {
     if (parseInt(b.dataset.goal) === goal) {
       b.classList.add('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
-      b.classList.remove('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
+      b.classList.remove('bg-surface1', 'border-borderDefault', 'text-zinc-200', 'font-medium');
     } else {
       b.classList.remove('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
-      b.classList.add('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
+      b.classList.add('bg-surface1', 'border-borderDefault', 'text-zinc-200', 'font-medium');
     }
   });
   openModal('modal-settings');
@@ -2035,7 +2035,7 @@ function openSettingsModal() {
 
 async function openReviewsModal() {
   const container = document.getElementById('reviews-list-container');
-  container.innerHTML = '<div class="text-xs text-slate-500 py-4">Checking review schedule...</div>';
+  container.innerHTML = '<div class="text-xs text-zinc-500 py-4">Checking review schedule...</div>';
   openModal('modal-reviews');
 
   try {
@@ -2049,8 +2049,8 @@ async function openReviewsModal() {
       container.innerHTML = `
         <div class="py-8 text-center space-y-2">
           <svg class="w-8 h-8 text-amber-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <p class="text-xs font-bold text-slate-200 uppercase tracking-wide">Queue Clear · No Reviews Due Today</p>
-          <p class="text-[11px] text-slate-400">Keep solving problems cleanly. Any struggle triggers the SM-2 decay matrix.</p>
+          <p class="text-xs font-bold text-zinc-100 uppercase tracking-wide">Queue Clear · No Reviews Due Today</p>
+          <p class="text-[11px] text-zinc-400">Keep solving problems cleanly. Any struggle triggers the SM-2 decay matrix.</p>
         </div>
       `;
       return;
@@ -2062,7 +2062,7 @@ async function openReviewsModal() {
           <div class="flex items-center space-x-2">
             <span class="font-mono text-cyan-400 font-bold">#${r.problem_id}</span>
             <span class="font-semibold text-white">${r.title}</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">${r.chapter}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-zinc-400">${r.chapter}</span>
           </div>
           <div class="text-[11px] text-amber-400 mt-0.5">${r.interval_type} · Due ${r.due_date}</div>
         </div>
@@ -2103,7 +2103,7 @@ function updateSoundIcon() {
   const icon = document.getElementById('sound-icon');
   if (icon) {
     icon.textContent = state.soundEnabled ? 'AUDIO' : 'MUTE';
-    icon.className = state.soundEnabled ? "text-[10px] font-bold font-mono text-amber-400" : "text-[10px] font-bold font-mono text-slate-500";
+    icon.className = state.soundEnabled ? "text-[10px] font-bold font-mono text-amber-400" : "text-[10px] font-bold font-mono text-zinc-500";
   }
 }
 

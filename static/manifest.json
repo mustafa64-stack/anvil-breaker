@@ -4,8 +4,8 @@
   "description": "Master 610 DSA problems in sequence with a strict 15-minute timebox protocol and GitHub auto-sync. Founded by Mustafa Marjani.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#070b14",
-  "theme_color": "#070b14",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "/static/icon-192.png",
