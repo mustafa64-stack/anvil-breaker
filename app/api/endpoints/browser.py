@@ -48,14 +48,14 @@ def validate_http_url(url: str) -> str:
     Enforces strict protocol security: only http and https are allowed.
     Rejects file://, javascript:, data:, and shell injection vectors.
     """
-    clean = sanitize_url(url)
-    parsed = urlparse(clean)
+    raw_clean = url.strip()
+    parsed = urlparse(raw_clean)
     if parsed.scheme.lower() not in ("http", "https"):
         raise HTTPException(
             status_code=400, 
             detail=f"Security rejection: Invalid URL scheme '{parsed.scheme}'. Only http and https protocols are allowed."
         )
-    return clean
+    return sanitize_url(raw_clean)
 
 @router.post("/open-browser")
 def open_browser_endpoint(payload: OpenBrowserRequest):
@@ -79,6 +79,15 @@ def open_browser_endpoint(payload: OpenBrowserRequest):
             prob = next((p for p in blind_probs if p["id"] == payload.problem_id), None)
             if prob and prob.get("url"):
                 url = prob["url"]
+        elif sheet == "core-path":
+            import json
+            prob_path = os.path.join(settings.DATA_DIR, "problems.json")
+            if os.path.exists(prob_path):
+                with open(prob_path, "r", encoding="utf-8") as f:
+                    core_probs = json.load(f)
+                prob = next((p for p in core_probs if p.get("id") == payload.problem_id), None)
+                if prob and prob.get("url"):
+                    url = prob["url"]
 
     if not url:
         url = f"https://leetcode.com/problemset/all/?page={payload.problem_id or 1}"

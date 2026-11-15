@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Anvil Breaker™ — 15m LeetCode Protocol HUD",
+  "name": "Anvil Breaker™ — 15m Multi-Platform Protocol HUD",
   "version": "1.0.0",
-  "description": "Strict 15-Minute Protocol HUD injected directly into LeetCode. Break the tutorial anvil.",
+  "description": "Strict 15-Minute Protocol HUD injected directly into LeetCode, CSES, and Codeforces. Break the tutorial anvil.",
   "author": "Mustafa Marjani",
   "permissions": [
     "storage",
@@ -38,7 +38,9 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*.leetcode.com/problems/*"
+        "*://*.leetcode.com/problems/*",
+        "*://*.cses.fi/problemset/task/*",
+        "*://*.codeforces.com/problemset/problem/*"
       ],
       "js": ["content.js"],
       "css": ["content.css"],

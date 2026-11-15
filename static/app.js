@@ -72,14 +72,13 @@ async function apiFetch(url, options = {}) {
   try {
     const res = await fetch(url, Object.assign({}, options, { headers }));
     if (res.status === 401) {
-      console.warn("API call returned 401 Unauthorized - clearing token");
+      console.warn("API call returned 401 Unauthorized - session unauthenticated or expired");
       localStorage.removeItem('anvil_token');
       localStorage.removeItem('anvil_user');
       state.token = '';
       state.user = null;
-      if (window.location.pathname.startsWith('/app')) {
-        window.location.replace('/?session_expired=true');
-      }
+      updateUserUI(null);
+      // Retain workspace state in guest/local vault mode without kicking the user to login page
     }
     return res;
   } catch (err) {
@@ -98,7 +97,7 @@ function getProblemPlatform(prob) {
   if (rawPlatform === "CSES" || url.includes("cses.fi") || url.includes("cses") || title.includes("[cses]") || title.includes("cses")) {
     const cleanTitle = title.replace(/\[cses\]/gi, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const fallbackUrl = `https://cses.fi/problemset/task/${cleanTitle}`;
-    return { name: "CSES", color: "amber", short: "CSES", class: "bg-surface3 text-amber-400 border border-amber-500/25", defaultUrl: prob.url || fallbackUrl };
+    return { name: "CSES", color: "blue", short: "CSES", class: "bg-sky-500/15 text-sky-400 border border-sky-500/30", defaultUrl: prob.url || fallbackUrl };
   }
   if (rawPlatform === "CODEFORCES" || url.includes("codeforces.com") || url.includes("codeforces") || title.includes("[cf]") || title.includes("[codeforces]")) {
     return { name: "Codeforces", color: "zinc", short: "CF", class: "bg-surface3 text-zinc-200 border border-borderDefault", defaultUrl: prob.url || "https://codeforces.com" };
@@ -326,6 +325,13 @@ function toggleCompactHud() {
 
 // Initialize Application
 async function initApp() {
+  // 1. Immediately register all event listeners so every button and interaction works instantly
+  try {
+    setupEventListeners();
+  } catch (err) {
+    console.warn("Initial setupEventListeners warning:", err);
+  }
+
   try {
     await initAuth();
 
@@ -375,7 +381,6 @@ async function initApp() {
     renderSidebar();
     renderCurriculumTable();
     selectProblem(state.currentProblemId, false);
-    setupEventListeners();
     await loadSheetsList();
 
     // Initialize Deep-Link Routing or Default Roadmap State
@@ -1626,6 +1631,18 @@ function renderCurriculumTable() {
       });
     });
 
+    // Make entire problem row clickable to select problem and open solver
+    chCard.querySelectorAll('.curriculum-prob-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) return;
+        const pId = parseInt(row.dataset.id);
+        if (pId) {
+          selectProblem(pId, false);
+          switchView('solver', true);
+        }
+      });
+    });
+
     container.appendChild(chCard);
   });
 
@@ -1660,10 +1677,15 @@ function showNotification(msg) {
 
 // Setup Event Listeners & Hotkeys
 function setupEventListeners() {
+  const addSafeListener = (id, event, handler) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(event, handler);
+  };
+
   // Timer buttons
-  document.getElementById('btn-timer-toggle').addEventListener('click', toggleTimer);
-  document.getElementById('btn-timer-reset').addEventListener('click', resetTimer);
-  document.getElementById('btn-next-phase').addEventListener('click', () => {
+  addSafeListener('btn-timer-toggle', 'click', toggleTimer);
+  addSafeListener('btn-timer-reset', 'click', resetTimer);
+  addSafeListener('btn-next-phase', 'click', () => {
     let nextP = state.activePhase + 1;
     if (nextP > 4) nextP = 1;
     setPhase(nextP);
@@ -1680,44 +1702,39 @@ function setupEventListeners() {
   });
 
   // Open Problem button / link
-  const btnOpenProb = document.getElementById('btn-open-platform-link') || document.getElementById('btn-open-brave');
-  if (btnOpenProb) btnOpenProb.addEventListener('click', openCurrentInBrave);
+  addSafeListener('btn-open-platform-link', 'click', openCurrentInBrave);
+  addSafeListener('btn-open-brave', 'click', openCurrentInBrave);
 
   // Prev / Next Problem buttons
-  const btnPrev = document.getElementById('btn-prev-problem');
-  if (btnPrev) btnPrev.addEventListener('click', advancePrev);
-  
-  const btnNext = document.getElementById('btn-next-problem');
-  if (btnNext) btnNext.addEventListener('click', advanceNext);
-
-  const btnAdvNext = document.getElementById('btn-advance-next');
-  if (btnAdvNext) btnAdvNext.addEventListener('click', advanceNext);
+  addSafeListener('btn-prev-problem', 'click', advancePrev);
+  addSafeListener('btn-next-problem', 'click', advanceNext);
+  addSafeListener('btn-advance-next', 'click', advanceNext);
 
   // Jump to Current button in sidebar
-  document.getElementById('btn-jump-current').addEventListener('click', () => {
+  addSafeListener('btn-jump-current', 'click', () => {
     selectProblem(state.currentProblemId);
   });
 
   // Outcome buttons
-  document.getElementById('btn-solve-clean').addEventListener('click', () => {
+  addSafeListener('btn-solve-clean', 'click', () => {
     saveStatus('clean');
   });
-  document.getElementById('btn-solve-help').addEventListener('click', () => {
+  addSafeListener('btn-solve-help', 'click', () => {
     saveStatus('help');
   });
-  document.getElementById('btn-solve-fail').addEventListener('click', () => {
+  addSafeListener('btn-solve-fail', 'click', () => {
     // Open Error Log Modal for Rule 4
     openModal('modal-error-log');
   });
 
   // Hint reveal button
-  document.getElementById('btn-reveal-hint').addEventListener('click', () => {
+  addSafeListener('btn-reveal-hint', 'click', () => {
     const hintBox = document.getElementById('hint-display-box');
-    hintBox.classList.toggle('hidden');
+    if (hintBox) hintBox.classList.toggle('hidden');
   });
 
   // Scratchpad
-  document.getElementById('scratchpad-input').addEventListener('input', handleScratchpadChange);
+  addSafeListener('scratchpad-input', 'input', handleScratchpadChange);
 
   // Pattern pills
   document.querySelectorAll('.pattern-pill').forEach(pill => {
@@ -1728,7 +1745,7 @@ function setupEventListeners() {
   });
 
   // Search input
-  document.getElementById('search-input').addEventListener('input', (e) => {
+  addSafeListener('search-input', 'input', (e) => {
     state.searchQuery = e.target.value;
     renderSidebar();
   });
@@ -1748,16 +1765,16 @@ function setupEventListeners() {
   });
 
   // Sound toggle button
-  document.getElementById('btn-toggle-sound').addEventListener('click', () => {
+  addSafeListener('btn-toggle-sound', 'click', () => {
     state.soundEnabled = !state.soundEnabled;
     updateSoundIcon();
     saveSetting({ sound_enabled: state.soundEnabled });
   });
 
   // Modals
-  document.getElementById('btn-brave-guide').addEventListener('click', () => openModal('modal-brave-guide'));
-  document.getElementById('btn-open-reviews').addEventListener('click', openReviewsModal);
-  document.getElementById('btn-open-settings').addEventListener('click', openSettingsModal);
+  addSafeListener('btn-brave-guide', 'click', () => openModal('modal-brave-guide'));
+  addSafeListener('btn-open-reviews', 'click', openReviewsModal);
+  addSafeListener('btn-open-settings', 'click', openSettingsModal);
 
   document.querySelectorAll('.btn-close-modal').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1766,7 +1783,7 @@ function setupEventListeners() {
   });
 
   // Test Brave launch button
-  document.getElementById('btn-test-brave').addEventListener('click', async () => {
+  addSafeListener('btn-test-brave', 'click', async () => {
     await fetch('/api/open-brave', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1775,9 +1792,10 @@ function setupEventListeners() {
   });
 
   // Error Log Modal save
-  document.getElementById('btn-save-error-log').addEventListener('click', () => {
+  addSafeListener('btn-save-error-log', 'click', () => {
     const activeCat = document.querySelector('.error-cat-btn.active')?.dataset.cat || 'idea';
-    const note = document.getElementById('error-note-input').value;
+    const noteEl = document.getElementById('error-note-input');
+    const note = noteEl ? noteEl.value : '';
     saveStatus('failed', activeCat, note);
     closeModals();
   });
@@ -1794,8 +1812,9 @@ function setupEventListeners() {
   });
 
   // Settings Save
-  document.getElementById('btn-save-settings').addEventListener('click', async () => {
-    const bravePath = document.getElementById('setting-brave-path').value;
+  addSafeListener('btn-save-settings', 'click', async () => {
+    const bravePathEl = document.getElementById('setting-brave-path');
+    const bravePath = bravePathEl ? bravePathEl.value : '';
     const activeGoal = parseInt(document.querySelector('.goal-opt-btn.active')?.dataset.goal || '3');
     await saveSetting({ brave_path: bravePath, daily_goal: activeGoal });
     state.progress.brave_path = bravePath;
@@ -1824,11 +1843,11 @@ function setupEventListeners() {
   });
 
   // Quick Extend (+1m / +5m)
-  document.getElementById('btn-add-1m').addEventListener('click', () => addExtraTime(1));
-  document.getElementById('btn-add-5m').addEventListener('click', () => addExtraTime(5));
+  addSafeListener('btn-add-1m', 'click', () => addExtraTime(1));
+  addSafeListener('btn-add-5m', 'click', () => addExtraTime(5));
 
   // Toggle Compact Focus HUD
-  document.getElementById('btn-toggle-compact-hud').addEventListener('click', toggleCompactHud);
+  addSafeListener('btn-toggle-compact-hud', 'click', toggleCompactHud);
 
   // Custom Timer Modal Setup
   const customTimerBtn = document.getElementById('btn-custom-timer');
@@ -1878,7 +1897,7 @@ function setupEventListeners() {
   }
 
   // Backup Export
-  document.getElementById('btn-export-json').addEventListener('click', () => {
+  addSafeListener('btn-export-json', 'click', () => {
     window.location.href = '/api/export';
   });
 
@@ -2563,11 +2582,6 @@ async function initAuth() {
   }
 
   if (!token) {
-    const path = window.location.pathname.toLowerCase();
-    if (path.includes('/app') || path.includes('/workspace') || path.includes('/solver') || path.includes('/dashboard')) {
-      window.location.href = '/';
-      return;
-    }
     updateUserUI(null);
     return;
   }
@@ -2585,7 +2599,6 @@ async function initAuth() {
       localStorage.removeItem('anvil_user');
       state.token = '';
       updateUserUI(null);
-      window.location.href = '/';
     }
   } catch (err) {
     console.warn("Auth check failed (network/offline):", err);
