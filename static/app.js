@@ -40,6 +40,9 @@ let state = {
   currentProblemId: 1,
   activeFilter: 'all',
   searchQuery: '',
+  curriculumFilter: 'all',
+  curriculumSearchQuery: '',
+  allAccordionsExpanded: true,
   activePresetKey: '15m',
   phaseConfig: null,
   timerSeconds: 15 * 60,
@@ -287,6 +290,7 @@ async function initApp() {
     updateSoundIcon();
     renderStats();
     renderSidebar();
+    renderCurriculumTable();
     selectProblem(state.currentProblemId, false);
     setupEventListeners();
     await loadSheetsList();
@@ -673,16 +677,16 @@ async function openCurrentInBrave() {
 }
 
 // Save Status & Spaced Repetition Updates
-async function saveStatus(status, errorType = "", errorNote = "") {
-  const probId = state.currentProblemId;
-  const timeSpent = state.timerElapsed;
-  const scratchpad = document.getElementById('scratchpad-input').value;
+async function saveStatus(status, errorType = "", errorNote = "", targetProbId = null) {
+  const probId = targetProbId || state.currentProblemId;
+  const timeSpent = (probId === state.currentProblemId) ? state.timerElapsed : 0;
+  const scratchpad = (probId === state.currentProblemId) ? (document.getElementById('scratchpad-input')?.value || "") : "";
   
   // Find selected pattern
   let selectedPattern = "";
   const activePatternPill = document.querySelector('.pattern-pill.active');
-  if (activePatternPill) {
-    selectedPattern = activePatternPill.dataset.pattern;
+  if (activePatternPill && probId === state.currentProblemId) {
+    selectedPattern = activePatternPill.dataset.pattern || "";
   }
 
   const payload = {
@@ -704,7 +708,10 @@ async function saveStatus(status, errorType = "", errorNote = "") {
     const result = await res.json();
     if (result.status === 'ok') {
       if (!state.progress.problems) state.progress.problems = {};
-      state.progress.problems[String(probId)] = result.data;
+      if (!state.progress.problems[String(probId)]) state.progress.problems[String(probId)] = {};
+      state.progress.problems[String(probId)].status = status;
+      state.progress.problems[String(probId)].time_spent = timeSpent;
+      if (selectedPattern) state.progress.problems[String(probId)].pattern = selectedPattern;
       
       if (status === 'clean' || status === 'help') {
         playSound('success');
@@ -713,12 +720,31 @@ async function saveStatus(status, errorType = "", errorNote = "") {
       // Re-render UI
       renderStats();
       renderSidebar();
+      renderCurriculumTable();
 
       // Show brief toast
-      showNotification(status === 'clean' ? '✓ Marked as Cleanly Solved!' : (status === 'help' ? '⚡ Scheduled for Re-solve (Rule 3)' : '✕ Logged to Error Queue'));
+      if (status === 'clean') showNotification('✓ Solved!');
+      else if (status === 'help') showNotification('⚡ Scheduled for Re-solve (Rule 3)');
+      else if (status === 'failed') showNotification('✕ Logged to Error Queue');
+      else showNotification('Status reset to uncompleted');
     }
   } catch (e) {
     console.error("Failed to update status:", e);
+  }
+}
+
+// Toggle Problem Completion Checkbox (Instant Sheet Roadmap Action)
+function toggleProblemCheckbox(probId, e) {
+  if (e) {
+    e.stopPropagation();
+  }
+  const pData = (state.progress.problems && state.progress.problems[String(probId)]) || {};
+  const currentStatus = pData.status || 'unsolved';
+  
+  if (currentStatus === 'clean' || currentStatus === 'help') {
+    saveStatus('unsolved', '', '', probId);
+  } else {
+    saveStatus('clean', '', '', probId);
   }
 }
 
@@ -882,35 +908,455 @@ function renderSidebar() {
   });
 }
 
-// Render Top Stats & Overall Progress
+// Helper to check if a problem is completed
+function isProblemSolved(probId) {
+  const pData = (state.progress.problems && state.progress.problems[String(probId)]) || {};
+  return pData.status === 'clean' || pData.status === 'help';
+}
+
+// Render Top Stats & Overall Progress (TakeUForward Gold Standard Metrics)
 function renderStats() {
   const total = state.problems.length || 610;
-  let solvedClean = 0;
-  let solvedHelp = 0;
   
-  if (state.progress.problems) {
-    Object.values(state.progress.problems).forEach(p => {
-      if (p.status === 'clean') solvedClean++;
-      else if (p.status === 'help') solvedHelp++;
-    });
+  let easyTotal = 0;
+  let easySolved = 0;
+  let medTotal = 0;
+  let medSolved = 0;
+  let hardTotal = 0;
+  let hardSolved = 0;
+
+  state.problems.forEach(p => {
+    const solved = isProblemSolved(p.id);
+    if (p.level === 'E') {
+      easyTotal++;
+      if (solved) easySolved++;
+    } else if (p.level === 'M') {
+      medTotal++;
+      if (solved) medSolved++;
+    } else if (p.level === 'H') {
+      hardTotal++;
+      if (solved) hardSolved++;
+    }
+  });
+
+  const totalSolved = easySolved + medSolved + hardSolved;
+  const pct = total > 0 ? Math.round((totalSolved / total) * 100) : 0;
+
+  // Header overall stat text
+  const overallTextEl = document.getElementById('overall-progress-text');
+  if (overallTextEl) {
+    overallTextEl.textContent = `${totalSolved} / ${total} (${pct}%)`;
   }
-
-  const totalSolved = solvedClean + solvedHelp;
-  const pct = Math.round((totalSolved / total) * 100);
-
-  // Overall stat text
-  document.getElementById('overall-progress-text').textContent = `${totalSolved} / ${total} (${pct}%)`;
 
   // Daily target
   const goal = state.progress.daily_goal || 3;
   const todayCount = state.progress.today_solved_count || 0;
-  document.getElementById('stat-daily-progress').textContent = `${todayCount} / ${goal}`;
-  const barPct = Math.min(100, Math.round((todayCount / goal) * 100));
-  document.getElementById('stat-daily-bar').style.width = `${barPct}%`;
+  const dailyProgEl = document.getElementById('stat-daily-progress');
+  if (dailyProgEl) {
+    dailyProgEl.textContent = `${todayCount} / ${goal}`;
+  }
+  const dailyBarEl = document.getElementById('stat-daily-bar');
+  if (dailyBarEl) {
+    const barPct = Math.min(100, Math.round((todayCount / goal) * 100));
+    dailyBarEl.style.width = `${barPct}%`;
+  }
 
   // Streak
-  const streak = state.progress.streak || 1;
-  document.getElementById('stat-streak').textContent = `${streak} day${streak > 1 ? 's' : ''}`;
+  const streakEl = document.getElementById('stat-streak');
+  if (streakEl) {
+    const streak = state.progress.streak || 1;
+    streakEl.textContent = `${streak} day${streak > 1 ? 's' : ''}`;
+  }
+
+  // Hero Donut Ring (Circumference of r=42 is 2 * PI * 42 ~= 263.89)
+  const donutPctEl = document.getElementById('hero-donut-pct');
+  if (donutPctEl) {
+    donutPctEl.textContent = `${pct}%`;
+  }
+  const donutCircleEl = document.getElementById('hero-donut-circle');
+  if (donutCircleEl) {
+    const circumference = 263.89;
+    const offset = circumference - (pct / 100) * circumference;
+    donutCircleEl.style.strokeDashoffset = offset;
+  }
+
+  // Difficulty metrics
+  const easyCountEl = document.getElementById('stat-easy-count');
+  if (easyCountEl) easyCountEl.textContent = `${easySolved} / ${easyTotal}`;
+  const easyBarEl = document.getElementById('stat-easy-bar');
+  if (easyBarEl) easyBarEl.style.width = `${easyTotal > 0 ? Math.round((easySolved / easyTotal) * 100) : 0}%`;
+
+  const medCountEl = document.getElementById('stat-med-count');
+  if (medCountEl) medCountEl.textContent = `${medSolved} / ${medTotal}`;
+  const medBarEl = document.getElementById('stat-med-bar');
+  if (medBarEl) medBarEl.style.width = `${medTotal > 0 ? Math.round((medSolved / medTotal) * 100) : 0}%`;
+
+  const hardCountEl = document.getElementById('stat-hard-count');
+  if (hardCountEl) hardCountEl.textContent = `${hardSolved} / ${hardTotal}`;
+  const hardBarEl = document.getElementById('stat-hard-bar');
+  if (hardBarEl) hardBarEl.style.width = `${hardTotal > 0 ? Math.round((hardSolved / hardTotal) * 100) : 0}%`;
+
+  // Hero Curriculum Header details
+  const badgeCountEl = document.getElementById('curriculum-badge-count');
+  if (badgeCountEl) badgeCountEl.textContent = `${total} Problems`;
+
+  const heroTitleEl = document.getElementById('curriculum-hero-title');
+  if (heroTitleEl) {
+    const titles = {
+      'core-path': 'The Core Path (610)',
+      'striver-sde': "Striver's SDE Sheet (95)",
+      'neetcode-150': 'NeetCode 150',
+      'blind-75': 'Blind 75'
+    };
+    heroTitleEl.textContent = titles[state.activeSheetSlug] || state.activeSheetSlug || 'Curriculum Sheet';
+  }
+
+  // Hero Resume Button problem title
+  const currProb = state.problems.find(p => p.id === state.currentProblemId) || state.problems[0];
+  const heroCurrentTitleEl = document.getElementById('hero-current-title');
+  if (heroCurrentTitleEl && currProb) {
+    heroCurrentTitleEl.textContent = `#${currProb.id} ${currProb.title}`;
+  }
+}
+
+// Dual-Mode View Switcher: TakeUForward Sheet Roadmap vs 15m Protocol Solver HUD
+function switchView(viewName) {
+  const curriculumView = document.getElementById('view-curriculum');
+  const solverView = document.getElementById('view-solver');
+  const navCurriculum = document.getElementById('nav-btn-curriculum');
+  const navSolver = document.getElementById('nav-btn-solver');
+
+  if (viewName === 'solver') {
+    if (curriculumView) curriculumView.classList.add('hidden');
+    if (solverView) solverView.classList.remove('hidden');
+
+    if (navCurriculum) {
+      navCurriculum.classList.remove('active', 'bg-surface3', 'text-amber-400');
+      navCurriculum.classList.add('text-slate-300');
+    }
+    if (navSolver) {
+      navSolver.classList.add('active', 'bg-surface3', 'text-amber-400');
+      navSolver.classList.remove('text-slate-300');
+    }
+    renderSidebar();
+  } else {
+    // viewName === 'curriculum'
+    if (curriculumView) curriculumView.classList.remove('hidden');
+    if (solverView) solverView.classList.add('hidden');
+
+    if (navCurriculum) {
+      navCurriculum.classList.add('active', 'bg-surface3', 'text-amber-400');
+      navCurriculum.classList.remove('text-slate-300');
+    }
+    if (navSolver) {
+      navSolver.classList.remove('active', 'bg-surface3', 'text-amber-400');
+      navSolver.classList.add('text-slate-300');
+    }
+    renderCurriculumTable();
+    renderStats();
+  }
+}
+
+// Resume Current Problem in 15m Protocol Solver
+function resumeCurrentProblem() {
+  selectProblem(state.currentProblemId || 1);
+  switchView('solver');
+}
+
+// Pick a Random Unsolved Problem
+function pickRandomProblem() {
+  if (!state.problems || state.problems.length === 0) return;
+  const unsolved = state.problems.filter(p => !isProblemSolved(p.id));
+  const pool = unsolved.length > 0 ? unsolved : state.problems;
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  if (chosen) {
+    selectProblem(chosen.id);
+    switchView('solver');
+    showNotification(`🎲 Picked Random Problem: #${chosen.id} ${chosen.title}`);
+  }
+}
+
+// Toggle Expanding or Collapsing All Curriculum Accordions
+function toggleAllAccordions() {
+  state.allAccordionsExpanded = !state.allAccordionsExpanded;
+  const btnText = document.getElementById('accordion-toggle-text');
+  if (btnText) {
+    btnText.textContent = state.allAccordionsExpanded ? "Collapse All" : "Expand All";
+  }
+  const bodies = document.querySelectorAll('.curriculum-accordion-body');
+  const arrows = document.querySelectorAll('.accordion-arrow-btn svg');
+  bodies.forEach(b => {
+    if (state.allAccordionsExpanded) {
+      b.classList.remove('hidden');
+    } else {
+      b.classList.add('hidden');
+    }
+  });
+  arrows.forEach(a => {
+    a.classList.toggle('rotate-180', state.allAccordionsExpanded);
+  });
+}
+
+// Render Full TakeUForward-Style Sheet Roadmap with Topic Accordions & High-Density Tables
+function renderCurriculumTable() {
+  const container = document.getElementById('curriculum-table-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!state.problems || state.problems.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-16 bg-surface1 rounded-xl border border-borderDefault">
+        <p class="text-slate-400 text-sm">No curriculum problems loaded for this sheet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const query = (state.curriculumSearchQuery || '').toLowerCase().trim();
+  const filter = state.curriculumFilter || 'all';
+
+  // Filter problems
+  const filteredProblems = state.problems.filter(p => {
+    const solved = isProblemSolved(p.id);
+
+    // Filter matching
+    if (filter === 'unsolved' && solved) return false;
+    if (filter === 'solved' && !solved) return false;
+    if (filter === 'easy' && p.level !== 'E') return false;
+    if (filter === 'medium' && p.level !== 'M') return false;
+    if (filter === 'hard' && p.level !== 'H') return false;
+
+    // Search query matching
+    if (query) {
+      const matchTitle = (p.title || '').toLowerCase().includes(query);
+      const matchHint = (p.hint || '').toLowerCase().includes(query);
+      const matchChapter = (p.chapter_name || '').toLowerCase().includes(query);
+      const matchId = String(p.id) === query || `#${p.id}` === query;
+      const matchLists = (p.lists || []).some(l => l.toLowerCase().includes(query));
+      if (!matchTitle && !matchHint && !matchChapter && !matchId && !matchLists) return false;
+    }
+
+    return true;
+  });
+
+  // Group filtered problems by chapter_id
+  const chapterGroups = {};
+  filteredProblems.forEach(p => {
+    if (!chapterGroups[p.chapter_id]) {
+      chapterGroups[p.chapter_id] = [];
+    }
+    chapterGroups[p.chapter_id].push(p);
+  });
+
+  let visibleChapters = 0;
+
+  state.chapters.forEach((ch) => {
+    const probs = chapterGroups[ch.id] || [];
+    if (probs.length === 0 && (query || filter !== 'all')) return;
+    visibleChapters++;
+
+    // Calculate chapter stats
+    const allChProbs = state.problems.filter(p => p.chapter_id === ch.id);
+    const totalInCh = allChProbs.length || ch.count || 1;
+    const solvedInCh = allChProbs.filter(p => isProblemSolved(p.id)).length;
+    const chPct = Math.round((solvedInCh / totalInCh) * 100);
+    const isAllSolved = solvedInCh === totalInCh && totalInCh > 0;
+
+    // Chapter Accordion Card
+    const chCard = document.createElement('div');
+    chCard.className = "bg-surface1 border border-borderDefault rounded-xl overflow-hidden transition shadow-sm mb-4";
+    chCard.dataset.chapterId = ch.id;
+
+    const isExpanded = state.allAccordionsExpanded !== false || query !== '';
+
+    chCard.innerHTML = `
+      <!-- Accordion Header -->
+      <div class="curriculum-accordion-header px-4 sm:px-6 py-4 bg-surface1 hover:bg-surface2/60 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none transition border-b border-borderDefault">
+        
+        <div class="flex items-center space-x-3 truncate">
+          <span class="px-2.5 py-1 rounded bg-amber-500/15 text-amber-400 font-mono text-xs font-bold shrink-0 border border-amber-500/25">
+            Step ${ch.id}
+          </span>
+          <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate">
+            ${escapeHtml(ch.name)}
+          </h3>
+        </div>
+
+        <div class="flex items-center justify-between sm:justify-end space-x-4 shrink-0 text-xs">
+          <div class="flex items-center space-x-2">
+            <div class="w-24 sm:w-32 h-2 bg-surface3 rounded-full overflow-hidden">
+              <div class="h-full ${isAllSolved ? 'bg-emerald-400' : 'bg-amber-500'} transition-all duration-300" style="width: ${chPct}%"></div>
+            </div>
+            <span class="font-mono text-[11px] ${isAllSolved ? 'text-emerald-400 font-bold' : 'text-slate-400'}">
+              ${solvedInCh}/${totalInCh} (${chPct}%)
+            </span>
+          </div>
+
+          <button class="accordion-arrow-btn p-1 text-slate-400 hover:text-white transition" aria-label="Toggle Topic">
+            <svg class="w-4 h-4 transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Accordion Table Body -->
+      <div class="curriculum-accordion-body ${isExpanded ? '' : 'hidden'} overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-surface2/60 text-slate-400 font-mono text-[10px] uppercase tracking-wider border-b border-borderSubtle">
+            <tr>
+              <th class="py-2.5 px-4 w-14 text-center">Status</th>
+              <th class="py-2.5 px-3 w-16 text-slate-500 font-mono">#</th>
+              <th class="py-2.5 px-4 font-semibold text-slate-300">Problem Title</th>
+              <th class="py-2.5 px-3 w-24">Difficulty</th>
+              <th class="py-2.5 px-4 hidden md:table-cell">Pattern / Technique</th>
+              <th class="py-2.5 px-4 w-36 text-center">15m Protocol</th>
+              <th class="py-2.5 px-4 w-24 text-right">Practice</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-borderSubtle">
+            ${probs.map(p => {
+              const pData = (state.progress.problems && state.progress.problems[String(p.id)]) || {};
+              const status = pData.status || 'unsolved';
+              const isClean = status === 'clean';
+              const isHelp = status === 'help';
+              const isSolved = isClean || isHelp;
+
+              let diffBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">EASY</span>`;
+              if (p.level === 'M') {
+                diffBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-500/15 text-amber-400 border border-amber-500/25">MED</span>`;
+              } else if (p.level === 'H') {
+                diffBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-500/15 text-rose-400 border border-rose-500/25">HARD</span>`;
+              }
+
+              const isCurrent = p.id === state.currentProblemId;
+
+              return `
+                <tr class="curriculum-prob-row hover:bg-surface2/40 transition group ${isSolved ? 'bg-emerald-500/[0.02]' : ''} ${isCurrent ? 'bg-amber-500/[0.05]' : ''}" data-id="${p.id}">
+                  
+                  <!-- Status Checkbox -->
+                  <td class="py-2.5 px-4 text-center shrink-0">
+                    <button type="button" class="prob-checkbox-btn w-5 h-5 rounded-md border ${isSolved ? 'bg-emerald-500 border-emerald-400 text-slate-950 font-bold' : 'border-slate-600 bg-surface2 hover:border-amber-500'} flex items-center justify-center transition mx-auto" data-id="${p.id}" title="${isSolved ? 'Mark as Unsolved' : 'Mark as Solved'}">
+                      ${isSolved ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                    </button>
+                  </td>
+
+                  <!-- Problem ID -->
+                  <td class="py-2.5 px-3 font-mono text-slate-500 text-[11px]">
+                    #${p.id}
+                  </td>
+
+                  <!-- Title & Tags -->
+                  <td class="py-2.5 px-4">
+                    <div class="flex items-center space-x-2">
+                      <button class="btn-open-solver-title text-left font-medium ${isSolved ? 'text-slate-300' : 'text-slate-100'} hover:text-amber-400 transition" data-id="${p.id}">
+                        ${escapeHtml(p.title)}
+                      </button>
+                      ${(p.lists && p.lists.length > 0) ? `
+                        <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.2 rounded bg-surface3 text-slate-400 font-mono border border-borderSubtle">
+                          ${p.lists[0].includes('75') ? 'Blind 75' : (p.lists[0].includes('150') ? 'NC 150' : p.lists[0])}
+                        </span>
+                      ` : ''}
+                    </div>
+                  </td>
+
+                  <!-- Difficulty -->
+                  <td class="py-2.5 px-3 shrink-0">
+                    ${diffBadge}
+                  </td>
+
+                  <!-- Pattern / Technique -->
+                  <td class="py-2.5 px-4 hidden md:table-cell text-slate-400 font-mono text-[11px] truncate max-w-xs" title="${escapeHtml(p.hint || '')}">
+                    ${escapeHtml(p.hint || 'Standard approach')}
+                  </td>
+
+                  <!-- 15m Protocol Execution Launcher -->
+                  <td class="py-2.5 px-4 text-center shrink-0">
+                    <button class="btn-launch-15m w-full px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 font-bold font-mono text-[11px] border border-amber-500/30 transition flex items-center justify-center space-x-1 shadow-sm active:scale-98" data-id="${p.id}" title="Launch 15m Protocol HUD for #${p.id}">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                      <span>⚡ Solve (15m)</span>
+                    </button>
+                  </td>
+
+                  <!-- Practice Link -->
+                  <td class="py-2.5 px-4 text-right shrink-0">
+                    <a href="${p.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(p.title)}`}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-slate-400 hover:text-amber-400 font-medium transition text-[11px]" title="Open on LeetCode">
+                      <span>LeetCode</span>
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                  </td>
+
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Attach event listeners for accordion header toggle
+    const header = chCard.querySelector('.curriculum-accordion-header');
+    const body = chCard.querySelector('.curriculum-accordion-body');
+    const arrow = chCard.querySelector('.accordion-arrow-btn svg');
+
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      const isHidden = body.classList.toggle('hidden');
+      arrow.classList.toggle('rotate-180', !isHidden);
+    });
+
+    const arrowBtn = chCard.querySelector('.accordion-arrow-btn');
+    arrowBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = body.classList.toggle('hidden');
+      arrow.classList.toggle('rotate-180', !isHidden);
+    });
+
+    // Attach Checkbox handlers
+    chCard.querySelectorAll('.prob-checkbox-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const pId = parseInt(btn.dataset.id);
+        toggleProblemCheckbox(pId, e);
+      });
+    });
+
+    // Attach Title Click -> Open in Solver
+    chCard.querySelectorAll('.btn-open-solver-title').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pId = parseInt(btn.dataset.id);
+        selectProblem(pId);
+        switchView('solver');
+      });
+    });
+
+    // Attach 15m Protocol Solve Button -> Open in Solver and start timer
+    chCard.querySelectorAll('.btn-launch-15m').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pId = parseInt(btn.dataset.id);
+        selectProblem(pId);
+        switchView('solver');
+        if (!state.timerRunning) {
+          toggleTimer();
+        }
+      });
+    });
+
+    container.appendChild(chCard);
+  });
+
+  if (visibleChapters === 0) {
+    container.innerHTML = `
+      <div class="text-center py-16 bg-surface1 rounded-xl border border-borderDefault">
+        <div class="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center mx-auto mb-3 text-slate-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <h3 class="text-slate-200 font-bold text-sm">No problems found</h3>
+        <p class="text-slate-400 text-xs mt-1">Try clearing your search query or switching filters.</p>
+      </div>
+    `;
+  }
 }
 
 // Show temporary notification toast
@@ -1258,6 +1704,57 @@ function setupEventListeners() {
       setPhase(4);
     }
   });
+
+  // View Switcher (TakeUForward Sheet Roadmap vs 15m Protocol Solver)
+  const navCurriculumBtn = document.getElementById('nav-btn-curriculum');
+  if (navCurriculumBtn) {
+    navCurriculumBtn.addEventListener('click', () => switchView('curriculum'));
+  }
+
+  const navSolverBtn = document.getElementById('nav-btn-solver');
+  if (navSolverBtn) {
+    navSolverBtn.addEventListener('click', () => switchView('solver'));
+  }
+
+  // Hero Action Buttons
+  const btnHeroResume = document.getElementById('btn-hero-resume');
+  if (btnHeroResume) {
+    btnHeroResume.addEventListener('click', resumeCurrentProblem);
+  }
+
+  const btnHeroRandom = document.getElementById('btn-hero-random');
+  if (btnHeroRandom) {
+    btnHeroRandom.addEventListener('click', pickRandomProblem);
+  }
+
+  // Curriculum Search
+  const curriculumSearchInput = document.getElementById('curriculum-search-input');
+  if (curriculumSearchInput) {
+    curriculumSearchInput.addEventListener('input', (e) => {
+      state.curriculumSearchQuery = e.target.value;
+      renderCurriculumTable();
+    });
+  }
+
+  // Curriculum Filter Buttons (All, Unsolved, Solved, Easy, Medium, Hard)
+  document.querySelectorAll('.curriculum-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.curriculum-filter-btn').forEach(b => {
+        b.classList.remove('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
+        b.classList.add('bg-surface2', 'text-slate-300', 'font-medium');
+      });
+      btn.classList.add('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
+      btn.classList.remove('bg-surface2', 'text-slate-300', 'font-medium');
+      state.curriculumFilter = btn.dataset.filter;
+      renderCurriculumTable();
+    });
+  });
+
+  // Toggle all accordions
+  const btnToggleAccordions = document.getElementById('btn-toggle-all-accordions');
+  if (btnToggleAccordions) {
+    btnToggleAccordions.addEventListener('click', toggleAllAccordions);
+  }
 }
 
 // Multi-Sheet Management Logic
@@ -1328,6 +1825,7 @@ async function switchSheet(slug) {
 
     renderStats();
     renderSidebar();
+    renderCurriculumTable();
     if (state.problems.length > 0) {
       selectProblem(state.problems[0].id, true);
     }

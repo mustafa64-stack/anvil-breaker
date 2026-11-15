@@ -49,7 +49,7 @@
 <body class="bg-canvas text-slate-100 font-sans min-h-screen flex flex-col selection:bg-amber-500/25 selection:text-white">
 
   <!-- TOP NAVBAR -->
-  <header class="border-b border-borderDefault bg-surface1/95 backdrop-blur sticky top-0 z-40 px-5 py-2.5 flex items-center justify-between">
+  <header class="border-b border-borderDefault bg-surface1/95 backdrop-blur sticky top-0 z-40 px-4 sm:px-6 py-2.5 flex items-center justify-between">
     <!-- Brand / Title & Sheet Selector -->
     <div class="flex items-center space-x-3.5">
       <a href="/" class="flex items-center space-x-2.5 group">
@@ -58,14 +58,14 @@
           <h1 class="text-xs font-black tracking-wider text-white uppercase flex items-center gap-1.5">
             ANVIL BREAKER<span class="text-[9px] text-amber-400 font-mono font-bold">TM</span>
           </h1>
-          <p class="text-[10px] text-slate-400 font-medium">15-Min Protocol Engine</p>
+          <p class="text-[10px] text-slate-400 font-medium hidden sm:block">15-Min Protocol Engine</p>
         </div>
       </a>
 
       <!-- Divider -->
       <div class="hidden sm:block w-px h-5 bg-borderDefault"></div>
 
-      <!-- Dynamic Sheet Selector Dropdown (TakeUForward Multi-Sheet Engine) -->
+      <!-- Dynamic Sheet Selector Dropdown (Multi-Sheet Engine) -->
       <div class="relative">
         <button id="btn-sheet-selector" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderDefault text-xs font-semibold transition" title="Switch Sheet or Create Self-Made Sheet">
           <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -88,50 +88,32 @@
       </div>
     </div>
 
-    <!-- Center Daily Stats Bar (Live Performance Metrics) -->
-    <div class="hidden lg:flex items-center space-x-4 bg-surface2 px-4 py-1.5 rounded-lg border border-borderDefault">
-      <!-- Streak -->
-      <div class="flex items-center space-x-1.5 text-xs font-medium" title="Consecutive days practicing protocol">
-        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
-        <span class="text-slate-400">Streak:</span>
-        <span id="stat-streak" class="text-amber-400 font-bold font-mono">1 day</span>
-      </div>
+    <!-- Center Navigation View Switcher (TakeUForward Sheet vs Protocol Solver) -->
+    <div class="flex items-center bg-surface2 p-1 rounded-lg border border-borderDefault">
+      <button id="nav-btn-curriculum" class="nav-tab-btn active px-3.5 py-1.5 rounded-md text-xs font-semibold flex items-center space-x-1.5 transition" title="View Full Curriculum Sheet (TakeUForward Style)">
+        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+        <span>Sheet Roadmap</span>
+      </button>
 
-      <div class="w-px h-3.5 bg-slate-800"></div>
-
-      <!-- Daily Target -->
-      <div class="flex items-center space-x-2 text-xs font-medium" title="Today's solved problems against target">
-        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span class="text-slate-400">Daily:</span>
-        <span id="stat-daily-progress" class="font-bold text-white font-mono">0 / 3</span>
-        <div class="w-14 h-1.5 bg-surface3 rounded-full overflow-hidden">
-          <div id="stat-daily-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%"></div>
-        </div>
-      </div>
-
-      <div class="w-px h-3.5 bg-slate-800"></div>
-
-      <!-- Spaced Repetition Due (SM-2 Algorithm) -->
-      <button id="btn-open-reviews" class="flex items-center space-x-1.5 text-xs hover:text-amber-400 transition text-slate-300" title="SuperMemo-2 algorithmic spaced reviews due today">
-        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        <span>Reviews:</span>
-        <span id="stat-reviews-due" class="px-1.5 py-0.2 rounded bg-surface3 text-amber-400 text-xs font-mono font-bold">0</span>
+      <button id="nav-btn-solver" class="nav-tab-btn px-3.5 py-1.5 rounded-md text-xs font-semibold text-slate-300 hover:text-white flex items-center space-x-1.5 transition" title="Open 15-Minute Protocol Solver Command Center">
+        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <span>15m Protocol HUD</span>
       </button>
     </div>
 
     <!-- Right Controls: Mini HUD, Brave sync, sound, badge, settings -->
     <div class="flex items-center space-x-2">
-      <!-- Pop-out Mini HUD Button (Always-on-Top PiP) -->
-      <button id="btn-header-popout" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderDefault text-xs font-semibold transition shadow-sm" title="Pop out Floating Always-On-Top Mini HUD (H)">
+      <!-- Pop-out Mini HUD Button -->
+      <button id="btn-header-popout" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderDefault text-xs font-semibold transition shadow-sm" title="Pop out Floating Always-On-Top Mini HUD (H)">
         <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-        <span class="hidden sm:inline">Mini HUD</span>
+        <span>Mini HUD</span>
         <span class="text-[9px] font-mono opacity-60 bg-surface3 px-1 py-0.2 rounded">H</span>
       </button>
 
       <!-- Brave Extension Indicator / Help -->
-      <button id="btn-brave-guide" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderDefault text-xs font-medium transition" title="View Brave & LeetCode Git Sync Guide">
+      <button id="btn-brave-guide" class="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderDefault text-xs font-medium transition" title="View Brave & LeetCode Git Sync Guide">
         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <span class="hidden sm:inline">Brave + Git</span>
+        <span>Brave + Git</span>
       </button>
 
       <!-- Sound Toggle -->
@@ -154,10 +136,145 @@
     </div>
   </header>
 
-  <!-- MAIN APP CONTAINER -->
-  <div class="flex-1 flex overflow-hidden">
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: FULL-WIDTH SHEET CURRICULUM ROADMAP (TakeUForward Surpassed)  -->
+  <!-- ===================================================================== -->
+  <div id="view-curriculum" class="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+    
+    <!-- Hero Analytics Dashboard Banner -->
+    <div class="border-b border-borderDefault bg-surface1 px-6 py-8">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        
+        <!-- Left Title & Description -->
+        <div class="space-y-2 max-w-xl">
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono text-[10px] font-bold tracking-wide uppercase border border-amber-500/25">
+              Active Curriculum
+            </span>
+            <span id="curriculum-badge-count" class="text-xs text-slate-400 font-mono">610 Problems</span>
+          </div>
 
-    <!-- LEFT SIDEBAR: TOPIC ACCORDIONS & PROBLEM LIST (TakeUForward Architecture) -->
+          <h2 id="curriculum-hero-title" class="text-3xl lg:text-4xl font-black tracking-tight text-white">
+            The Core Path (610)
+          </h2>
+          <p id="curriculum-hero-desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            The complete 32-chapter algorithmic mastery roadmap. Solve sequentially or by topic with the strict 15-Minute Protocol.
+          </p>
+
+          <div class="pt-2 flex flex-wrap items-center gap-3">
+            <button id="btn-hero-resume" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center space-x-2 transition shadow-sm active:scale-98">
+              <svg class="w-3.5 h-3.5 text-slate-950" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
+              <span>Resume Current: <span id="hero-current-title">#1 Two Sum</span></span>
+            </button>
+
+            <button id="btn-hero-random" class="px-3.5 py-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderDefault text-xs font-semibold flex items-center space-x-1.5 transition">
+              <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Random Problem</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Circular Donut Chart & 3 Difficulty Cards (TakeUForward Gold Standard) -->
+        <div class="flex items-center space-x-6 bg-surface2/60 p-4 rounded-2xl border border-borderDefault shrink-0">
+          
+          <!-- Circular Progress Donut -->
+          <div class="relative w-24 h-24 flex items-center justify-center shrink-0">
+            <svg class="w-24 h-24 progress-ring" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.08)" stroke-width="8" fill="none" />
+              <circle id="hero-donut-circle" class="progress-ring-circle" cx="50" cy="50" r="42" stroke="#f59e0b" stroke-width="8" stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="263.89" fill="none" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="hero-donut-pct" class="text-xl font-mono font-black text-white tabular-nums">0%</span>
+              <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Solved</span>
+            </div>
+          </div>
+
+          <!-- Difficulty Breakdown Metrics (Easy / Medium / Hard) -->
+          <div class="space-y-2 w-44 text-xs font-medium">
+            <!-- Easy -->
+            <div>
+              <div class="flex items-center justify-between text-[11px] mb-1">
+                <span class="text-emerald-400 font-bold">Easy</span>
+                <span id="stat-easy-count" class="font-mono text-slate-300">0 / 0</span>
+              </div>
+              <div class="w-full h-1.5 bg-surface3 rounded-full overflow-hidden">
+                <div id="stat-easy-bar" class="h-full bg-emerald-500 transition-all duration-400" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Medium -->
+            <div>
+              <div class="flex items-center justify-between text-[11px] mb-1">
+                <span class="text-amber-400 font-bold">Medium</span>
+                <span id="stat-med-count" class="font-mono text-slate-300">0 / 0</span>
+              </div>
+              <div class="w-full h-1.5 bg-surface3 rounded-full overflow-hidden">
+                <div id="stat-med-bar" class="h-full bg-amber-500 transition-all duration-400" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Hard -->
+            <div>
+              <div class="flex items-center justify-between text-[11px] mb-1">
+                <span class="text-rose-400 font-bold">Hard</span>
+                <span id="stat-hard-count" class="font-mono text-slate-300">0 / 0</span>
+              </div>
+              <div class="w-full h-1.5 bg-surface3 rounded-full overflow-hidden">
+                <div id="stat-hard-bar" class="h-full bg-rose-500 transition-all duration-400" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Curriculum Filter & Search Toolbar -->
+    <div class="border-b border-borderDefault bg-surface1/60 px-6 py-3 sticky top-0 z-20 backdrop-blur">
+      <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+        
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-80">
+          <input type="text" id="curriculum-search-input" placeholder="Search problems, topics, patterns..." 
+            class="w-full bg-surface2 text-xs text-slate-200 placeholder-slate-500 rounded-lg pl-8 pr-3 py-2 border border-borderDefault focus:border-amber-500 transition">
+          <svg class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+
+        <!-- Filter Buttons (TakeUForward Category Toggles) -->
+        <div class="flex items-center space-x-1.5 text-xs overflow-x-auto scrollbar-none">
+          <button class="curriculum-filter-btn active px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs transition" data-filter="all">All</button>
+          <button class="curriculum-filter-btn px-3 py-1.5 rounded-lg bg-surface2 text-slate-300 hover:text-white font-medium text-xs transition" data-filter="unsolved">To-Do</button>
+          <button class="curriculum-filter-btn px-3 py-1.5 rounded-lg bg-surface2 text-slate-300 hover:text-white font-medium text-xs transition" data-filter="solved">Solved</button>
+          <button class="curriculum-filter-btn px-3 py-1.5 rounded-lg bg-surface2 text-slate-300 hover:text-white font-medium text-xs transition" data-filter="easy">Easy</button>
+          <button class="curriculum-filter-btn px-3 py-1.5 rounded-lg bg-surface2 text-slate-300 hover:text-white font-medium text-xs transition" data-filter="medium">Medium</button>
+          <button class="curriculum-filter-btn px-3 py-1.5 rounded-lg bg-surface2 text-slate-300 hover:text-white font-medium text-xs transition" data-filter="hard">Hard</button>
+        </div>
+
+        <!-- Expand / Collapse All Accordions -->
+        <button id="btn-toggle-all-accordions" class="text-xs text-slate-400 hover:text-amber-400 font-medium transition flex items-center space-x-1">
+          <span id="accordion-toggle-text">Collapse All</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Curriculum Full-Width Accordion & Table Content Area -->
+    <div class="max-w-6xl mx-auto w-full p-6 space-y-4 flex-1">
+      <div id="curriculum-table-container" class="space-y-4">
+        <!-- Injected dynamically by JS (Step / Topic Accordions + Full Tables) -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: 15-MINUTE PROTOCOL SOLVER (Tactical Execution Command Center) -->
+  <!-- ===================================================================== -->
+  <div id="view-solver" class="flex-1 flex overflow-hidden hidden">
+
+    <!-- LEFT SIDEBAR: TOPICS & PROBLEMS LIST -->
     <aside id="sidebar" class="w-80 lg:w-96 border-r border-borderDefault bg-surface1 flex flex-col shrink-0">
       
       <!-- Filter & Search Toolbar -->
