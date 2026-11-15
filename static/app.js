@@ -211,6 +211,17 @@ function applyHudPreset(presetKey, customObj = null, resetClock = true) {
     }
   }
 
+  const customCurrBtn = document.getElementById('btn-custom-timer-curriculum');
+  if (customCurrBtn) {
+    if (presetKey === 'custom') {
+      customCurrBtn.className = "px-2.5 py-1 rounded-md bg-surface3 text-amber-400 font-bold border border-amber-500/50 font-mono text-xs transition";
+      customCurrBtn.innerHTML = `<span>Custom (${presetData.totalMinutes}m)</span>`;
+    } else {
+      customCurrBtn.className = "px-2.5 py-1 rounded-md bg-surface2 hover:bg-surface3 text-slate-300 hover:text-amber-400 font-mono text-xs font-medium transition border border-dashed border-white/20 flex items-center gap-1";
+      customCurrBtn.innerHTML = `<svg class="w-3 h-3 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg><span>Custom Time</span>`;
+    }
+  }
+
   // Save to localStorage
   try {
     localStorage.setItem('dsa_hud_preset', presetKey);
@@ -518,6 +529,12 @@ function updateTimerUI() {
     displayEl.textContent = timerStr;
   }
 
+  // Update Curriculum Suite Timer Display
+  const currDisplay = document.getElementById('curriculum-timer-display');
+  if (currDisplay) {
+    currDisplay.textContent = timerStr;
+  }
+
   // Update Docked Mini Timer
   const dockedDisplay = document.getElementById('docked-timer-display');
   if (dockedDisplay) {
@@ -530,6 +547,11 @@ function updateTimerUI() {
 
   const dockedBtn = document.getElementById('btn-docked-toggle');
   const dockedIcon = document.getElementById('docked-icon-play');
+
+  const currToggleText = document.getElementById('curriculum-timer-btn-text');
+  if (currToggleText) {
+    currToggleText.textContent = state.timerRunning ? "Pause Timer" : "Start Timer";
+  }
 
   if (state.timerRunning) {
     if (toggleBtn) {
@@ -1754,6 +1776,32 @@ function setupEventListeners() {
   const btnToggleAccordions = document.getElementById('btn-toggle-all-accordions');
   if (btnToggleAccordions) {
     btnToggleAccordions.addEventListener('click', toggleAllAccordions);
+  }
+
+  // Curriculum Suite Timer & Customization Controls
+  const currTimerToggle = document.getElementById('btn-curriculum-timer-toggle');
+  if (currTimerToggle) currTimerToggle.addEventListener('click', toggleTimer);
+
+  const currTimerReset = document.getElementById('btn-curriculum-timer-reset');
+  if (currTimerReset) currTimerReset.addEventListener('click', resetTimer);
+
+  const currAdd1m = document.getElementById('btn-add-1m-curriculum');
+  if (currAdd1m) currAdd1m.addEventListener('click', () => addExtraTime(1));
+
+  const currAdd5m = document.getElementById('btn-add-5m-curriculum');
+  if (currAdd5m) currAdd5m.addEventListener('click', () => addExtraTime(5));
+
+  const currCustomTimer = document.getElementById('btn-custom-timer-curriculum');
+  if (currCustomTimer) {
+    currCustomTimer.addEventListener('click', () => {
+      openModal('modal-custom-timer');
+      updateCustomPreview();
+    });
+  }
+
+  const btnOpenWorkspace = document.getElementById('btn-open-workspace');
+  if (btnOpenWorkspace) {
+    btnOpenWorkspace.addEventListener('click', () => switchView('solver'));
   }
 }
 
