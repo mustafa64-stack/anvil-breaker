@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anvil Breaker™ — Engineering Performance System</title>
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="shortcut icon" href="/static/favicon.ico">
+  <link rel="apple-touch-icon" href="/static/icon-192.png">
   
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,12 +55,15 @@
     <!-- Brand / Title & Sheet Selector -->
     <div class="flex items-center space-x-3.5">
       <a href="/" class="flex items-center space-x-2.5 group">
-        <img src="/static/logo.svg" class="w-8 h-8 rounded-lg border border-borderMedium shadow-sm object-cover transition-transform group-hover:scale-105" alt="Anvil Breaker Logo">
+        <div class="relative shrink-0">
+          <img src="/static/logo-nav.png" class="w-8 h-8 rounded-lg border border-white/10 shadow-sm object-cover transition-transform group-hover:scale-105" alt="Anvil Breaker Logo">
+          <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-white/10 pointer-events-none"></div>
+        </div>
         <div>
-          <h1 class="text-xs font-black tracking-wider text-white uppercase flex items-center gap-1.5">
-            ANVIL BREAKER<span class="text-[9px] text-amber-400 font-mono font-bold">TM</span>
+          <h1 class="text-xs font-bold tracking-wider text-slate-100 uppercase flex items-center gap-1.5">
+            ANVIL BREAKER <span class="text-[9px] text-amber-400 font-mono font-semibold">PRO</span>
           </h1>
-          <p class="text-[10px] text-slate-400 font-medium hidden sm:block">15-Min Protocol Engine</p>
+          <p class="text-[10px] text-slate-400 font-mono hidden sm:block">By Mustafa Marjani</p>
         </div>
       </a>
 
@@ -142,35 +147,44 @@
   <div id="view-curriculum" class="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
     
     <!-- Hero Analytics Dashboard Banner -->
-    <div class="border-b border-borderDefault bg-surface1 px-6 py-8">
-      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="border-b border-borderDefault bg-surface1/95 px-6 py-7">
+      <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         
-        <!-- Left Title & Description -->
-        <div class="space-y-2 max-w-xl">
-          <div class="flex items-center space-x-2">
-            <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono text-[10px] font-bold tracking-wide uppercase border border-amber-500/25">
-              Active Curriculum
-            </span>
-            <span id="curriculum-badge-count" class="text-xs text-slate-400 font-mono">610 Problems</span>
+        <!-- Left: Realistic Logo Artwork + Title & Actions -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5 max-w-2xl">
+          <div class="relative shrink-0 group">
+            <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-transparent blur-md opacity-80 group-hover:opacity-100 transition"></div>
+            <img src="/static/hero_logo.jpg" class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl shadow-xl border border-white/10 object-cover" alt="Anvil Breaker™ Official Logo">
           </div>
 
-          <h2 id="curriculum-hero-title" class="text-3xl lg:text-4xl font-black tracking-tight text-white">
-            The Core Path (610)
-          </h2>
-          <p id="curriculum-hero-desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            The complete 32-chapter algorithmic mastery roadmap. Solve sequentially or by topic with the strict 15-Minute Protocol.
-          </p>
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-surface3 text-amber-400 font-mono text-[10px] font-semibold uppercase tracking-wider border border-amber-500/20">
+                Official Curriculum
+              </span>
+              <span id="curriculum-badge-count" class="text-xs text-slate-400 font-mono">610 Problems</span>
+              <span class="text-slate-600 hidden sm:inline">·</span>
+              <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">By Mustafa Marjani</span>
+            </div>
 
-          <div class="pt-2 flex flex-wrap items-center gap-3">
-            <button id="btn-hero-resume" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center space-x-2 transition shadow-sm active:scale-98">
-              <svg class="w-3.5 h-3.5 text-slate-950" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
-              <span>Resume Current: <span id="hero-current-title">#1 Two Sum</span></span>
-            </button>
+            <h2 id="curriculum-hero-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              The Core Path (610)
+            </h2>
+            <p id="curriculum-hero-desc" class="text-xs text-slate-400 max-w-lg leading-relaxed">
+              32-chapter algorithmic mastery roadmap. Solve sequentially or by pattern with strict 15-Minute Protocol timeboxing.
+            </p>
 
-            <button id="btn-hero-random" class="px-3.5 py-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderDefault text-xs font-semibold flex items-center space-x-1.5 transition">
-              <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-              <span>Random Problem</span>
-            </button>
+            <div class="pt-2 flex flex-wrap items-center gap-2.5">
+              <button id="btn-hero-resume" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center space-x-2 transition shadow-sm active:scale-98">
+                <svg class="w-3.5 h-3.5 text-slate-950" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
+                <span>Resume: <span id="hero-current-title">#1 Two Sum</span></span>
+              </button>
+
+              <button id="btn-hero-random" class="px-3.5 py-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-white/10 text-xs font-semibold flex items-center space-x-1.5 transition">
+                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span>Random Problem</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -696,7 +710,7 @@
             <!-- Clean Solve Button -->
             <button id="btn-solve-clean" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-left transition group active:scale-98">
               <div class="flex items-center space-x-2 mb-1">
-                <span class="text-emerald-400 text-sm font-bold">✓</span>
+                <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 <span class="text-xs font-bold text-white group-hover:text-emerald-300">Solved Cleanly</span>
               </div>
               <p class="text-[11px] text-slate-400">Within time cap, without hints. Full tick achieved.</p>
@@ -705,7 +719,7 @@
             <!-- Solved with Help Button -->
             <button id="btn-solve-help" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-left transition group active:scale-98">
               <div class="flex items-center space-x-2 mb-1">
-                <span class="text-amber-400 text-sm font-bold">↻</span>
+                <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 <span class="text-xs font-bold text-white group-hover:text-amber-300">Needed Editorial</span>
               </div>
               <p class="text-[11px] text-slate-400">Rule 3: Queues 1-day, 3-day, 2-wk re-solve.</p>
@@ -714,7 +728,7 @@
             <!-- Failed Button -->
             <button id="btn-solve-fail" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-left transition group active:scale-98">
               <div class="flex items-center space-x-2 mb-1">
-                <span class="text-rose-400 text-sm font-bold">✕</span>
+                <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 <span class="text-xs font-bold text-white group-hover:text-rose-300">Failed / Blocked</span>
               </div>
               <p class="text-[11px] text-slate-400">Rule 4: Log error reason (Idea/Bug/Speed).</p>

@@ -723,9 +723,9 @@ async function saveStatus(status, errorType = "", errorNote = "", targetProbId =
       renderCurriculumTable();
 
       // Show brief toast
-      if (status === 'clean') showNotification('✓ Solved!');
-      else if (status === 'help') showNotification('⚡ Scheduled for Re-solve (Rule 3)');
-      else if (status === 'failed') showNotification('✕ Logged to Error Queue');
+      if (status === 'clean') showNotification('Problem marked as cleanly solved.');
+      else if (status === 'help') showNotification('Queued for spaced re-solve.');
+      else if (status === 'failed') showNotification('Logged to error review queue.');
       else showNotification('Status reset to uncompleted');
     }
   } catch (e) {
@@ -855,11 +855,11 @@ function renderSidebar() {
           
           let statusIcon = `<span class="w-3.5 h-3.5 rounded-full border border-slate-600 inline-block"></span>`;
           if (status === 'clean') {
-            statusIcon = `<span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">✓</span>`;
+            statusIcon = `<span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></span>`;
           } else if (status === 'help') {
-            statusIcon = `<span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-[10px]">↻</span>`;
+            statusIcon = `<span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></span>`;
           } else if (status === 'failed') {
-            statusIcon = `<span class="w-4 h-4 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-[10px]">✕</span>`;
+            statusIcon = `<span class="w-4 h-4 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg></span>`;
           }
 
           let lvlBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">EASY</span>`;
@@ -1072,7 +1072,7 @@ function pickRandomProblem() {
   if (chosen) {
     selectProblem(chosen.id);
     switchView('solver');
-    showNotification(`🎲 Picked Random Problem: #${chosen.id} ${chosen.title}`);
+    showNotification(`Random problem selected: #${chosen.id} ${chosen.title}`);
   }
 }
 
@@ -1174,8 +1174,8 @@ function renderCurriculumTable() {
       <div class="curriculum-accordion-header px-4 sm:px-6 py-4 bg-surface1 hover:bg-surface2/60 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none transition border-b border-borderDefault">
         
         <div class="flex items-center space-x-3 truncate">
-          <span class="px-2.5 py-1 rounded bg-amber-500/15 text-amber-400 font-mono text-xs font-bold shrink-0 border border-amber-500/25">
-            Step ${ch.id}
+          <span class="px-2.5 py-1 rounded bg-surface3 text-slate-300 font-mono text-xs font-semibold shrink-0 border border-white/10">
+            Step ${ch.id < 10 ? '0' + ch.id : ch.id}
           </span>
           <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate">
             ${escapeHtml(ch.name)}
@@ -1273,9 +1273,9 @@ function renderCurriculumTable() {
 
                   <!-- 15m Protocol Execution Launcher -->
                   <td class="py-2.5 px-4 text-center shrink-0">
-                    <button class="btn-launch-15m w-full px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 font-bold font-mono text-[11px] border border-amber-500/30 transition flex items-center justify-center space-x-1 shadow-sm active:scale-98" data-id="${p.id}" title="Launch 15m Protocol HUD for #${p.id}">
-                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
-                      <span>⚡ Solve (15m)</span>
+                    <button class="btn-launch-15m w-full px-2.5 py-1.5 rounded-lg bg-surface2 hover:bg-amber-500 hover:text-slate-950 text-slate-300 font-medium font-mono text-[11px] border border-white/10 transition-all flex items-center justify-center space-x-1.5 shadow-sm active:scale-95 group/btn" data-id="${p.id}" title="Launch 15m Protocol HUD for #${p.id}">
+                      <svg class="w-3.5 h-3.5 text-amber-400 group-hover/btn:text-slate-950 transition-colors" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                      <span>15m Protocol</span>
                     </button>
                   </td>
 
