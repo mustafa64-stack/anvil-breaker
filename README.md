@@ -1,166 +1,139 @@
-# DSA Core Path & Adaptive Protocol Command Center
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+<img src="static/hero_logo.jpg" alt="Anvil Breaker Logo" width="160" style="border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);" />
+
+# ⚒️ ANVIL BREAKER™
+### Break the Tutorial Anvil. 15 Minutes or Move On.
+
+[![Live on Render](https://img.shields.io/badge/Render-Live%20Deploy-46E3B7.svg?logo=render&logoColor=white)](https://anvil-breaker.onrender.com)
+[![GitHub](https://img.shields.io/badge/GitHub-mustafa64--stack%2Fanvil--breaker-181717.svg?logo=github)](https://github.com/mustafa64-stack/anvil-breaker)
+[![Author](https://img.shields.io/badge/Author-Mustafa%20Marjani-F59E0B.svg)](https://github.com/mustafa64-stack)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker)](Dockerfile)
-[![PWA Ready](https://img.shields.io/badge/PWA-Installable-purple.svg)](static/manifest.json)
-[![DSA 15-Min Protocol](http://localhost:8765/api/badge/local_user.svg)](http://localhost:8765)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+[![Protocol](https://img.shields.io/badge/Protocol-15--Minute%20Cap-amber.svg)](#-1-the-15-minute-protocol)
 
-A professional, high-performance DSA companion application built for engineering mastery. Features a dynamic timebox HUD enforcing a strict **4-stage cognitive protocol**, a **floating Always-On-Top Mini HUD / Picture-in-Picture (PiP)** timer, multi-sheet architecture (**Core Path 610, Striver's SDE Sheet, NeetCode 150, Blind 75, and Self-Made Sheets**), native **Brave Browser** automation with **LeetHub/LeetSync GitHub push**, an **SM-2 algorithmic memory decay engine**, and a live **dynamic SVG GitHub badge generator**.
+**A high-performance algorithmic execution companion for engineers.**  
+Enforces a strict 4-phase timebox, live DOM injection HUD inside LeetCode, multi-sheet curriculum, SM-2 memory retention decay curves, and high-concurrency SQLite WAL persistence.
 
----
+[🚀 **Live Cloud App**](https://anvil-breaker.onrender.com) • [📖 **Protocol Spec**](#-1-the-15-minute-protocol) • [🧩 **Browser Extension**](#-2-floating-mini-hud--chrome-extension) • [🌐 **Self-Host & Deploy**](#-7-one-click-cloud-deployment)
 
-## ⚡ 1. The Dynamic Cognitive Protocol HUD
-
-Unlike static timers, the app provides real-time ambient HUD controls with dynamic phase re-allocation:
-
-| Mode | Total Time | Phase 1: Read & Trace | Phase 2: Pick a Pattern | Phase 3: Code & Test | Phase 4: Cut Losses |
-|---|---|---|---|---|---|
-| **15m Speedrun** | **15 min** | 03:00 (Sketch edge cases) | 04:00 (Map algorithm) | 06:00 (Clean code) | 02:00 (Editorial & memory re-solve) |
-| **25m Standard** | **25 min** | 05:00 (Dry-run constraints) | 05:00 (Brute force & invariant) | 11:00 (Dry-run test cases) | 04:00 (Deep breakdown & re-solve) |
-| **45m FAANG Mock** | **45 min** | 08:00 (Interview clarify) | 08:00 (Tradeoff discussion) | 22:00 (Production code) | 07:00 (Complexity & edge proofs) |
-| **Custom HUD** | **Variable** | Customizable via modal | Customizable via modal | Customizable via modal | Customizable via modal |
-
-### Additional HUD Controls:
-- **`+1m` / `+5m` Quick Extend**: Instantly adds time without resetting phase state.
-- **Compact Focus Mode**: Toggles stepper visibility for an ultra-clean distraction-free HUD.
-- **Audio Chimes**: Web Audio API synthesized frequencies signal phase changes and countdown limits.
+</div>
 
 ---
 
-## 🪟 2. Floating Pop-Out Mini HUD & Picture-in-Picture (PiP)
+## ⚡ 1. The 15-Minute Protocol
 
-When coding inside LeetCode in Brave or typing in your IDE, you don't need to switch back to the command center to watch the clock:
+Spending 90 minutes stuck on a single LeetCode problem is not learning—it is cognitive fatigue and disguised procrastination. **Anvil Breaker** stops tutorial hell by enforcing disciplined execution:
 
-1. **Pop-out Mini Window (Always-On-Top PiP)**:
-   - Click **"Pop-out HUD"** (or hit <kbd>H</kbd>).
-   - Utilizes the native Chromium **Document Picture-in-Picture API** or a detached popup (`/mini-hud`) that floats over your LeetCode code editor.
-   - Synchronized bi-directionally in real-time via `BroadcastChannel`: pausing, resetting, or jumping phases in the mini popup instantly reflects in the main application, and vice versa!
-2. **In-Page Docked Mini Corner Timer**:
-   - When reading through long constraints, problem hints, or writing notes in the scratchpad, a compact floating HUD remains pinned in the bottom-right corner with live time, phase indicator, and 1-click play/pause.
-
----
-
-## 📚 3. Multi-Sheet Engine & Self-Made Sheets
-
-Switch between top curated roadmaps or curate your own with 1-click:
-
-1. **The Core Path (610 Problems across 32 Chapters)**:
-   - Full sequential curriculum from foundations to advanced dynamic programming, trees, graphs, string automations, and game theory.
-2. **Striver's SDE Sheet (95 Problems across 19 Topics)**:
-   - The quintessential roadmap for software development engineer interviews.
-3. **NeetCode 150 (151 Problems across 18 Topics)**:
-   - Comprehensive pattern coverage across all LeetCode data structure categories.
-4. **Blind 75 (75 Problems across 13 Topics)**:
-   - High-yield sprint roadmap for rapid interview preparation.
-5. **Self-Made Sheets (Custom User Curations)**:
-   - Click **➕ Create Self-Made Sheet**.
-   - Paste any combination of LeetCode URLs (`https://leetcode.com/problems/trapping-rain-water/`) or problem titles (`Word Search II`).
-   - The system automatically parses slugs, titles, URLs, and organizes them into your customized track.
+| Phase | Timebox | Objective & Cognitive Guardrails |
+|---|---|---|
+| **Phase 1: Read & Trace** | `00:00 – 03:00` | Read constraints & dry-run small inputs on pen & paper. Check duplicates, empty, negatives. |
+| **Phase 2: Pick a Pattern** | `03:00 – 07:00` | Map problem to standard patterns (Two Pointers, Sliding Window, Monotonic Stack, BFS/DFS, DP). Formulate brute-force baseline. |
+| **Phase 3: Code & Test** | `07:00 – 13:00` | Write clean production code without copy-pasting or leaning on AI chat completions. Dry-run sample edge cases before submitting. |
+| **Phase 4: Cut Losses** | `13:00 – 15:00` | If still stuck at minute 13: **STOP**. Open editorial hints, understand the invariant proof, and type the working solution from scratch. |
 
 ---
 
-## 🛡️ 4. The Defensible Product Moat ("Fan With Wings")
+## 🪟 2. Floating Mini HUD & Chrome/Brave Extension
 
-Rather than a generic timer that can easily be copied, this platform introduces an algorithmic moat:
+Solve directly inside LeetCode without switching tabs:
+
+* **Always-On-Top Mini HUD (Picture-in-Picture)**:
+  Press <kbd>H</kbd> to launch a detached floating window that hovers over your editor via Chromium's Document Picture-in-Picture API. Real-time bi-directional sync via `BroadcastChannel`.
+* **Native LeetCode DOM Injection**:
+  The included Manifest V3 extension (`extension/`) injects a draggable floating HUD directly into `https://leetcode.com/problems/*`.
+* **Automatic Submission Sniffer**:
+  Listens for the LeetCode "Accepted" green toast and triggers background progress sync to your SQLite database and GitHub.
+
+---
+
+## 📚 3. Multi-Sheet Curriculum Engine
+
+* **The Core Path (610 Problems)**: Complete 32-chapter algorithmic mastery sequence.
+* **Striver's SDE Sheet (95 Problems)**: High-yield roadmap for FAANG/tier-1 software engineering rounds.
+* **NeetCode 150 (151 Problems)**: Pattern-driven comprehensive interview syllabus.
+* **Blind 75 (75 Problems)**: High-velocity sprint roadmap.
+* **Self-Made Custom Sheets**: Curate personal sheets on the fly by pasting LeetCode URLs or titles.
+
+---
+
+## 🧠 4. The Defensible Engineering Moat
 
 ```
 [ Problem Input ]
        │
        ▼
-[ Adaptive Cognitive Protocol (ACP) ] ──► Dynamically scales timebox by difficulty (E/M/H) & cognitive load
+[ Adaptive Cognitive Protocol (ACP) ] ──► Dynamically adjusts budget based on Easy/Med/Hard
        │
        ▼
-[ 5-Tier Cognitive Failure Diagnostics ] ──► Classifies root cause failure:
-       │                                     1. Pattern Blindspot (missed trick)
-       │                                     2. Invariant Proof (flawed edge proofs)
-       │                                     3. Boundary Bug (off-by-one, nulls)
-       │                                     4. TLE / Asymptotic (complexity)
-       │                                     5. Language Gotcha (overflow, comparator)
+[ 5-Tier Failure Diagnostics ] ──► Pinpoints root cause failure:
+       │                             1. Pattern Blindspot (missed pattern mapping)
+       │                             2. Invariant Proof Failure (logic collapsed)
+       │                             3. Boundary Bug (off-by-one, null edge cases)
+       │                             4. Asymptotic Inefficiency / TLE (O(N^2) vs O(N log N))
+       │                             5. Language Gotcha (overflow, custom comparator)
        ▼
-[ SM-2 Algorithmic Spaced Repetition ] ──► Calculates optimal memory decay curve (EF & Interval Days)
+[ SuperMemo-2 Spaced Repetition ] ──► Mathematically calculates optimal review review intervals
 ```
 
-- **ACP (Adaptive Cognitive Protocol)**: Dynamically scales phase budgets based on problem level and cognitive load.
-- **SM-2 Memory Decay Algorithm**: Calculates optimal review intervals based on SuperMemo-2 mathematical models ($EF' = EF + (0.1 - (5 - q) \times (0.08 + (5 - q) \times 0.02))$).
-- **Cognitive Failure Taxonomy**: Replaces vague notes with actionable algorithmic diagnostics.
-
 ---
 
-## 🦁 5. Brave Browser & GitHub Auto-Sync
+## 🚀 5. Getting Started Locally
 
-### How it works:
-1. When you click **"Open in Brave"** (or hit <kbd>B</kbd>), the app triggers `C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe` directly to the active problem on LeetCode.
-2. Ensure you have **LeetHub v2** or **LeetSync** installed in Brave and authorized with your GitHub repository (e.g. `dsa-solutions`).
-3. Whenever LeetCode shows **Accepted**, the extension pushes the clean code, runtime metrics, and problem README to GitHub automatically.
-
----
-
-## 📈 6. Live GitHub Profile Badge Generator
-
-Embed a live updating badge directly in your GitHub profile `README.md`:
-
-```markdown
-[![DSA 15-Min Protocol](http://localhost:8765/api/badge/local_user.svg)](http://localhost:8765)
-```
-
-The endpoint `/api/badge/{username}.svg` dynamically renders an SVG displaying your current streak and verified problem solves.
-
----
-
-## 🔒 7. Security & Software Engineering Standards
-
-- **OWASP Defense-in-Depth**: Strict security headers middleware (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, `Strict-Transport-Security`, `Content-Security-Policy`).
-- **Input Sanitization**: URL and title sanitizers prevent XSS injection attacks.
-- **SQLite WAL Mode**: Thread-safe ACID persistence with automatic migrations from JSON.
-- **Progressive Web App (PWA)**: Includes `manifest.json` for installation as a standalone desktop app.
-
----
-
-## 🌐 8. Real Cloud Deployment (Out of Localhost)
-
-To deploy your companion app to the cloud so you and others can access it anywhere from any phone or computer:
-
-### Option A: Free Cloud Deployment via Render.com (Recommended)
-1. Push this directory to your GitHub account (e.g., `github.com/<your-username>/dsa-protocol-hub`).
-2. Log into [Render.com](https://render.com) and click **New + ➔ Blueprint**.
-3. Select your repository. Render automatically reads `render.yaml`, spins up the Python 3.12 environment, initializes the SQLite database with persistent disk storage, provisions free SSL/TLS HTTPS certificates, and deploys it live at `https://dsa-protocol-hub.onrender.com`!
-
-### Option B: 1-Click Deploy via Railway.app
-1. Install Railway CLI: `npm i -g @railway/cli` (or connect your GitHub repo on [railway.app](https://railway.app)).
-2. Run in this directory:
-   ```bash
-   railway up
-   ```
-   Railway automatically detects `railway.json` and `Dockerfile`, handles the `$PORT` variable, and provides a live `up.railway.app` public domain.
-
-### Option C: Global Edge Deployment via Fly.io
-1. Install Flyctl and authenticate: `fly auth login`.
-2. Run:
-   ```bash
-   fly launch --config fly.toml
-   fly deploy
-   ```
-   Fly.io sets up zero-downtime global edge routing with persistent volume mounting for SQLite.
-
-### Option D: Docker Container Deployment
 ```bash
-docker-compose up -d --build
+# Clone the repository
+git clone https://github.com/mustafa64-stack/anvil-breaker.git
+cd anvil-breaker
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations and launch
+python database.py
+python -m uvicorn server:app --host 127.0.0.1 --port 8765 --reload
 ```
-Access at `http://localhost:8765` or your server's public IP.
+Open **`http://localhost:8765`** in Brave or Chrome.
 
 ---
 
-## ⌨️ 9. Keyboard Shortcuts
+## 🧩 6. Install the Browser Extension (Brave / Chrome)
 
-| Key | Action |
+1. Open your browser and navigate to `chrome://extensions` (or `brave://extensions`).
+2. Enable **Developer mode** (toggle in top-right corner).
+3. Click **Load unpacked** and select the `extension/` folder inside this repository.
+4. Navigate to any problem on LeetCode—the Anvil Breaker floating HUD will attach automatically.
+
+---
+
+## 🌐 7. One-Click Cloud Deployment
+
+Deploy instantly to **Render.com** via the pre-configured [`render.yaml`](render.yaml):
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mustafa64-stack/anvil-breaker)
+
+1. Click the button above or visit `https://render.com/deploy?repo=https://github.com/mustafa64-stack/anvil-breaker`.
+2. Click **Create Blueprint**.
+3. Render automatically provisions the environment and issues your live SSL URL at:  
+   👉 **`https://anvil-breaker.onrender.com`**
+
+---
+
+## ⌨️ 8. Keyboard Shortcuts
+
+| Shortcut | Action |
 |---|---|
-| <kbd>Space</kbd> | Start / Pause Active Timer |
+| <kbd>Space</kbd> | Start / Pause Active Protocol Timer |
 | <kbd>R</kbd> | Reset Protocol Timer |
 | <kbd>H</kbd> | Pop-out Floating Mini HUD (Picture-in-Picture) |
-| <kbd>B</kbd> | Open Problem directly in Brave Browser |
-| <kbd>N</kbd> | Advance to Next Problem in sequence |
-| <kbd>P</kbd> | Move to Previous Problem |
-| <kbd>M</kbd> | Cycle HUD Modes (15m ➔ 25m ➔ 45m) |
+| <kbd>B</kbd> | Open Current Problem in Brave Browser |
+| <kbd>N</kbd> / <kbd>P</kbd> | Next / Previous Problem |
+| <kbd>M</kbd> | Cycle Modes (15m ➔ 25m ➔ 45m) |
 | <kbd>+</kbd> | Quick Extend +1 minute |
-| <kbd>1</kbd> - <kbd>4</kbd> | Jump directly to Phase 1, 2, 3, or 4 |
+| <kbd>1</kbd> – <kbd>4</kbd> | Jump directly to Phase 1, 2, 3, or 4 |
+
+---
+
+## 📜 9. Proprietary License & Author
+
+Copyright © 2026 **Mustafa Marjani** (`founder@anvilbreaker.dev`). All rights reserved.  
+See [`LICENSE`](LICENSE) for complete proprietary source-available usage terms.
