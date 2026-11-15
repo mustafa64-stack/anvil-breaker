@@ -1,103 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anvil Breaker™ — Break the Tutorial Anvil</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-  <style>
-    body { background-color: #070a12; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .hero-glow { background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.15) 0%, rgba(99, 102, 241, 0.1) 40%, transparent 70%); }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col justify-between hero-glow">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Header -->
-  <header class="max-w-6xl mx-auto w-full p-6 flex items-center justify-between border-b border-slate-800/60">
-    <div class="flex items-center space-x-3">
-      <img src="/static/logo.svg" class="w-10 h-10 rounded-xl shadow-md border border-slate-700/50" alt="Anvil Breaker">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#070b14',
+            surface1: '#0e1526',
+            surface2: '#141d33',
+            surface3: '#1c2742',
+            surface4: '#253354',
+            borderDefault: 'rgba(255, 255, 255, 0.08)',
+            borderMedium: 'rgba(255, 255, 255, 0.14)'
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-canvas text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500/25 selection:text-white">
+
+  <!-- TOP NAVBAR -->
+  <header class="max-w-6xl mx-auto w-full px-6 py-5 flex items-center justify-between border-b border-borderDefault">
+    <div class="flex items-center space-x-3.5">
+      <img src="/static/logo.svg" class="w-9 h-9 rounded-xl border border-borderMedium shadow-sm object-cover" alt="Anvil Breaker Logo">
       <div>
-        <h1 class="text-lg font-black tracking-tight text-white">ANVIL BREAKER™</h1>
-        <p class="text-[10px] font-mono text-amber-400">By Mustafa Marjani</p>
+        <h1 class="text-sm font-black tracking-wider text-white uppercase flex items-center gap-1.5">
+          ANVIL BREAKER<span class="text-[9px] text-amber-400 font-mono font-bold">TM</span>
+        </h1>
+        <p class="text-[10px] text-slate-400 font-mono">By Mustafa Marjani</p>
       </div>
     </div>
     <div class="flex items-center space-x-3">
-      <a href="/" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg transition">Launch App ➔</a>
+      <a href="https://github.com/mustafa64-stack/anvil-breaker" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-slate-300 text-xs font-semibold transition flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        <span>GitHub</span>
+      </a>
+      <a href="/" class="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition shadow-sm">
+        Launch Command Center ➔
+      </a>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <main class="max-w-4xl mx-auto px-6 py-10 text-center space-y-7 flex-1 flex flex-col justify-center">
-    <!-- Featured Realistic Logo Artwork -->
+  <!-- HERO SECTION -->
+  <main class="max-w-4xl mx-auto px-6 py-12 text-center space-y-10 flex-1 flex flex-col justify-center">
+    
+    <!-- Hero Art: Realistic Shattering Anvil Logo with Ambient Depth -->
     <div class="flex justify-center">
-      <div class="relative group">
-        <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-amber-500 to-rose-600 opacity-30 blur-lg group-hover:opacity-50 transition duration-500"></div>
-        <img src="/static/hero_logo.jpg" class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-2xl shadow-2xl border border-slate-700/80 object-cover" alt="Anvil Breaker Brand Art">
+      <div class="relative">
+        <div class="absolute -inset-2 rounded-3xl bg-amber-500/10 blur-xl pointer-events-none"></div>
+        <img src="/static/hero_logo.jpg" class="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl shadow-2xl border border-borderMedium object-cover" alt="Anvil Breaker Icon">
       </div>
     </div>
 
-    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold mx-auto">
-      <span>⚡ Stop Tutorial Hell</span>
-      <span>·</span>
-      <span>15-Minute Hard Cap Protocol</span>
+    <!-- Badge Pill -->
+    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-surface2 border border-borderDefault text-slate-300 text-xs font-semibold mx-auto">
+      <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+      <span class="text-white">The 15-Minute Protocol</span>
+      <span class="text-slate-500">·</span>
+      <span class="text-slate-400">Stop Tutorial Hell</span>
     </div>
 
-    <h2 class="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
-      Break the LeetCode Anvil.<br>
-      <span class="bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400 bg-clip-text text-transparent">
-        15 Minutes or Move On.
-      </span>
-    </h2>
+    <!-- Main Headline -->
+    <div class="space-y-4">
+      <h2 class="text-4xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+        Break the LeetCode Anvil.<br>
+        <span class="text-amber-400">15 Minutes or Move On.</span>
+      </h2>
 
-    <p class="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-      Spending 2 hours stuck on a problem isn't learning—it's cognitive friction. Anvil Breaker enforces an algorithmic 4-phase timebox, live DOM injection in LeetCode, and SM-2 memory retention so you never struggle aimlessly again.
-    </p>
+      <p class="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+        Spending 90 minutes stuck on one problem isn’t learning—it’s cognitive friction and ego trap. Anvil Breaker enforces an algorithmic 4-phase timebox, live DOM injection in LeetCode, and SuperMemo-2 memory decay curves so you never struggle aimlessly again.
+      </p>
+    </div>
 
-    <!-- 3-Step Fast Setup Checklist -->
-    <div class="bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-800 p-6 text-left max-w-xl mx-auto space-y-4 shadow-2xl">
-      <h3 class="text-xs font-mono font-bold uppercase text-indigo-400 tracking-wider">Fast Pre-Requisite Setup</h3>
+    <!-- 4-Phase Protocol Visual Timeline -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-left max-w-3xl mx-auto">
+      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
+        <div class="flex items-center justify-between text-[11px] font-mono text-sky-400 font-bold">
+          <span>PHASE 1</span>
+          <span>00–03m</span>
+        </div>
+        <div class="text-xs font-bold text-white">Read & Trace</div>
+        <div class="text-[11px] text-slate-400 leading-snug">Dry-run test cases on pen & paper. No typing.</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
+        <div class="flex items-center justify-between text-[11px] font-mono text-indigo-400 font-bold">
+          <span>PHASE 2</span>
+          <span>03–07m</span>
+        </div>
+        <div class="text-xs font-bold text-white">Pick a Pattern</div>
+        <div class="text-[11px] text-slate-400 leading-snug">Map to Two Pointers, DP, Stack. Find brute force.</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
+        <div class="flex items-center justify-between text-[11px] font-mono text-emerald-400 font-bold">
+          <span>PHASE 3</span>
+          <span>07–13m</span>
+        </div>
+        <div class="text-xs font-bold text-white">Code & Test</div>
+        <div class="text-[11px] text-slate-400 leading-snug">Clean implementation without AI autocomplete.</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
+        <div class="flex items-center justify-between text-[11px] font-mono text-rose-400 font-bold">
+          <span>PHASE 4</span>
+          <span>13–15m</span>
+        </div>
+        <div class="text-xs font-bold text-white">Cut Your Losses</div>
+        <div class="text-[11px] text-slate-400 leading-snug">Hard stop. Read hint, understand WHY, re-code.</div>
+      </div>
+    </div>
+
+    <!-- 3-Step Setup Checklist Card -->
+    <div class="bg-surface1 rounded-2xl border border-borderDefault p-6 text-left max-w-xl mx-auto space-y-4 shadow-xl">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-mono font-bold uppercase text-amber-400 tracking-wider">Fast Setup Checklist</h3>
+        <span class="text-[11px] text-slate-400 font-mono">3 Steps · 2 Minutes</span>
+      </div>
 
       <div class="space-y-3 text-xs">
-        <div class="flex items-start space-x-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
-          <span class="w-6 h-6 rounded-full bg-indigo-600/30 text-indigo-400 flex items-center justify-center font-bold font-mono text-[11px] shrink-0">1</span>
+        <div class="flex items-start space-x-3 p-3 rounded-xl bg-surface2 border border-borderDefault">
+          <span class="w-6 h-6 rounded-full bg-surface3 text-amber-400 border border-borderMedium flex items-center justify-center font-bold font-mono text-[11px] shrink-0">1</span>
           <div>
-            <div class="font-bold text-white">Load Anvil Breaker Extension</div>
-            <div class="text-slate-400 text-[11px]">Load unpacked folder <code class="text-amber-400 font-mono">c:\App for solver\extension</code> in Brave/Chrome (<code class="text-slate-300">chrome://extensions</code>).</div>
+            <div class="font-bold text-white">Load Browser Extension</div>
+            <div class="text-slate-400 text-[11px]">Load unpacked folder <code class="text-amber-400 font-mono bg-surface3 px-1 rounded">extension/</code> in Brave or Chrome (<code class="text-slate-300">chrome://extensions</code>).</div>
           </div>
         </div>
 
-        <div class="flex items-start space-x-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
-          <span class="w-6 h-6 rounded-full bg-amber-600/30 text-amber-400 flex items-center justify-center font-bold font-mono text-[11px] shrink-0">2</span>
+        <div class="flex items-start space-x-3 p-3 rounded-xl bg-surface2 border border-borderDefault">
+          <span class="w-6 h-6 rounded-full bg-surface3 text-amber-400 border border-borderMedium flex items-center justify-center font-bold font-mono text-[11px] shrink-0">2</span>
           <div>
-            <div class="font-bold text-white">Select Your Combat Track</div>
-            <div class="text-slate-400 text-[11px]">Choose The Core Path (610), Striver's SDE (95), NeetCode 150, or create your own Self-Made sheet.</div>
+            <div class="font-bold text-white">Select Your Sheet Roadmap</div>
+            <div class="text-slate-400 text-[11px]">Switch between Striver's SDE (95), NeetCode 150, Blind 75, Core Path (610), or create your own Self-Made sheet.</div>
           </div>
         </div>
 
-        <div class="flex items-start space-x-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
-          <span class="w-6 h-6 rounded-full bg-emerald-600/30 text-emerald-400 flex items-center justify-center font-bold font-mono text-[11px] shrink-0">3</span>
+        <div class="flex items-start space-x-3 p-3 rounded-xl bg-surface2 border border-borderDefault">
+          <span class="w-6 h-6 rounded-full bg-surface3 text-amber-400 border border-borderMedium flex items-center justify-center font-bold font-mono text-[11px] shrink-0">3</span>
           <div>
-            <div class="font-bold text-white">Embed Your Proof-of-Work Badge</div>
-            <div class="text-slate-400 text-[11px]">Paste your live SVG streak badge into your GitHub Profile README.</div>
+            <div class="font-bold text-white">Automate LeetCode to Git Sync</div>
+            <div class="text-slate-400 text-[11px]">Accepted submissions are automatically recorded in your SQLite database and pushed to Git.</div>
           </div>
         </div>
       </div>
 
       <div class="pt-2">
-        <a href="/" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-700 text-white font-black text-sm flex items-center justify-center space-x-2 shadow-lg transition">
-          <span>Enter Anvil Breaker Command Center</span>
-          <span>➔</span>
+        <a href="/" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-sm flex items-center justify-center space-x-2 shadow-md transition active:scale-98">
+          <span>Enter Command Center</span>
+          <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </a>
       </div>
     </div>
+
   </main>
 
-  <!-- Footer -->
-  <footer class="max-w-6xl mx-auto w-full p-6 text-center text-xs text-slate-500 border-t border-slate-900">
+  <!-- FOOTER -->
+  <footer class="max-w-6xl mx-auto w-full px-6 py-6 text-center text-xs text-slate-500 border-t border-borderDefault">
     <p>© 2026 Mustafa Marjani. All Rights Reserved. Anvil Breaker™ Proprietary Performance Architecture.</p>
   </footer>
 
 </body>
 </html>
-

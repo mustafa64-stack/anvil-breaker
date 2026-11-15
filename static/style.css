@@ -1,15 +1,17 @@
-/* style.css - Anvil Breaker Design System (Crafted, Anti-Vibe-Coded) */
+/* style.css - Anvil Breaker™ Design System (Crafted, Anti-Vibe-Coded, Premium Dark) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg-canvas: #090d16;
-  --bg-surface-1: #0d1424;
-  --bg-surface-2: #121a2d;
-  --bg-surface-3: #182239;
-  --bg-surface-4: #1e2b47;
+  --bg-canvas: #070b14;
+  --bg-surface-1: #0e1526;
+  --bg-surface-2: #141d33;
+  --bg-surface-3: #1c2742;
+  --bg-surface-4: #253354;
   
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-medium: rgba(255, 255, 255, 0.12);
-  --border-focus: rgba(245, 158, 11, 0.5);
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  --border-focus: #f59e0b;
 
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
@@ -19,18 +21,32 @@
   --accent-amber-hover: #d97706;
   --accent-indigo: #6366f1;
   --accent-emerald: #10b981;
-  --accent-rose: #f43f5e;
+  --accent-rose: #ef4444;
+  --accent-sky: #0ea5e9;
+
+  --shadow-level-1: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-level-2: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-level-3: 0 12px 32px rgba(0, 0, 0, 0.6);
 }
 
-/* Tabular numbers for all clocks, counters, and statistics */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular numbers for clocks, counters, and statistics to eliminate layout jitter */
 .tabular-nums, #timer-display, #docked-timer-display, #timer-digits, .font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
   -moz-font-feature-settings: "tnum";
   -webkit-font-feature-settings: "tnum";
   font-feature-settings: "tnum";
 }
 
-/* Subtle, functional scrollbars (respects OS theme) */
+/* Subtle, functional scrollbars */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -39,11 +55,11 @@
   background: var(--bg-canvas);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #25334d;
+  background: #1e293b;
   border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #3b4d70;
+  background: #334155;
 }
 
 .scrollbar-none::-webkit-scrollbar {
@@ -54,64 +70,81 @@
   scrollbar-width: none;
 }
 
-/* Accessible focus rings */
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+/* Accessible, crisp focus rings */
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex="0"]:focus-visible {
   outline: 2px solid var(--accent-amber) !important;
   outline-offset: 2px !important;
 }
 
-/* Stepper styles with semantic visual weight (No random neon glows) */
+/* Protocol Stepper with Semantic Visual Weight */
 .protocol-step {
   background: var(--bg-surface-1);
-  border: 1px solid var(--border-subtle);
-  transition: all 0.18s ease;
+  border: 1px solid var(--border-default);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .protocol-step:hover {
   background: var(--bg-surface-2);
-  border-color: var(--border-medium);
+  border-color: var(--border-hover);
 }
 
 .protocol-step.active {
   background: var(--bg-surface-2);
-  border-color: rgba(245, 158, 11, 0.4);
-  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: var(--shadow-level-1);
   opacity: 1 !important;
 }
 
 .protocol-step[data-phase="1"].active {
-  border-color: rgba(56, 189, 248, 0.5);
+  border-color: rgba(14, 165, 233, 0.7);
 }
 
 .protocol-step[data-phase="2"].active {
-  border-color: rgba(129, 140, 248, 0.5);
+  border-color: rgba(99, 102, 241, 0.7);
 }
 
 .protocol-step[data-phase="3"].active {
-  border-color: rgba(52, 211, 153, 0.5);
+  border-color: rgba(16, 185, 129, 0.7);
 }
 
 .protocol-step[data-phase="4"].active {
-  border-color: rgba(251, 113, 133, 0.6);
+  border-color: rgba(239, 68, 68, 0.7);
 }
 
 /* Pattern pill active state */
+.pattern-pill {
+  transition: all 150ms ease;
+}
+.pattern-pill:hover {
+  background: var(--bg-surface-3);
+  color: #ffffff;
+}
 .pattern-pill.active {
   background: rgba(245, 158, 11, 0.15) !important;
-  border-color: rgba(245, 158, 11, 0.4) !important;
+  border-color: rgba(245, 158, 11, 0.5) !important;
   color: #fbbf24 !important;
   font-weight: 600;
 }
 
-/* Problem item active and hover */
+/* Chapter Accordion */
+.chapter-header {
+  transition: background-color 150ms ease;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.chapter-header:hover {
+  background-color: var(--bg-surface-2) !important;
+}
+
+/* Problem Row item (TakeUForward styled, enhanced for dark mode) */
 .problem-item {
-  transition: background-color 0.12s ease;
+  transition: all 140ms ease;
+  border-left: 3px solid transparent;
 }
 .problem-item:hover {
   background-color: var(--bg-surface-2);
 }
 .problem-item.active {
-  background-color: var(--bg-surface-3);
+  background-color: var(--bg-surface-2);
   border-left: 3px solid var(--accent-amber);
 }
 
@@ -122,5 +155,33 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .phase-panel {
-  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom Checkbox Design */
+.custom-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #475569;
+  border-radius: 4px;
+  background-color: transparent;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.custom-checkbox:hover {
+  border-color: #94a3b8;
+}
+.custom-checkbox:checked {
+  background-color: var(--accent-amber);
+  border-color: var(--accent-amber);
+}
+.custom-checkbox:checked::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #070b14;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 }

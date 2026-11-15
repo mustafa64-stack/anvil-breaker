@@ -6,6 +6,11 @@
   <title>Anvil Breaker™ — Engineering Performance System</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
   
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -14,13 +19,14 @@
       theme: {
         extend: {
           colors: {
-            canvas: '#090d16',
-            surface1: '#0d1424',
-            surface2: '#121a2d',
-            surface3: '#182239',
-            surface4: '#1e2b47',
-            borderSubtle: 'rgba(255, 255, 255, 0.07)',
-            borderMedium: 'rgba(255, 255, 255, 0.12)',
+            canvas: '#070b14',
+            surface1: '#0e1526',
+            surface2: '#141d33',
+            surface3: '#1c2742',
+            surface4: '#253354',
+            borderSubtle: 'rgba(255, 255, 255, 0.05)',
+            borderDefault: 'rgba(255, 255, 255, 0.08)',
+            borderMedium: 'rgba(255, 255, 255, 0.14)',
             amberAccent: {
               400: '#fbbf24',
               500: '#f59e0b',
@@ -29,8 +35,8 @@
             }
           },
           fontFamily: {
-            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Inter', 'sans-serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
           }
         }
       }
@@ -38,51 +44,54 @@
   </script>
   <link rel="stylesheet" href="/static/style.css">
   <link rel="manifest" href="/static/manifest.json">
-  <meta name="theme-color" content="#090d16">
+  <meta name="theme-color" content="#070b14">
 </head>
-<body class="bg-[#090d16] text-slate-100 font-sans min-h-screen flex flex-col selection:bg-amber-500/30 selection:text-white">
+<body class="bg-canvas text-slate-100 font-sans min-h-screen flex flex-col selection:bg-amber-500/25 selection:text-white">
 
   <!-- TOP NAVBAR -->
-  <header class="border-b border-borderSubtle bg-surface1/95 sticky top-0 z-40 px-5 py-2.5 flex items-center justify-between">
-    <!-- Brand / Title -->
-    <div class="flex items-center space-x-3">
-      <img src="/static/logo.svg" class="w-9 h-9 rounded-lg border border-borderMedium shadow-sm object-cover" alt="Anvil Breaker Logo">
-      <div>
-        <div class="flex items-center space-x-2">
-          <h1 class="text-sm font-extrabold tracking-tight text-white flex items-center gap-1.5 uppercase">
-            ANVIL BREAKER
+  <header class="border-b border-borderDefault bg-surface1/95 backdrop-blur sticky top-0 z-40 px-5 py-2.5 flex items-center justify-between">
+    <!-- Brand / Title & Sheet Selector -->
+    <div class="flex items-center space-x-3.5">
+      <a href="/" class="flex items-center space-x-2.5 group">
+        <img src="/static/logo.svg" class="w-8 h-8 rounded-lg border border-borderMedium shadow-sm object-cover transition-transform group-hover:scale-105" alt="Anvil Breaker Logo">
+        <div>
+          <h1 class="text-xs font-black tracking-wider text-white uppercase flex items-center gap-1.5">
+            ANVIL BREAKER<span class="text-[9px] text-amber-400 font-mono font-bold">TM</span>
           </h1>
+          <p class="text-[10px] text-slate-400 font-medium">15-Min Protocol Engine</p>
+        </div>
+      </a>
 
-          <!-- Dynamic Sheet Selector Dropdown -->
-          <div class="relative">
-            <button id="btn-sheet-selector" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-surface2 hover:bg-surface3 text-slate-200 border border-borderMedium text-xs font-semibold transition" title="Switch Sheet or Create Self-Made Sheet">
-              <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-              <span id="active-sheet-name" class="font-mono text-xs">The Core Path (610)</span>
-              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      <!-- Divider -->
+      <div class="hidden sm:block w-px h-5 bg-borderDefault"></div>
+
+      <!-- Dynamic Sheet Selector Dropdown (TakeUForward Multi-Sheet Engine) -->
+      <div class="relative">
+        <button id="btn-sheet-selector" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderDefault text-xs font-semibold transition" title="Switch Sheet or Create Self-Made Sheet">
+          <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <span id="active-sheet-name" class="font-mono text-xs">The Core Path (610)</span>
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+
+        <!-- Sheet Menu Popup -->
+        <div id="sheet-dropdown" class="absolute left-0 mt-2 w-80 bg-surface2 rounded-xl border border-borderMedium shadow-2xl z-50 p-2 hidden divide-y divide-borderSubtle">
+          <div id="sheet-list-container" class="space-y-1 pb-2 max-h-64 overflow-y-auto custom-scrollbar">
+            <!-- Rendered dynamically by JS -->
+          </div>
+          <div class="pt-2">
+            <button id="btn-open-create-sheet" class="w-full py-2 px-3 rounded-lg bg-surface3 hover:bg-surface4 text-amber-400 text-xs font-bold flex items-center justify-center space-x-1.5 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Create Self-Made Sheet</span>
             </button>
-
-            <!-- Sheet Menu Popup -->
-            <div id="sheet-dropdown" class="absolute left-0 mt-1.5 w-72 bg-surface2 rounded-xl border border-borderMedium shadow-2xl z-50 p-2 hidden divide-y divide-borderSubtle">
-              <div id="sheet-list-container" class="space-y-1 pb-1.5 max-h-60 overflow-y-auto custom-scrollbar">
-                <!-- Rendered dynamically by JS -->
-              </div>
-              <div class="pt-1.5">
-                <button id="btn-open-create-sheet" class="w-full py-1.5 px-2.5 rounded-lg bg-surface3 hover:bg-surface4 text-amber-400 text-xs font-bold flex items-center justify-center space-x-1.5 transition">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                  <span>Create Self-Made Sheet</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
-        <p class="text-[11px] text-slate-400">Strict Timeboxing · Multi-Sheet Engine · Adaptive Retention</p>
       </div>
     </div>
 
-    <!-- Center Daily Stats -->
-    <div class="hidden md:flex items-center space-x-5 bg-surface2 px-4 py-1.5 rounded-lg border border-borderSubtle">
+    <!-- Center Daily Stats Bar (Live Performance Metrics) -->
+    <div class="hidden lg:flex items-center space-x-4 bg-surface2 px-4 py-1.5 rounded-lg border border-borderDefault">
       <!-- Streak -->
-      <div class="flex items-center space-x-1.5 text-xs font-medium">
+      <div class="flex items-center space-x-1.5 text-xs font-medium" title="Consecutive days practicing protocol">
         <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
         <span class="text-slate-400">Streak:</span>
         <span id="stat-streak" class="text-amber-400 font-bold font-mono">1 day</span>
@@ -91,9 +100,9 @@
       <div class="w-px h-3.5 bg-slate-800"></div>
 
       <!-- Daily Target -->
-      <div class="flex items-center space-x-2 text-xs font-medium">
+      <div class="flex items-center space-x-2 text-xs font-medium" title="Today's solved problems against target">
         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span class="text-slate-400">Target:</span>
+        <span class="text-slate-400">Daily:</span>
         <span id="stat-daily-progress" class="font-bold text-white font-mono">0 / 3</span>
         <div class="w-14 h-1.5 bg-surface3 rounded-full overflow-hidden">
           <div id="stat-daily-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%"></div>
@@ -102,8 +111,8 @@
 
       <div class="w-px h-3.5 bg-slate-800"></div>
 
-      <!-- Spaced Repetition Due -->
-      <button id="btn-open-reviews" class="flex items-center space-x-1.5 text-xs hover:text-amber-400 transition text-slate-300">
+      <!-- Spaced Repetition Due (SM-2 Algorithm) -->
+      <button id="btn-open-reviews" class="flex items-center space-x-1.5 text-xs hover:text-amber-400 transition text-slate-300" title="SuperMemo-2 algorithmic spaced reviews due today">
         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         <span>Reviews:</span>
         <span id="stat-reviews-due" class="px-1.5 py-0.2 rounded bg-surface3 text-amber-400 text-xs font-mono font-bold">0</span>
@@ -112,30 +121,31 @@
 
     <!-- Right Controls: Mini HUD, Brave sync, sound, badge, settings -->
     <div class="flex items-center space-x-2">
-      <!-- Pop-out Mini HUD Button -->
-      <button id="btn-header-popout" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderMedium text-xs font-semibold transition" title="Pop out Floating Always-On-Top Mini HUD (H)">
+      <!-- Pop-out Mini HUD Button (Always-on-Top PiP) -->
+      <button id="btn-header-popout" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-200 border border-borderDefault text-xs font-semibold transition shadow-sm" title="Pop out Floating Always-On-Top Mini HUD (H)">
         <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         <span class="hidden sm:inline">Mini HUD</span>
+        <span class="text-[9px] font-mono opacity-60 bg-surface3 px-1 py-0.2 rounded">H</span>
       </button>
 
       <!-- Brave Extension Indicator / Help -->
-      <button id="btn-brave-guide" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderMedium text-xs font-medium transition" title="View Brave & LeetCode Git Sync Guide">
+      <button id="btn-brave-guide" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderDefault text-xs font-medium transition" title="View Brave & LeetCode Git Sync Guide">
         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
         <span class="hidden sm:inline">Brave + Git</span>
       </button>
 
       <!-- Sound Toggle -->
-      <button id="btn-toggle-sound" class="p-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 transition border border-borderMedium" title="Toggle Audio Chimes" aria-label="Toggle Sound">
-        <span id="sound-icon" class="text-xs font-bold font-mono">BELL</span>
+      <button id="btn-toggle-sound" class="p-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 transition border border-borderDefault" title="Toggle Audio Chimes" aria-label="Toggle Sound">
+        <span id="sound-icon" class="text-xs font-bold font-mono">AUDIO</span>
       </button>
 
       <!-- GitHub Dynamic Badge Button -->
-      <button id="btn-open-badge-modal" class="p-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 transition border border-borderMedium" title="Get Live GitHub Portfolio Badge" aria-label="GitHub Badge">
+      <button id="btn-open-badge-modal" class="p-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 transition border border-borderDefault" title="Get Live GitHub Portfolio Badge" aria-label="GitHub Badge">
         <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
       </button>
 
       <!-- Settings Button -->
-      <button id="btn-open-settings" class="p-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 transition border border-borderMedium" title="Settings & Backup" aria-label="Settings">
+      <button id="btn-open-settings" class="p-2 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 transition border border-borderDefault" title="Settings & Backup" aria-label="Settings">
         <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -147,47 +157,47 @@
   <!-- MAIN APP CONTAINER -->
   <div class="flex-1 flex overflow-hidden">
 
-    <!-- LEFT SIDEBAR: CHAPTERS & PROBLEMS LIST -->
-    <aside id="sidebar" class="w-80 lg:w-96 border-r border-borderSubtle bg-surface1 flex flex-col shrink-0">
+    <!-- LEFT SIDEBAR: TOPIC ACCORDIONS & PROBLEM LIST (TakeUForward Architecture) -->
+    <aside id="sidebar" class="w-80 lg:w-96 border-r border-borderDefault bg-surface1 flex flex-col shrink-0">
       
       <!-- Filter & Search Toolbar -->
-      <div class="p-3 border-b border-borderSubtle space-y-2 bg-surface1">
+      <div class="p-3 border-b border-borderDefault space-y-2.5 bg-surface1">
         <!-- Search input -->
         <div class="relative">
-          <input type="text" id="search-input" placeholder="Search problems, patterns, tags..." 
-            class="w-full bg-surface2 text-xs text-slate-200 placeholder-slate-500 rounded-lg pl-8 pr-3 py-2 border border-borderSubtle focus:border-amber-500 transition">
+          <input type="text" id="search-input" placeholder="Search problems, patterns, topics..." 
+            class="w-full bg-surface2 text-xs text-slate-200 placeholder-slate-500 rounded-lg pl-8 pr-3 py-2 border border-borderDefault focus:border-amber-500 transition">
           <svg class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
 
         <!-- Filter Pills -->
-        <div class="flex items-center space-x-1 text-xs overflow-x-auto pb-1 scrollbar-none">
-          <button class="filter-btn active px-2.5 py-1 rounded-md bg-amber-500 text-slate-950 font-bold whitespace-nowrap text-xs" data-filter="all">All</button>
-          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs" data-filter="sprint">Sprint (151)</button>
-          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs" data-filter="unsolved">To-Do</button>
-          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs" data-filter="solved">Solved</button>
-          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs" data-filter="review">Review Queue</button>
+        <div class="flex items-center space-x-1.5 text-xs overflow-x-auto pb-0.5 scrollbar-none">
+          <button class="filter-btn active px-2.5 py-1 rounded-md bg-amber-500 text-slate-950 font-bold whitespace-nowrap text-xs transition" data-filter="all">All</button>
+          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs transition" data-filter="sprint">Sprint (151)</button>
+          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs transition" data-filter="unsolved">To-Do</button>
+          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs transition" data-filter="solved">Solved</button>
+          <button class="filter-btn px-2.5 py-1 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium whitespace-nowrap text-xs transition" data-filter="review">Review Queue</button>
         </div>
 
-        <!-- Jump to Current Button -->
-        <button id="btn-jump-current" class="w-full py-1.5 px-3 rounded-md bg-surface2 hover:bg-surface3 text-amber-400 border border-borderMedium text-xs font-semibold flex items-center justify-between transition">
+        <!-- Jump to Current Problem Button -->
+        <button id="btn-jump-current" class="w-full py-1.5 px-3 rounded-lg bg-surface2 hover:bg-surface3 text-amber-400 border border-borderDefault text-xs font-semibold flex items-center justify-between transition">
           <span class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
             <span>Current Problem</span>
           </span>
-          <span id="current-badge-text" class="font-mono text-[11px] text-slate-400">#1 Two Sum</span>
+          <span id="current-badge-text" class="font-mono text-[11px] text-slate-400 truncate max-w-[140px]">#1 Two Sum</span>
         </button>
       </div>
 
-      <!-- Problem / Chapter Scroll Area -->
+      <!-- Problem / Chapter Accordion Scroll Area -->
       <div id="chapter-list-container" class="flex-1 overflow-y-auto custom-scrollbar divide-y divide-borderSubtle">
-        <!-- Rendered by JS -->
+        <!-- Rendered dynamically by JS -->
       </div>
 
       <!-- Sidebar Footer Stats -->
-      <div class="p-3 border-t border-borderSubtle bg-surface1 flex items-center justify-between text-xs text-slate-400">
-        <span>Completion:</span>
+      <div class="p-3 border-t border-borderDefault bg-surface1 flex items-center justify-between text-xs text-slate-400">
+        <span class="font-medium">Total Completion:</span>
         <span id="overall-progress-text" class="font-mono font-bold text-white tabular-nums">0 / 610 (0%)</span>
       </div>
     </aside>
@@ -195,8 +205,8 @@
     <!-- RIGHT MAIN WORKSPACE -->
     <main class="flex-1 flex flex-col overflow-y-auto custom-scrollbar bg-canvas">
       
-      <!-- PROBLEM HEADER HERO -->
-      <div class="border-b border-borderSubtle bg-surface1 px-6 py-5">
+      <!-- PROBLEM HEADER HERO (TakeUForward Resource Presentation) -->
+      <div class="border-b border-borderDefault bg-surface1 px-6 py-5">
         <div class="max-w-5xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           
           <div class="space-y-1.5">
@@ -204,13 +214,13 @@
               <span id="prob-id-badge" class="px-2 py-0.5 rounded font-mono text-xs font-bold bg-surface3 text-amber-400 border border-borderMedium">#1</span>
               <span id="prob-chapter-badge" class="text-xs text-slate-400 font-medium">Chapter 1 · Programming Basics</span>
               <span class="text-slate-600">·</span>
-              <span id="prob-level-badge" class="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">Easy</span>
+              <span id="prob-level-badge" class="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">Easy</span>
               
               <div id="prob-list-badges" class="flex items-center gap-1"></div>
               <span id="prob-platform-badge" class="text-xs text-slate-500 font-mono">LeetCode</span>
             </div>
 
-            <h2 id="prob-title" class="text-2xl lg:text-3xl font-bold tracking-tight text-white select-text">Two Sum</h2>
+            <h2 id="prob-title" class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white select-text">Two Sum</h2>
             <p id="prob-subhint-text" class="text-xs text-slate-400 max-w-2xl select-text">Core pattern focus and primary takeaway for this challenge.</p>
           </div>
 
@@ -222,12 +232,12 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
               <span>Open in Brave</span>
-              <span class="text-[10px] font-mono bg-black/10 px-1.5 py-0.5 rounded text-slate-900 hidden sm:inline">Press 'B'</span>
+              <span class="text-[10px] font-mono bg-black/10 px-1.5 py-0.5 rounded text-slate-900 hidden sm:inline">B</span>
             </button>
 
             <!-- Navigation Controls (Prev / Next) -->
-            <div class="flex items-center bg-surface2 rounded-lg p-1 border border-borderMedium">
-              <button id="btn-prev-problem" class="p-1.5 text-slate-400 hover:text-white rounded hover:bg-surface3 transition" title="Previous Problem" aria-label="Previous Problem">
+            <div class="flex items-center bg-surface2 rounded-lg p-1 border border-borderDefault">
+              <button id="btn-prev-problem" class="p-1.5 text-slate-400 hover:text-white rounded hover:bg-surface3 transition" title="Previous Problem (Press 'P')" aria-label="Previous Problem">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
               </button>
               <button id="btn-next-problem" class="p-1.5 text-slate-400 hover:text-white rounded hover:bg-surface3 transition" title="Next Problem (Press 'N')" aria-label="Next Problem">
@@ -243,7 +253,7 @@
       <div class="max-w-5xl mx-auto w-full p-6 space-y-5 flex-1">
         
         <!-- DYNAMIC HUD CONTROL & PRESET BAR -->
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-surface1 p-2.5 rounded-xl border border-borderSubtle">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-surface1 p-2.5 rounded-xl border border-borderDefault">
           <!-- Preset Switcher -->
           <div class="flex items-center space-x-1.5 text-xs overflow-x-auto">
             <span class="text-slate-400 font-semibold mr-1 flex items-center gap-1">
@@ -266,10 +276,10 @@
 
           <!-- Quick Time Adjusters & Focus Mode -->
           <div class="flex items-center space-x-2 text-xs">
-            <button id="btn-add-1m" class="px-2 py-1 rounded bg-surface2 hover:bg-surface3 text-slate-300 font-mono transition text-xs" title="Add 1 Minute to Timer">
+            <button id="btn-add-1m" class="px-2.5 py-1 rounded-md bg-surface2 hover:bg-surface3 text-slate-300 font-mono transition text-xs" title="Add 1 Minute to Timer">
               +1m
             </button>
-            <button id="btn-add-5m" class="px-2 py-1 rounded bg-surface2 hover:bg-surface3 text-slate-300 font-mono transition text-xs" title="Add 5 Minutes to Timer">
+            <button id="btn-add-5m" class="px-2.5 py-1 rounded-md bg-surface2 hover:bg-surface3 text-slate-300 font-mono transition text-xs" title="Add 5 Minutes to Timer">
               +5m
             </button>
             <div class="w-px h-3.5 bg-slate-800 mx-1"></div>
@@ -280,7 +290,7 @@
         </div>
 
         <!-- 4-PHASE PROGRESS STEPPER -->
-        <div id="protocol-stepper-container" class="bg-surface1 rounded-xl border border-borderSubtle p-3.5 transition-all duration-300">
+        <div id="protocol-stepper-container" class="bg-surface1 rounded-xl border border-borderDefault p-3.5 transition-all duration-300">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
             
             <!-- Phase 1 -->
@@ -327,13 +337,14 @@
         </div>
 
         <!-- TIMER HUD & CONTROLS -->
-        <div id="timer-hud-card" class="bg-surface1 rounded-xl border border-borderSubtle p-5 relative overflow-hidden transition-all duration-300">
+        <div id="timer-hud-card" class="bg-surface1 rounded-xl border border-borderDefault p-5 relative overflow-hidden transition-all duration-300">
+          <div id="timer-ambient-glow" class="hidden"></div>
           <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             
             <!-- Clock Display -->
             <div class="flex items-center space-x-6">
               <div>
-                <div class="flex items-baseline space-x-2">
+                <div class="flex items-baseline space-x-2.5">
                   <span id="timer-display" class="text-5xl lg:text-6xl font-mono font-bold tracking-tight text-white tabular-nums">
                     15:00
                   </span>
@@ -342,13 +353,13 @@
                   </span>
                 </div>
                 <!-- Phase Segment Bar -->
-                <div class="w-full h-1 bg-surface3 rounded-full mt-2.5 overflow-hidden flex">
+                <div class="w-full h-1.5 bg-surface3 rounded-full mt-2.5 overflow-hidden flex">
                   <div id="phase-bar-1" class="h-full bg-sky-400 transition-all duration-300" style="width: 20%"></div>
                   <div id="phase-bar-2" class="h-full bg-indigo-400 transition-all duration-300" style="width: 26%"></div>
                   <div id="phase-bar-3" class="h-full bg-emerald-400 transition-all duration-300" style="width: 40%"></div>
                   <div id="phase-bar-4" class="h-full bg-rose-400 transition-all duration-300" style="width: 14%"></div>
                 </div>
-                <p id="timer-instruction" class="text-xs text-slate-400 mt-2">
+                <p id="timer-instruction" class="text-xs text-slate-400 mt-2 font-medium">
                   Minutes 0–3: Read constraints and sketch edge cases on paper.
                 </p>
               </div>
@@ -359,19 +370,19 @@
               <button id="btn-timer-toggle" class="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center space-x-2 transition shadow-sm active:scale-98">
                 <svg id="timer-icon-play" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
                 <span id="timer-toggle-text">Start Timer</span>
-                <span class="text-[9px] font-mono opacity-70">Space</span>
+                <span class="text-[9px] font-mono opacity-70 bg-black/10 px-1 py-0.2 rounded">Space</span>
               </button>
 
-              <button id="btn-timer-reset" class="p-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderMedium transition text-xs" title="Reset Timer (Press 'R')" aria-label="Reset Timer">
+              <button id="btn-timer-reset" class="p-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderDefault transition text-xs" title="Reset Timer (Press 'R')" aria-label="Reset Timer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               </button>
 
-              <button id="btn-next-phase" class="px-3 py-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderMedium text-xs font-semibold flex items-center space-x-1.5 transition" title="Jump to Next Phase">
+              <button id="btn-next-phase" class="px-3 py-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 border border-borderDefault text-xs font-semibold flex items-center space-x-1.5 transition" title="Jump to Next Phase">
                 <span>Next Phase</span>
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
               </button>
 
-              <button id="btn-popout-timer" class="px-3 py-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-amber-400 border border-borderMedium text-xs font-semibold flex items-center space-x-1.5 transition" title="Pop-out Floating Mini HUD for LeetCode (Press 'H')">
+              <button id="btn-popout-timer" class="px-3 py-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-amber-400 border border-borderDefault text-xs font-semibold flex items-center space-x-1.5 transition" title="Pop-out Floating Mini HUD for LeetCode (Press 'H')">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                 <span>Pop-out HUD</span>
               </button>
@@ -385,7 +396,7 @@
           
           <!-- PHASE 1 CONTENT: Read & Trace -->
           <div id="phase-content-1" class="phase-panel space-y-4">
-            <div class="bg-surface1 rounded-xl border border-borderSubtle p-4 space-y-3">
+            <div class="bg-surface1 rounded-xl border border-borderDefault p-4 space-y-3">
               <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
                 <div class="flex items-center space-x-2">
                   <span class="w-2 h-2 rounded-full bg-sky-400"></span>
@@ -398,43 +409,43 @@
               <div>
                 <p class="text-xs font-semibold text-slate-300 mb-2">Mandatory Edge Cases Checklist:</p>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="edge-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Empty / Null Input</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="edge-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Empty / Null Input</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="edge-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Single Element</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="edge-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Single Element</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="edge-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Duplicates / All Same</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="edge-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Duplicates / All Same</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="edge-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Even vs Odd Lengths</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="edge-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Even vs Odd Lengths</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="edge-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Negative / Zero</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="edge-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Negative / Zero</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="edge-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">32-bit Integer Overflow</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="edge-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Integer Overflow (32-bit)</span>
                   </label>
                 </div>
               </div>
 
               <!-- Rule Reminder Callout -->
               <div class="p-3 rounded-lg bg-surface2 border border-borderMedium text-xs text-slate-300">
-                <strong>Rule 1 Mandate:</strong> If you cannot explain your approach in 3 sentences, you do not have it yet. Test on paper before touching code.
+                <strong class="text-amber-400">Rule 1 Mandate:</strong> If you cannot explain your approach in 3 sentences, you do not have it yet. Test on paper before touching code.
               </div>
             </div>
           </div>
 
           <!-- PHASE 2 CONTENT: Pick a Pattern -->
           <div id="phase-content-2" class="phase-panel space-y-4 hidden">
-            <div class="bg-surface1 rounded-xl border border-borderSubtle p-4 space-y-3">
+            <div class="bg-surface1 rounded-xl border border-borderDefault p-4 space-y-3">
               <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
                 <div class="flex items-center space-x-2">
                   <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
@@ -447,31 +458,31 @@
               <div>
                 <p class="text-xs font-semibold text-slate-300 mb-2">Identify & Tag the Problem Pattern:</p>
                 <div class="flex flex-wrap gap-1.5 text-xs" id="pattern-badges-container">
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Two Pointers">Two Pointers</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Sliding Window">Sliding Window</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Hash Map / Frequency">Hash Map</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Binary Search">Binary Search</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Prefix Sum / Difference Array">Prefix Sum</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="BFS / DFS">BFS / DFS</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Monotonic Stack / Deque">Monotonic Stack</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Heap / Priority Queue">Heap / Top-K</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Backtracking / Recursion">Backtracking</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Dynamic Programming">Dynamic Programming</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Bit Manipulation">Bit Manipulation</button>
-                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderSubtle text-slate-300 hover:text-white transition" data-pattern="Greedy / Intervals">Greedy / Intervals</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Two Pointers">Two Pointers</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Sliding Window">Sliding Window</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Hash Map / Frequency">Hash Map</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Binary Search">Binary Search</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Prefix Sum / Difference Array">Prefix Sum</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="BFS / DFS">BFS / DFS</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Monotonic Stack / Deque">Monotonic Stack</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Heap / Priority Queue">Heap / Top-K</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Backtracking / Recursion">Backtracking</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Dynamic Programming">Dynamic Programming</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Bit Manipulation">Bit Manipulation</button>
+                  <button class="pattern-pill px-2.5 py-1 rounded bg-surface2 border border-borderDefault text-slate-300 hover:text-white transition" data-pattern="Greedy / Intervals">Greedy / Intervals</button>
                 </div>
               </div>
 
               <!-- Brute-Force Formulation Reminder -->
               <div class="p-3 rounded-lg bg-surface2 border border-borderMedium text-xs text-slate-300">
-                <strong>Stuck on optimal?</strong> Formulate the working brute-force solution first, identify the bottleneck, then eliminate redundant calculations.
+                <strong class="text-amber-400">Stuck on optimal?</strong> Formulate the working brute-force solution first, identify the bottleneck, then eliminate redundant calculations.
               </div>
             </div>
           </div>
 
           <!-- PHASE 3 CONTENT: Code & Test -->
           <div id="phase-content-3" class="phase-panel space-y-4 hidden">
-            <div class="bg-surface1 rounded-xl border border-borderSubtle p-4 space-y-3">
+            <div class="bg-surface1 rounded-xl border border-borderDefault p-4 space-y-3">
               <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
                 <div class="flex items-center space-x-2">
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -484,21 +495,21 @@
               <div>
                 <p class="text-xs font-semibold text-slate-300 mb-2">Dry-Run Before Submitting in Brave:</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="dryrun-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Dry-ran custom test case line by line</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="dryrun-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Dry-ran custom test case line by line</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="dryrun-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Checked pointer boundaries & off-by-one</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="dryrun-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Checked pointer boundaries & off-by-one</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="dryrun-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">No leaning on AI or copy-pasting code</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="dryrun-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">No leaning on AI or copy-pasting code</span>
                   </label>
-                  <label class="flex items-center space-x-2 p-2 rounded-lg bg-surface2 border border-borderSubtle cursor-pointer">
-                    <input type="checkbox" class="dryrun-check rounded bg-surface3 text-amber-500 focus:ring-0">
-                    <span class="text-slate-300">Memory & time complexity within constraints</span>
+                  <label class="flex items-center space-x-2 p-2.5 rounded-lg bg-surface2 border border-borderDefault cursor-pointer hover:border-borderMedium transition">
+                    <input type="checkbox" class="dryrun-check custom-checkbox">
+                    <span class="text-slate-300 text-xs">Time & memory complexity fits constraints</span>
                   </label>
                 </div>
               </div>
@@ -529,7 +540,7 @@
               </div>
 
               <!-- Editorial Hint Box -->
-              <div class="bg-surface2 rounded-lg border border-borderSubtle p-3 space-y-2">
+              <div class="bg-surface2 rounded-lg border border-borderDefault p-3 space-y-2">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold text-slate-300">Editorial Insight:</span>
                   <button id="btn-reveal-hint" class="px-2.5 py-1 rounded bg-surface3 hover:bg-surface4 text-amber-400 border border-borderMedium text-xs font-bold transition">
@@ -546,7 +557,7 @@
         </div>
 
         <!-- SCRATCHPAD & NOTES -->
-        <div class="bg-surface1 rounded-xl border border-borderSubtle p-4 space-y-2">
+        <div class="bg-surface1 rounded-xl border border-borderDefault p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -556,17 +567,17 @@
           </div>
 
           <textarea id="scratchpad-input" rows="3" placeholder="Dry-run traces, edge cases, recurrence relations..."
-            class="w-full bg-surface2 text-xs font-mono text-slate-200 rounded-lg p-3 border border-borderSubtle focus:border-amber-500 transition resize-y select-text"></textarea>
+            class="w-full bg-surface2 text-xs font-mono text-slate-200 rounded-lg p-3 border border-borderDefault focus:border-amber-500 transition resize-y select-text"></textarea>
         </div>
 
         <!-- OUTCOME RESOLVER & NEXT QUESTION QUEUE -->
-        <div class="bg-surface1 rounded-xl border border-borderSubtle p-4 space-y-3">
+        <div class="bg-surface1 rounded-xl border border-borderDefault p-4 space-y-3">
           <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Log Problem Outcome</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             
             <!-- Clean Solve Button -->
-            <button id="btn-solve-clean" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderSubtle text-left transition group active:scale-98">
+            <button id="btn-solve-clean" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-left transition group active:scale-98">
               <div class="flex items-center space-x-2 mb-1">
                 <span class="text-emerald-400 text-sm font-bold">✓</span>
                 <span class="text-xs font-bold text-white group-hover:text-emerald-300">Solved Cleanly</span>
@@ -575,16 +586,16 @@
             </button>
 
             <!-- Solved with Help Button -->
-            <button id="btn-solve-help" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderSubtle text-left transition group active:scale-98">
+            <button id="btn-solve-help" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-left transition group active:scale-98">
               <div class="flex items-center space-x-2 mb-1">
-                <span class="text-amber-400 text-sm font-bold">⚡</span>
+                <span class="text-amber-400 text-sm font-bold">↻</span>
                 <span class="text-xs font-bold text-white group-hover:text-amber-300">Needed Editorial</span>
               </div>
               <p class="text-[11px] text-slate-400">Rule 3: Queues 1-day, 3-day, 2-wk re-solve.</p>
             </button>
 
             <!-- Failed Button -->
-            <button id="btn-solve-fail" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderSubtle text-left transition group active:scale-98">
+            <button id="btn-solve-fail" class="p-3 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-left transition group active:scale-98">
               <div class="flex items-center space-x-2 mb-1">
                 <span class="text-rose-400 text-sm font-bold">✕</span>
                 <span class="text-xs font-bold text-white group-hover:text-rose-300">Failed / Blocked</span>
@@ -595,7 +606,7 @@
           </div>
 
           <!-- Bottom Sequential Advance -->
-          <div class="pt-2.5 border-t border-borderSubtle flex items-center justify-between">
+          <div class="pt-2.5 border-t border-borderDefault flex items-center justify-between">
             <span class="text-xs text-slate-400">Sequence: Question #1 to #610</span>
             <button id="btn-advance-next" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center space-x-2 transition shadow-sm">
               <span>Advance to Next Problem</span>
@@ -609,7 +620,7 @@
   </div>
 
   <!-- ERROR LOG MODAL (Rule 4: One-line error log) -->
-  <div id="modal-error-log" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+  <div id="modal-error-log" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-md p-5 space-y-3.5 shadow-2xl">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
         <h3 class="text-sm font-bold text-white flex items-center gap-2">
@@ -626,19 +637,19 @@
       <div>
         <label class="text-xs font-semibold text-slate-400 block mb-1.5">Cognitive Failure Taxonomy:</label>
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <button class="error-cat-btn active p-2 rounded-md bg-surface3 border border-amber-500/40 text-amber-400 font-medium text-left" data-cat="idea">
+          <button class="error-cat-btn active p-2.5 rounded-lg bg-surface3 border border-amber-500/40 text-amber-400 font-medium text-left transition" data-cat="idea">
             <div class="font-bold">Pattern Blindspot</div>
             <div class="text-[10px] text-slate-400">Missed key algorithm/idea</div>
           </button>
-          <button class="error-cat-btn p-2 rounded-md bg-surface1 border border-borderSubtle text-slate-300 hover:text-white font-medium text-left" data-cat="proof">
+          <button class="error-cat-btn p-2.5 rounded-lg bg-surface1 border border-borderDefault text-slate-300 hover:text-white font-medium text-left transition" data-cat="proof">
             <div class="font-bold">Invariant Failure</div>
             <div class="text-[10px] text-slate-400">Flawed logic / edge proofs</div>
           </button>
-          <button class="error-cat-btn p-2 rounded-md bg-surface1 border border-borderSubtle text-slate-300 hover:text-white font-medium text-left" data-cat="boundary">
+          <button class="error-cat-btn p-2.5 rounded-lg bg-surface1 border border-borderDefault text-slate-300 hover:text-white font-medium text-left transition" data-cat="boundary">
             <div class="font-bold">Boundary Bug</div>
             <div class="text-[10px] text-slate-400">Off-by-one / null pointer</div>
           </button>
-          <button class="error-cat-btn p-2 rounded-md bg-surface1 border border-borderSubtle text-slate-300 hover:text-white font-medium text-left" data-cat="speed">
+          <button class="error-cat-btn p-2.5 rounded-lg bg-surface1 border border-borderDefault text-slate-300 hover:text-white font-medium text-left transition" data-cat="speed">
             <div class="font-bold">TLE / Asymptotic</div>
             <div class="text-[10px] text-slate-400">Time/Space exceeded</div>
           </button>
@@ -649,7 +660,7 @@
       <div>
         <label class="text-xs font-semibold text-slate-400 block mb-1">One-line Failure Note:</label>
         <input type="text" id="error-note-input" placeholder="e.g. Off-by-one in binary search right boundary"
-          class="w-full bg-surface1 text-xs text-slate-200 rounded-lg p-2.5 border border-borderSubtle focus:border-amber-500">
+          class="w-full bg-surface1 text-xs text-slate-200 rounded-lg p-2.5 border border-borderDefault focus:border-amber-500">
       </div>
 
       <!-- Save & Schedule -->
@@ -661,8 +672,8 @@
   </div>
 
   <!-- BRAVE & GIT EXTENSION GUIDE MODAL -->
-  <div id="modal-brave-guide" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-lg p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+  <div id="modal-brave-guide" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-lg p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
         <h3 class="text-sm font-bold text-white">Brave & LeetCode Git Push Setup</h3>
         <button class="btn-close-modal text-slate-400 hover:text-white text-lg" aria-label="Close">&times;</button>
@@ -673,7 +684,7 @@
           When you click <strong>Open in Brave</strong>, your browser opens the problem on LeetCode. Our native Anvil Breaker extension or LeetHub automatically pushes every solved problem to your GitHub repository.
         </p>
 
-        <div class="bg-surface1 p-3.5 rounded-lg border border-borderSubtle space-y-2">
+        <div class="bg-surface1 p-3.5 rounded-lg border border-borderDefault space-y-2">
           <div class="font-bold text-white text-xs">Two Ways to Sync:</div>
           <div class="space-y-1.5 text-slate-300">
             <div>1. <strong>Anvil Breaker Native Extension</strong>: Load unpacked folder <code class="bg-surface2 px-1 rounded text-amber-400 font-mono">extension/</code> in <code class="text-slate-200">chrome://extensions</code>.</div>
@@ -681,7 +692,7 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between p-3 rounded-lg bg-surface1 border border-borderSubtle">
+        <div class="flex items-center justify-between p-3 rounded-lg bg-surface1 border border-borderDefault">
           <div>
             <div class="font-semibold text-white">Test Brave Connection:</div>
             <div class="text-[11px] text-slate-400">Launch Brave directly from app</div>
@@ -699,7 +710,7 @@
   </div>
 
   <!-- SPACED REPETITION / REVIEW QUEUE MODAL -->
-  <div id="modal-reviews" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+  <div id="modal-reviews" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-xl p-5 space-y-3 shadow-2xl max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
         <h3 class="text-sm font-bold text-white">Spaced Repetition Review Queue</h3>
@@ -710,7 +721,7 @@
         Rule 3 clean re-solves and Rule 4 failure re-attempts due today appear below:
       </p>
 
-      <div id="reviews-list-container" class="flex-1 overflow-y-auto space-y-2 pr-1 divide-y divide-borderSubtle">
+      <div id="reviews-list-container" class="flex-1 overflow-y-auto space-y-2 pr-1 divide-y divide-borderSubtle custom-scrollbar">
         <!-- Injected by JS -->
       </div>
 
@@ -720,8 +731,8 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL -->
-  <div id="modal-settings" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+  <!-- PREFERENCES / SETTINGS MODAL -->
+  <div id="modal-settings" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-md p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
         <h3 class="text-sm font-bold text-white">Preferences</h3>
@@ -731,20 +742,20 @@
       <div>
         <label class="text-xs font-semibold text-slate-400 block mb-1.5">Daily Problem Target:</label>
         <div class="grid grid-cols-3 gap-2 text-xs">
-          <button class="goal-opt-btn py-1.5 rounded-md bg-surface1 text-slate-300 font-medium" data-goal="2">2 / day</button>
-          <button class="goal-opt-btn active py-1.5 rounded-md bg-surface3 border border-amber-500/40 text-amber-400 font-bold" data-goal="3">3 / day</button>
-          <button class="goal-opt-btn py-1.5 rounded-md bg-surface1 text-slate-300 font-medium" data-goal="4">4 / day</button>
+          <button class="goal-opt-btn py-1.5 rounded-lg bg-surface1 border border-borderDefault text-slate-300 font-medium transition" data-goal="2">2 / day</button>
+          <button class="goal-opt-btn active py-1.5 rounded-lg bg-surface3 border border-amber-500/40 text-amber-400 font-bold transition" data-goal="3">3 / day</button>
+          <button class="goal-opt-btn py-1.5 rounded-lg bg-surface1 border border-borderDefault text-slate-300 font-medium transition" data-goal="4">4 / day</button>
         </div>
       </div>
 
       <div>
         <label class="text-xs font-semibold text-slate-400 block mb-1">Brave Executable Path:</label>
         <input type="text" id="setting-brave-path" 
-          class="w-full bg-surface1 text-xs font-mono text-slate-200 rounded-lg p-2.5 border border-borderSubtle focus:border-amber-500">
+          class="w-full bg-surface1 text-xs font-mono text-slate-200 rounded-lg p-2.5 border border-borderDefault focus:border-amber-500">
       </div>
 
       <div class="pt-2 border-t border-borderSubtle flex items-center justify-between">
-        <button id="btn-export-json" class="px-3 py-1.5 bg-surface1 hover:bg-surface3 text-slate-300 text-xs rounded-lg transition">
+        <button id="btn-export-json" class="px-3 py-1.5 bg-surface1 hover:bg-surface3 text-slate-300 text-xs rounded-lg transition border border-borderDefault">
           Export Backup
         </button>
         <button id="btn-save-settings" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg transition">
@@ -755,7 +766,7 @@
   </div>
 
   <!-- CUSTOM TIMER CONFIG MODAL -->
-  <div id="modal-custom-timer" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+  <div id="modal-custom-timer" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-md p-5 space-y-3.5 shadow-2xl">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
         <h3 class="text-sm font-bold text-white">Customize Protocol Minutes</h3>
@@ -763,25 +774,25 @@
       </div>
 
       <div class="space-y-2.5 text-xs">
-        <div class="flex items-center justify-between bg-surface1 p-2 rounded-lg border border-borderSubtle">
+        <div class="flex items-center justify-between bg-surface1 p-2.5 rounded-lg border border-borderDefault">
           <span class="text-slate-300">Phase 1: Read & Trace</span>
           <input type="number" id="custom-p1" min="1" max="30" value="3" class="w-14 bg-surface2 text-white font-mono text-center rounded py-1 border border-borderMedium">
         </div>
-        <div class="flex items-center justify-between bg-surface1 p-2 rounded-lg border border-borderSubtle">
+        <div class="flex items-center justify-between bg-surface1 p-2.5 rounded-lg border border-borderDefault">
           <span class="text-slate-300">Phase 2: Pick a Pattern</span>
           <input type="number" id="custom-p2" min="1" max="30" value="4" class="w-14 bg-surface2 text-white font-mono text-center rounded py-1 border border-borderMedium">
         </div>
-        <div class="flex items-center justify-between bg-surface1 p-2 rounded-lg border border-borderSubtle">
+        <div class="flex items-center justify-between bg-surface1 p-2.5 rounded-lg border border-borderDefault">
           <span class="text-slate-300">Phase 3: Code & Test</span>
           <input type="number" id="custom-p3" min="1" max="60" value="6" class="w-14 bg-surface2 text-white font-mono text-center rounded py-1 border border-borderMedium">
         </div>
-        <div class="flex items-center justify-between bg-surface1 p-2 rounded-lg border border-borderSubtle">
+        <div class="flex items-center justify-between bg-surface1 p-2.5 rounded-lg border border-borderDefault">
           <span class="text-slate-300">Phase 4: Cut Losses</span>
           <input type="number" id="custom-p4" min="1" max="30" value="2" class="w-14 bg-surface2 text-white font-mono text-center rounded py-1 border border-borderMedium">
         </div>
       </div>
 
-      <div class="p-2.5 rounded-lg bg-surface1 border border-borderSubtle flex items-center justify-between text-xs">
+      <div class="p-2.5 rounded-lg bg-surface1 border border-borderDefault flex items-center justify-between text-xs">
         <span class="text-slate-400 font-semibold">Total Time Cap:</span>
         <span id="custom-total-preview" class="font-mono font-bold text-white tabular-nums">15 Minutes</span>
       </div>
@@ -794,24 +805,24 @@
   </div>
 
   <!-- SELF-MADE SHEET CREATOR MODAL -->
-  <div id="modal-custom-sheet" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+  <div id="modal-custom-sheet" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-lg p-5 space-y-3.5 shadow-2xl max-h-[90vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
         <h3 class="text-sm font-bold text-white">Create Self-Made Sheet</h3>
         <button class="btn-close-modal text-slate-400 hover:text-white" aria-label="Close">&times;</button>
       </div>
 
-      <div class="space-y-3 flex-1 overflow-y-auto pr-1 text-xs">
+      <div class="space-y-3 flex-1 overflow-y-auto pr-1 text-xs custom-scrollbar">
         <div>
           <label class="font-semibold text-slate-400 block mb-1">Sheet Title:</label>
           <input type="text" id="custom-sheet-title" placeholder="e.g. Google L4 Must-Solve, Top 30 Graphs"
-            class="w-full bg-surface1 text-slate-200 rounded-lg p-2.5 border border-borderSubtle focus:border-amber-500">
+            class="w-full bg-surface1 text-slate-200 rounded-lg p-2.5 border border-borderDefault focus:border-amber-500">
         </div>
 
         <div>
           <label class="font-semibold text-slate-400 block mb-1">Description (Optional):</label>
           <input type="text" id="custom-sheet-desc" placeholder="e.g. High-yield list for technical rounds"
-            class="w-full bg-surface1 text-slate-200 rounded-lg p-2.5 border border-borderSubtle focus:border-amber-500">
+            class="w-full bg-surface1 text-slate-200 rounded-lg p-2.5 border border-borderDefault focus:border-amber-500">
         </div>
 
         <div>
@@ -819,7 +830,7 @@
           <textarea id="custom-sheet-input" rows="6" placeholder="https://leetcode.com/problems/two-sum/
 https://leetcode.com/problems/trapping-rain-water/
 Word Search II"
-            class="w-full bg-surface1 font-mono text-slate-200 rounded-lg p-2.5 border border-borderSubtle focus:border-amber-500"></textarea>
+            class="w-full bg-surface1 font-mono text-slate-200 rounded-lg p-2.5 border border-borderDefault focus:border-amber-500"></textarea>
         </div>
       </div>
 
@@ -831,7 +842,7 @@ Word Search II"
   </div>
 
   <!-- GITHUB DYNAMIC BADGE MODAL -->
-  <div id="modal-badge-share" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+  <div id="modal-badge-share" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-md p-5 space-y-3.5 shadow-2xl">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
         <h3 class="text-sm font-bold text-white">Live GitHub Portfolio Badge</h3>
@@ -843,7 +854,7 @@ Word Search II"
       </p>
 
       <!-- Badge Preview -->
-      <div class="p-3 bg-surface1 rounded-lg border border-borderSubtle flex items-center justify-center">
+      <div class="p-3 bg-surface1 rounded-lg border border-borderDefault flex items-center justify-center">
         <img id="badge-preview-img" src="/api/badge/local_user.svg" alt="Anvil Breaker Badge Preview">
       </div>
 
@@ -852,7 +863,7 @@ Word Search II"
         <label class="text-xs font-semibold text-slate-400 block mb-1">Markdown Snippet:</label>
         <div class="relative">
           <input type="text" id="badge-markdown-input" readonly value="[![Anvil Breaker](http://localhost:8765/api/badge/local_user.svg)](http://localhost:8765)"
-            class="w-full bg-surface1 text-xs font-mono text-slate-200 rounded-lg p-2.5 border border-borderSubtle focus:outline-none">
+            class="w-full bg-surface1 text-xs font-mono text-slate-200 rounded-lg p-2.5 border border-borderDefault focus:outline-none">
           <button id="btn-copy-badge-md" class="absolute right-1.5 top-1.5 px-2.5 py-1 bg-surface3 hover:bg-surface4 text-amber-400 rounded text-xs font-bold transition">
             Copy
           </button>
@@ -879,17 +890,17 @@ Word Search II"
     
     <div class="flex items-center space-x-1 border-l border-slate-800 pl-2">
       <!-- Mini Play / Pause -->
-      <button id="btn-docked-toggle" class="p-1 rounded bg-amber-500 hover:bg-amber-600 text-slate-950 transition" title="Start/Pause (Space)" aria-label="Start or Pause Timer">
+      <button id="btn-docked-toggle" class="p-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 transition" title="Start/Pause (Space)" aria-label="Start or Pause Timer">
         <svg id="docked-icon-play" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
       </button>
 
       <!-- Pop out to floating window / PiP -->
-      <button id="btn-docked-popout" class="p-1 rounded bg-surface2 hover:bg-surface3 text-slate-300 hover:text-white transition" title="Pop out Floating Always-On-Top Window (H)" aria-label="Pop-out HUD">
+      <button id="btn-docked-popout" class="p-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-300 hover:text-white transition border border-borderDefault" title="Pop out Floating Always-On-Top Window (H)" aria-label="Pop-out HUD">
         <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
       </button>
 
       <!-- Scroll to Timer -->
-      <button id="btn-docked-scroll-top" class="p-1 rounded bg-surface2 hover:bg-surface3 text-slate-400 hover:text-white transition" title="Jump to Timer" aria-label="Scroll to top">
+      <button id="btn-docked-scroll-top" class="p-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-slate-400 hover:text-white transition border border-borderDefault" title="Jump to Timer" aria-label="Scroll to top">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
       </button>
     </div>

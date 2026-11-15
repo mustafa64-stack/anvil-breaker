@@ -457,23 +457,23 @@ function setPhase(phaseNum) {
   const phaseRange = curPhase ? curPhase.label : "";
 
   if (phaseNum === 1) {
-    glow.className = "absolute -top-24 -left-24 w-72 h-72 rounded-full bg-cyan-500/15 blur-3xl pointer-events-none transition-all duration-700";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/30";
+    if (glow) glow.className = "hidden";
+    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-sky-500/15 text-sky-400 border border-sky-500/30";
     phaseTag.textContent = `Phase 1: ${phaseName} (${phaseRange})`;
     instruction.textContent = "Read constraints and sketch edge cases on pen & paper.";
   } else if (phaseNum === 2) {
-    glow.className = "absolute -top-24 -left-24 w-72 h-72 rounded-full bg-violet-500/15 blur-3xl pointer-events-none transition-all duration-700";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-violet-500/20 text-violet-300 border border-violet-500/30";
+    if (glow) glow.className = "hidden";
+    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-indigo-500/15 text-indigo-400 border border-indigo-500/30";
     phaseTag.textContent = `Phase 2: ${phaseName} (${phaseRange})`;
     instruction.textContent = "Map to known pattern. Start with brute force if needed.";
   } else if (phaseNum === 3) {
-    glow.className = "absolute -top-24 -left-24 w-72 h-72 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none transition-all duration-700";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+    if (glow) glow.className = "hidden";
+    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
     phaseTag.textContent = `Phase 3: ${phaseName} (${phaseRange})`;
     instruction.textContent = "Code cleanly in Brave. Dry-run test cases before submitting.";
   } else if (phaseNum === 4) {
-    glow.className = "absolute -top-24 -left-24 w-72 h-72 rounded-full bg-rose-500/20 blur-3xl pointer-events-none transition-all duration-700";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30";
+    if (glow) glow.className = "hidden";
+    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-rose-500/15 text-rose-400 border border-rose-500/30";
     phaseTag.textContent = `Phase 4: ${phaseName} (${phaseRange})`;
     instruction.textContent = "Time cap reached! Stop struggling. Read the hint, understand WHY, code from memory.";
   }
@@ -529,28 +529,28 @@ function updateTimerUI() {
 
   if (state.timerRunning) {
     if (toggleBtn) {
-      toggleBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
-      toggleBtn.classList.add('bg-amber-600', 'hover:bg-amber-500');
+      toggleBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+      toggleBtn.classList.add('bg-amber-600', 'hover:bg-amber-700');
     }
     if (toggleText) toggleText.textContent = "Pause Timer";
     if (toggleIcon) toggleIcon.innerHTML = `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>`;
     
     if (dockedBtn) {
-      dockedBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
-      dockedBtn.classList.add('bg-amber-600', 'hover:bg-amber-500');
+      dockedBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+      dockedBtn.classList.add('bg-amber-600', 'hover:bg-amber-700');
     }
     if (dockedIcon) dockedIcon.innerHTML = `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>`;
   } else {
     if (toggleBtn) {
-      toggleBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
-      toggleBtn.classList.remove('bg-amber-600', 'hover:bg-amber-500');
+      toggleBtn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+      toggleBtn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
     }
     if (toggleText) toggleText.textContent = "Start Timer";
     if (toggleIcon) toggleIcon.innerHTML = `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>`;
 
     if (dockedBtn) {
-      dockedBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
-      dockedBtn.classList.remove('bg-amber-600', 'hover:bg-amber-500');
+      dockedBtn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+      dockedBtn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
     }
     if (dockedIcon) dockedIcon.innerHTML = `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>`;
   }
@@ -806,48 +806,55 @@ function renderSidebar() {
     // Header
     const isCurrentCh = allChProbs.some(p => p.id === state.currentProblemId);
     const isExpanded = isCurrentCh || query !== '';
+    const chPct = Math.round((solvedCount / ch.count) * 100);
 
     chapterSection.innerHTML = `
-      <div class="chapter-header px-4 py-2.5 bg-slate-900/60 hover:bg-slate-800/80 cursor-pointer flex items-center justify-between text-xs transition select-none">
+      <div class="chapter-header px-3.5 py-2.5 bg-surface1 hover:bg-surface2 cursor-pointer flex items-center justify-between text-xs transition select-none border-b border-borderSubtle">
         <div class="flex items-center space-x-2 truncate">
-          <span class="text-indigo-400 font-bold font-mono">Ch ${ch.id}</span>
-          <span class="font-semibold text-slate-200 truncate">${ch.name}</span>
+          <span class="text-amber-400 font-bold font-mono text-[11px] bg-surface3 px-1.5 py-0.5 rounded">Ch ${ch.id}</span>
+          <span class="font-semibold text-slate-200 truncate">${escapeHtml(ch.name)}</span>
         </div>
         <div class="flex items-center space-x-2 text-[11px] font-mono shrink-0">
+          <div class="w-10 h-1.5 bg-surface3 rounded-full overflow-hidden hidden sm:block">
+            <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${chPct}%"></div>
+          </div>
           <span class="${solvedCount === ch.count ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${solvedCount}/${ch.count}</span>
           <svg class="w-3.5 h-3.5 text-slate-500 transform transition-transform ${isExpanded ? 'rotate-90' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </div>
       </div>
-      <div class="problem-sublist divide-y divide-slate-800/20 ${isExpanded ? '' : 'hidden'}">
+      <div class="problem-sublist divide-y divide-borderSubtle ${isExpanded ? '' : 'hidden'}">
         ${probs.map(p => {
           const pData = (state.progress.problems && state.progress.problems[String(p.id)]) || {};
           const status = pData.status || 'unsolved';
           
-          let statusIcon = `<span class="w-2 h-2 rounded-full bg-slate-700"></span>`;
+          let statusIcon = `<span class="w-3.5 h-3.5 rounded-full border border-slate-600 inline-block"></span>`;
           if (status === 'clean') {
-            statusIcon = `<span class="text-emerald-400 text-xs font-bold">✓</span>`;
+            statusIcon = `<span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">✓</span>`;
           } else if (status === 'help') {
-            statusIcon = `<span class="text-amber-400 text-xs font-bold">⚡</span>`;
+            statusIcon = `<span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-[10px]">↻</span>`;
           } else if (status === 'failed') {
-            statusIcon = `<span class="text-rose-400 text-xs font-bold">✕</span>`;
+            statusIcon = `<span class="w-4 h-4 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-[10px]">✕</span>`;
           }
 
-          let lvlColor = "text-emerald-400";
-          if (p.level === 'M') lvlColor = "text-amber-400";
-          if (p.level === 'H') lvlColor = "text-rose-400";
+          let lvlBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">EASY</span>`;
+          if (p.level === 'M') {
+            lvlBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono bg-amber-500/15 text-amber-400 border border-amber-500/25">MED</span>`;
+          } else if (p.level === 'H') {
+            lvlBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono bg-rose-500/15 text-rose-400 border border-rose-500/25">HARD</span>`;
+          }
 
           const isCurrent = p.id === state.currentProblemId;
 
           return `
-            <div class="problem-item px-4 py-2 cursor-pointer flex items-center justify-between text-xs ${isCurrent ? 'active' : ''}" data-id="${p.id}">
-              <div class="flex items-center space-x-2.5 truncate">
-                <span class="w-3.5 flex justify-center">${statusIcon}</span>
-                <span class="font-mono text-slate-400 text-[11px]">#${p.id}</span>
-                <span class="text-slate-200 truncate ${isCurrent ? 'font-bold text-white' : ''}">${p.title}</span>
+            <div class="problem-item px-3.5 py-2 cursor-pointer flex items-center justify-between text-xs transition ${isCurrent ? 'active' : ''}" data-id="${p.id}">
+              <div class="flex items-center space-x-2.5 truncate mr-2">
+                <span class="w-4 flex justify-center shrink-0">${statusIcon}</span>
+                <span class="font-mono text-slate-500 text-[11px] shrink-0">#${p.id}</span>
+                <span class="text-slate-200 truncate ${isCurrent ? 'font-bold text-white' : 'hover:text-slate-100'}">${escapeHtml(p.title)}</span>
               </div>
-              <div class="flex items-center space-x-2 shrink-0">
-                ${(p.lists && p.lists.length > 0) ? `<span class="text-[9px] px-1 rounded bg-indigo-500/20 text-indigo-300 font-mono">${p.lists[0].includes('75') ? 'B75' : 'NC'}</span>` : ''}
-                <span class="font-bold text-[10px] font-mono ${lvlColor}">${p.level}</span>
+              <div class="flex items-center space-x-1.5 shrink-0">
+                ${(p.lists && p.lists.length > 0) ? `<span class="text-[9px] px-1 rounded bg-surface3 text-slate-300 font-mono border border-borderSubtle">${p.lists[0].includes('75') ? 'B75' : 'NC'}</span>` : ''}
+                ${lvlBadge}
               </div>
             </div>
           `;
@@ -912,7 +919,7 @@ function showNotification(msg) {
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'app-toast';
-    toast.className = 'fixed bottom-6 right-6 px-4 py-2.5 rounded-xl bg-slate-800 text-white border border-cardBorder shadow-2xl text-xs font-semibold z-50 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none flex items-center space-x-2';
+    toast.className = 'fixed bottom-6 right-6 px-4 py-2.5 rounded-xl bg-surface2 text-slate-100 border border-borderMedium shadow-2xl text-xs font-semibold z-50 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none flex items-center space-x-2';
     document.body.appendChild(toast);
   }
   toast.textContent = msg;
@@ -999,11 +1006,11 @@ function setupEventListeners() {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('active', 'bg-indigo-600', 'text-white');
-        b.classList.add('bg-slate-800', 'text-slate-300');
+        b.classList.remove('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
+        b.classList.add('bg-surface2', 'text-slate-300', 'font-medium');
       });
-      btn.classList.add('active', 'bg-indigo-600', 'text-white');
-      btn.classList.remove('bg-slate-800', 'text-slate-300');
+      btn.classList.add('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
+      btn.classList.remove('bg-surface2', 'text-slate-300', 'font-medium');
       state.activeFilter = btn.dataset.filter;
       renderSidebar();
     });
@@ -1047,11 +1054,11 @@ function setupEventListeners() {
   document.querySelectorAll('.error-cat-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.error-cat-btn').forEach(b => {
-        b.classList.remove('active', 'bg-indigo-600', 'text-white');
-        b.classList.add('bg-slate-800', 'text-slate-300');
+        b.classList.remove('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400');
+        b.classList.add('bg-surface1', 'border-borderDefault', 'text-slate-300');
       });
-      btn.classList.add('active', 'bg-indigo-600', 'text-white');
-      btn.classList.remove('bg-slate-800', 'text-slate-300');
+      btn.classList.add('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400');
+      btn.classList.remove('bg-surface1', 'border-borderDefault', 'text-slate-300');
     });
   });
 
@@ -1070,11 +1077,11 @@ function setupEventListeners() {
   document.querySelectorAll('.goal-opt-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.goal-opt-btn').forEach(b => {
-        b.classList.remove('active', 'bg-indigo-600', 'text-white');
-        b.classList.add('bg-slate-800', 'text-slate-300');
+        b.classList.remove('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
+        b.classList.add('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
       });
-      btn.classList.add('active', 'bg-indigo-600', 'text-white');
-      btn.classList.remove('bg-slate-800', 'text-slate-300');
+      btn.classList.add('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
+      btn.classList.remove('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
     });
   });
 
@@ -1470,11 +1477,11 @@ function openSettingsModal() {
   const goal = state.progress.daily_goal || 3;
   document.querySelectorAll('.goal-opt-btn').forEach(b => {
     if (parseInt(b.dataset.goal) === goal) {
-      b.classList.add('active', 'bg-indigo-600', 'text-white');
-      b.classList.remove('bg-slate-800', 'text-slate-300');
+      b.classList.add('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
+      b.classList.remove('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
     } else {
-      b.classList.remove('active', 'bg-indigo-600', 'text-white');
-      b.classList.add('bg-slate-800', 'text-slate-300');
+      b.classList.remove('active', 'bg-surface3', 'border-amber-500/40', 'text-amber-400', 'font-bold');
+      b.classList.add('bg-surface1', 'border-borderDefault', 'text-slate-300', 'font-medium');
     }
   });
   openModal('modal-settings');
