@@ -68,26 +68,31 @@ async function apiFetch(url, options = {}) {
   return fetch(url, Object.assign({}, options, { headers }));
 }
 
-// Dynamic Platform Resolver (CSES, LeetCode, Codeforces, HackerRank, GeeksforGeeks)
+// Dynamic Platform Resolver (CSES, LeetCode, Codeforces, HackerRank, GeeksforGeeks, InterviewBit)
 function getProblemPlatform(prob) {
-  if (!prob) return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25" };
+  if (!prob) return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25", defaultUrl: "https://leetcode.com" };
   const url = (prob.url || "").toLowerCase();
   const title = (prob.title || "").toLowerCase();
   const rawPlatform = (prob.platform || "").toUpperCase();
 
-  if (rawPlatform === "CSES" || url.includes("cses.fi") || title.includes("[cses]")) {
-    return { name: "CSES", color: "cyan", short: "CSES", class: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/25" };
+  if (rawPlatform === "CSES" || url.includes("cses.fi") || title.includes("[cses]") || title.includes("cses")) {
+    const cleanTitle = title.replace(/\[cses\]/gi, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const fallbackUrl = `https://cses.fi/problemset/task/${cleanTitle}`;
+    return { name: "CSES", color: "cyan", short: "CSES", class: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/25", defaultUrl: fallbackUrl };
   }
   if (rawPlatform === "CODEFORCES" || url.includes("codeforces.com") || title.includes("[cf]") || title.includes("[codeforces]")) {
-    return { name: "Codeforces", color: "sky", short: "CF", class: "bg-sky-500/15 text-sky-400 border border-sky-500/25" };
+    return { name: "Codeforces", color: "sky", short: "CF", class: "bg-sky-500/15 text-sky-400 border border-sky-500/25", defaultUrl: "https://codeforces.com" };
   }
-  if (rawPlatform === "GFG" || rawPlatform === "GEEKSFORGEEKS" || url.includes("geeksforgeeks.org")) {
-    return { name: "GeeksforGeeks", color: "emerald", short: "GFG", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" };
+  if (rawPlatform === "GFG" || rawPlatform === "GEEKSFORGEEKS" || url.includes("geeksforgeeks.org") || title.includes("[gfg]")) {
+    return { name: "GeeksforGeeks", color: "emerald", short: "GFG", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25", defaultUrl: "https://practice.geeksforgeeks.org" };
   }
   if (rawPlatform === "HACKERRANK" || url.includes("hackerrank.com")) {
-    return { name: "HackerRank", color: "emerald", short: "HR", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" };
+    return { name: "HackerRank", color: "emerald", short: "HR", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25", defaultUrl: "https://hackerrank.com" };
   }
-  return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25" };
+  if (rawPlatform === "INTERVIEWBIT" || url.includes("interviewbit.com")) {
+    return { name: "InterviewBit", color: "orange", short: "IB", class: "bg-orange-500/15 text-orange-400 border border-orange-500/25", defaultUrl: "https://interviewbit.com" };
+  }
+  return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25", defaultUrl: `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title || '')}` };
 }
 
 // Bi-directional BroadcastChannel for Always-On-Top Mini HUD
@@ -354,7 +359,7 @@ async function initApp() {
     await loadSheetsList();
 
     // Initialize Deep-Link Routing or Default Roadmap State
-    if (window.location.hash && window.location.hash !== '#/roadmap') {
+    if ((window.location.hash && window.location.hash !== '#/roadmap') || window.location.search.includes('sheet=')) {
       handleHashRouting(false);
     } else {
       if (window.history && window.history.replaceState) {
@@ -679,6 +684,8 @@ function selectProblem(problemId, autoScroll = true, updateHistory = false) {
 
   // Dynamic Platform detection (CSES, LeetCode, Codeforces, etc.)
   const plat = getProblemPlatform(prob);
+  const targetUrl = prob.url || plat.defaultUrl || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title)}`;
+
   const platBadge = document.getElementById('prob-platform-badge');
   if (platBadge) {
     platBadge.textContent = plat.name;
@@ -688,6 +695,28 @@ function selectProblem(problemId, autoScroll = true, updateHistory = false) {
   const btnOpenPlatText = document.getElementById('btn-open-platform-text');
   if (btnOpenPlatText) {
     btnOpenPlatText.textContent = `Open on ${plat.name}`;
+  }
+
+  const openLinkEl = document.getElementById('btn-open-platform-link');
+  if (openLinkEl) {
+    openLinkEl.href = targetUrl;
+    openLinkEl.title = `Open problem directly on ${plat.name} (Press 'B')`;
+  }
+
+  const phase3Guidance = document.getElementById('phase3-submit-guidance');
+  if (phase3Guidance) {
+    phase3Guidance.textContent = `Submit directly on ${plat.name} in your browser. Record outcome below to calibrate retention.`;
+  }
+
+  const phase3Btn = document.getElementById('btn-phase3-open-link');
+  if (phase3Btn) {
+    phase3Btn.textContent = `Open on ${plat.name}`;
+    phase3Btn.onclick = () => openCurrentInBrave();
+  }
+
+  const hudBtn = document.getElementById('btn-popout-timer');
+  if (hudBtn) {
+    hudBtn.title = `Pop-out Floating Mini HUD for ${plat.name} (Press 'H')`;
   }
 
   // Subhint / Core takeaway
@@ -743,39 +772,39 @@ function selectProblem(problemId, autoScroll = true, updateHistory = false) {
   }
 }
 
-// Universal Browser Launch Handler (Brave, Chrome, Edge, Firefox, or Default)
-async function openCurrentInBrave() {
+// Universal Browser Launch Handler (Brave, Chrome, Edge, Firefox, or Default) - 100% Immunity to Popup Blockers
+function openCurrentInBrave() {
   const prob = state.problems.find(p => p.id === state.currentProblemId);
   if (!prob) return;
 
   const plat = getProblemPlatform(prob);
-  const targetUrl = prob.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title)}`;
+  const targetUrl = prob.url || plat.defaultUrl || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title)}`;
   const chosenBrowser = state.preferredBrowser || localStorage.getItem('anvil_browser') || 'auto';
 
-  const btnText = document.getElementById('btn-open-platform-text');
-  const origText = btnText ? btnText.textContent : `Open on ${plat.name}`;
-  if (btnText) btnText.textContent = `Opening ${plat.name}...`;
-
+  // 1. Direct synchronous open inside user gesture — never blocked by modern browsers
   try {
-    const res = await apiFetch('/api/open-browser', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ problem_id: prob.id, url: targetUrl, browser: chosenBrowser })
-    });
-    const result = await res.json();
-    if (result.is_cloud || !result.launched_direct) {
-      // Fallback or Cloud mode: open directly via window.open
-      window.open(targetUrl, '_blank');
+    const win = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    if (!win) {
+      const a = document.createElement('a');
+      a.href = targetUrl;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
-  } catch (err) {
-    console.warn("Backend open error, using direct browser link:", err);
-    window.open(targetUrl, '_blank');
-  } finally {
-    setTimeout(() => {
-      if (btnText) btnText.textContent = origText;
-    }, 600);
+  } catch (e) {
+    window.location.href = targetUrl;
   }
+
+  // 2. Background notify for local OS browser launcher or analytics
+  apiFetch('/api/open-browser', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ problem_id: prob.id, url: targetUrl, browser: chosenBrowser })
+  }).catch(() => {});
 }
+const openCurrentProblem = openCurrentInBrave;
 
 // Save Status & Spaced Repetition Updates
 async function saveStatus(status, errorType = "", errorNote = "", targetProbId = null) {
@@ -1185,23 +1214,43 @@ function navigateTo(viewName, options = {}, pushHistory = true) {
   }
 }
 
-// Deep-Link & Browser Hash Router
+// Deep-Link & Browser Hash Router (Sheets, Problems & Roadmaps)
 function handleHashRouting(pushHistory = false) {
   const hash = window.location.hash || '';
-  const problemMatch = hash.match(/^#\/?problem\/(\d+)/i);
-  const roadmapMatch = hash.match(/^#\/?(roadmap|curriculum|sheet)/i);
+  const searchParams = new URLSearchParams(window.location.search);
+  const querySheet = searchParams.get('sheet');
 
+  // 1. Check for Sheet Navigation (e.g. #striver-sde, #neetcode-150, #blind-75, #core-path, #/sheet/striver-sde, ?sheet=striver-sde)
+  let targetSheet = querySheet;
+  const sheetHashMatch = hash.match(/^#\/?(?:sheet\/)?(striver-sde|neetcode-150|blind-75|core-path|[a-z0-9-]+)/i);
+  if (!targetSheet && sheetHashMatch) {
+    const candidate = sheetHashMatch[1].toLowerCase();
+    if (candidate !== 'roadmap' && candidate !== 'curriculum' && candidate !== 'problem') {
+      targetSheet = candidate;
+    }
+  }
+
+  if (targetSheet && targetSheet !== state.activeSheetSlug) {
+    switchSheet(targetSheet);
+    switchView('curriculum', pushHistory);
+    return;
+  }
+
+  // 2. Check for Problem Navigation (#/problem/123)
+  const problemMatch = hash.match(/^#\/?problem\/(\d+)/i);
   if (problemMatch) {
     const probId = parseInt(problemMatch[1], 10);
     if (probId) {
       if (state.problems && state.problems.some(p => p.id === probId)) {
-        selectProblem(probId, false);
+        selectProblem(probId, false, false);
       }
       switchView('solver', pushHistory);
+      return;
     }
-  } else if (roadmapMatch || hash === '' || hash === '#') {
-    switchView('curriculum', pushHistory);
   }
+
+  // 3. Roadmap / Curriculum Default
+  switchView('curriculum', pushHistory);
 }
 
 // Resume Current Problem in 15m Protocol Solver
@@ -1564,17 +1613,19 @@ function setupEventListeners() {
     });
   });
 
-  // Open in Brave button
-  document.getElementById('btn-open-brave').addEventListener('click', openCurrentInBrave);
+  // Open Problem button / link
+  const btnOpenProb = document.getElementById('btn-open-platform-link') || document.getElementById('btn-open-brave');
+  if (btnOpenProb) btnOpenProb.addEventListener('click', openCurrentInBrave);
 
   // Prev / Next Problem buttons
-  document.getElementById('btn-prev-problem').addEventListener('click', () => {
-    if (state.currentProblemId > 1) {
-      selectProblem(state.currentProblemId - 1, true, true);
-    }
-  });
-  document.getElementById('btn-next-problem').addEventListener('click', advanceNext);
-  document.getElementById('btn-advance-next').addEventListener('click', advanceNext);
+  const btnPrev = document.getElementById('btn-prev-problem');
+  if (btnPrev) btnPrev.addEventListener('click', advancePrev);
+  
+  const btnNext = document.getElementById('btn-next-problem');
+  if (btnNext) btnNext.addEventListener('click', advanceNext);
+
+  const btnAdvNext = document.getElementById('btn-advance-next');
+  if (btnAdvNext) btnAdvNext.addEventListener('click', advanceNext);
 
   // Jump to Current button in sidebar
   document.getElementById('btn-jump-current').addEventListener('click', () => {
@@ -1853,7 +1904,7 @@ function setupEventListeners() {
     } else if (e.key === 'n' || e.key === 'N') {
       advanceNext();
     } else if (e.key === 'p' || e.key === 'P') {
-      if (state.currentProblemId > 1) selectProblem(state.currentProblemId - 1);
+      advancePrev();
     } else if (e.key === 'm' || e.key === 'M') {
       // Cycle HUD presets
       const modes = ['15m', '25m', '45m'];
@@ -1950,15 +2001,11 @@ function setupEventListeners() {
     btnOpenWorkspace.addEventListener('click', () => switchView('solver', true));
   }
 
-  // Back to Curriculum Roadmap button from solver (Mirrors Browser Native Back)
+  // Back to Curriculum Roadmap button from solver (Smooth Return to Sheet)
   const btnBackCurriculum = document.getElementById('btn-back-to-curriculum');
   if (btnBackCurriculum) {
     btnBackCurriculum.addEventListener('click', () => {
-      if (window.history && window.history.length > 1) {
-        window.history.back();
-      } else {
-        switchView('curriculum', true);
-      }
+      switchView('curriculum', true);
     });
   }
 
@@ -2029,16 +2076,60 @@ function setupEventListeners() {
     btnFooterShortcuts.addEventListener('click', () => openModal('modal-shortcuts'));
   }
 
+  // Dedicated Multi-Sheet Roadmaps Tab Bar listeners
+  document.querySelectorAll('.sheet-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const slug = btn.dataset.slug;
+      if (slug) {
+        switchSheet(slug);
+      }
+    });
+  });
+
+  const tabCreateSheet = document.getElementById('btn-tab-create-sheet');
+  if (tabCreateSheet) {
+    tabCreateSheet.addEventListener('click', () => openModal('modal-create-sheet'));
+  }
+
+  // Open Problem link
+  const openLink = document.getElementById('btn-open-platform-link');
+  if (openLink) {
+    openLink.addEventListener('click', () => {
+      openCurrentInBrave();
+    });
+  }
+
   // Handle Browser Back / Forward buttons seamlessly (HTML5 History API)
   window.addEventListener('popstate', (e) => {
-    if (e.state && e.state.view === 'solver' && e.state.problemId) {
-      selectProblem(e.state.problemId, false);
-      switchView('solver', false);
-    } else if (e.state && e.state.view === 'curriculum') {
-      switchView('curriculum', false);
-    } else {
-      handleHashRouting(false);
+    // 1. If any modal is currently visible, close it
+    const openModals = Array.from(document.querySelectorAll('.fixed.inset-0')).filter(m => !m.classList.contains('hidden'));
+    if (openModals.length > 0) {
+      openModals.forEach(m => m.classList.add('hidden'));
+      return;
     }
+
+    // 2. If state or hash says curriculum or roadmap or sheet, switch to curriculum
+    const hash = window.location.hash || '';
+    if ((e.state && e.state.view === 'curriculum') || hash === '' || hash === '#' || hash === '#/roadmap' || hash === '#roadmap' || hash.includes('sheet') || hash.includes('striver') || hash.includes('neetcode') || hash.includes('blind') || hash.includes('core-path')) {
+      switchView('curriculum', false);
+      if (hash.includes('striver') || hash.includes('neetcode') || hash.includes('blind') || hash.includes('core-path')) {
+        handleHashRouting(false);
+      }
+      return;
+    }
+
+    // 3. If state or hash says solver
+    if ((e.state && e.state.view === 'solver' && e.state.problemId) || hash.startsWith('#/problem/')) {
+      const match = hash.match(/^#\/?problem\/(\d+)/i);
+      const pId = (e.state && e.state.problemId) ? e.state.problemId : (match ? parseInt(match[1], 10) : state.currentProblemId);
+      if (pId) {
+        selectProblem(pId, false, false);
+      }
+      switchView('solver', false);
+      return;
+    }
+
+    handleHashRouting(false);
   });
 
   window.addEventListener('hashchange', () => {
@@ -2100,29 +2191,43 @@ async function switchSheet(slug) {
       state.progress = data.progress;
     }
 
-    // Update Header active sheet name
+    // Update Header active sheet name & Tab bar state
     const activeSheetNameEl = document.getElementById('active-sheet-name');
+    const titles = {
+      'core-path': 'The Core Path (610)',
+      'striver-sde': "Striver's SDE (95)",
+      'neetcode-150': 'NeetCode 150',
+      'blind-75': 'Blind 75'
+    };
+    const displayTitle = titles[slug] || (data.sheet_title || slug);
     if (activeSheetNameEl) {
-      const titles = {
-        'core-path': 'The Core Path (610)',
-        'striver-sde': "Striver's SDE (95)",
-        'neetcode-150': 'NeetCode 150',
-        'blind-75': 'Blind 75'
-      };
-      activeSheetNameEl.textContent = titles[slug] || (data.sheet_title || slug);
+      activeSheetNameEl.textContent = displayTitle;
     }
+
+    document.querySelectorAll('.sheet-tab-btn').forEach(btn => {
+      if (btn.dataset.slug === slug) {
+        btn.className = "sheet-tab-btn active px-3.5 py-1.5 rounded-lg bg-amber-500 text-black font-bold text-xs transition flex items-center space-x-1.5 shadow-sm";
+      } else {
+        btn.className = "sheet-tab-btn px-3.5 py-1.5 rounded-lg bg-surface2 text-zinc-300 hover:text-white hover:bg-surface3 border border-borderDefault font-medium text-xs transition flex items-center space-x-1.5";
+      }
+    });
 
     renderStats();
     renderSidebar();
     renderCurriculumTable();
     if (state.problems.length > 0) {
-      selectProblem(state.problems[0].id, true);
+      selectProblem(state.problems[0].id, false, false);
     }
 
-    // Save active sheet preference
+    // Save active sheet preference & history state
     saveSetting({ active_sheet: slug });
     loadSheetsList();
-    showNotification(`Switched to: ${activeSheetNameEl ? activeSheetNameEl.textContent : slug}`);
+
+    if (window.history && window.history.replaceState) {
+      history.replaceState({ view: 'curriculum', sheet: slug }, '', `#/sheet/${slug}`);
+    }
+
+    showNotification(`Switched to: ${displayTitle}`);
   } catch (err) {
     console.error("Failed to switch sheet:", err);
     showNotification("Error loading sheet!");
@@ -2252,8 +2357,18 @@ function copyBadgeMarkdown() {
 }
 
 function advanceNext() {
-  if (state.currentProblemId < state.problems.length) {
-    selectProblem(state.currentProblemId + 1, true, true);
+  if (!state.problems || state.problems.length === 0) return;
+  const currIdx = state.problems.findIndex(p => p.id === state.currentProblemId);
+  if (currIdx >= 0 && currIdx < state.problems.length - 1) {
+    selectProblem(state.problems[currIdx + 1].id, true, true);
+  }
+}
+
+function advancePrev() {
+  if (!state.problems || state.problems.length === 0) return;
+  const currIdx = state.problems.findIndex(p => p.id === state.currentProblemId);
+  if (currIdx > 0) {
+    selectProblem(state.problems[currIdx - 1].id, true, true);
   }
 }
 
@@ -2263,6 +2378,8 @@ function openProblemPreview(problemId) {
   if (!prob) return;
 
   const plat = getProblemPlatform(prob);
+  const targetUrl = prob.url || plat.defaultUrl || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title)}`;
+
   const probIdEl = document.getElementById('preview-prob-id');
   if (probIdEl) probIdEl.textContent = `#${prob.id}`;
   
@@ -2307,7 +2424,7 @@ function openProblemPreview(problemId) {
 
   const extLink = document.getElementById('btn-preview-external');
   if (extLink) {
-    extLink.href = prob.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title)}`;
+    extLink.href = targetUrl;
   }
   const extLabel = document.getElementById('preview-external-label');
   if (extLabel) extLabel.textContent = `Open on ${plat.name}`;
@@ -2535,11 +2652,19 @@ function handleLogout() {
 
 function openModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('hidden');
+  if (!el) return;
+  el.classList.remove('hidden');
+  if (window.history && window.history.pushState) {
+    history.pushState({ modalOpen: id, view: state.currentView || 'curriculum', problemId: state.currentProblemId }, '', window.location.hash);
+  }
 }
 
-function closeModals() {
-  document.querySelectorAll('.fixed.inset-0').forEach(m => m.classList.add('hidden'));
+function closeModals(popHistory = false) {
+  const openList = Array.from(document.querySelectorAll('.fixed.inset-0')).filter(m => !m.classList.contains('hidden'));
+  openList.forEach(m => m.classList.add('hidden'));
+  if (popHistory && openList.length > 0 && window.history && window.history.state && window.history.state.modalOpen) {
+    window.history.back();
+  }
 }
 
 function openSettingsModal() {

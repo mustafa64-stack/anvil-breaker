@@ -1,11 +1,9 @@
 {
-  "description": "Anvil Breaker - High performance algorithmic engineering platform by Mustafa Marjani",
-  "repo": "https://github.com/mustafa64-stack/anvil-breaker",
   "owner": {
     "username": "mustafa64-stack",
     "email": "mustafamarjani64@gmail.com"
   },
-  "record": {
+  "records": {
     "CNAME": "anvil-breaker.onrender.com"
   }
 }

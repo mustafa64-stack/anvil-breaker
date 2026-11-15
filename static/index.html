@@ -331,6 +331,36 @@
       </div>
     </div>
 
+    <!-- Dedicated Multi-Sheet Roadmaps Tab Bar -->
+    <div class="border-b border-borderDefault bg-surface1 px-6 py-2.5">
+      <div class="max-w-6xl mx-auto flex items-center justify-between gap-3 overflow-x-auto scrollbar-none">
+        <div class="flex items-center space-x-2 text-xs">
+          <span class="text-zinc-500 font-mono text-[11px] uppercase tracking-wider mr-1 hidden sm:inline">Sheet:</span>
+          
+          <button class="sheet-tab-btn active px-3.5 py-1.5 rounded-lg bg-amber-500 text-black font-bold text-xs transition flex items-center space-x-1.5 shadow-sm" data-slug="core-path">
+            <span>The Core Path (610)</span>
+          </button>
+          
+          <button class="sheet-tab-btn px-3.5 py-1.5 rounded-lg bg-surface2 text-zinc-300 hover:text-white hover:bg-surface3 border border-borderDefault font-medium text-xs transition flex items-center space-x-1.5" data-slug="striver-sde">
+            <span>Striver SDE (95)</span>
+          </button>
+
+          <button class="sheet-tab-btn px-3.5 py-1.5 rounded-lg bg-surface2 text-zinc-300 hover:text-white hover:bg-surface3 border border-borderDefault font-medium text-xs transition flex items-center space-x-1.5" data-slug="neetcode-150">
+            <span>NeetCode 150</span>
+          </button>
+
+          <button class="sheet-tab-btn px-3.5 py-1.5 rounded-lg bg-surface2 text-zinc-300 hover:text-white hover:bg-surface3 border border-borderDefault font-medium text-xs transition flex items-center space-x-1.5" data-slug="blind-75">
+            <span>Blind 75</span>
+          </button>
+        </div>
+
+        <button id="btn-tab-create-sheet" class="shrink-0 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-amber-400 border border-amber-500/30 font-medium text-xs transition flex items-center space-x-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>Custom Sheet</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Curriculum Filter & Search Toolbar -->
     <div class="border-b border-borderDefault bg-surface1/60 px-6 py-3 sticky top-0 z-20 backdrop-blur">
       <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
@@ -452,9 +482,9 @@
           <div class="space-y-2">
             <!-- Back to Sheet Roadmap Button & Badges -->
             <div class="flex flex-wrap items-center gap-2">
-              <button id="btn-back-to-curriculum" class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-surface2 hover:bg-surface3 text-zinc-300 hover:text-white border border-borderDefault text-xs font-semibold transition active:scale-95 shadow-sm group" title="Return to Full Curriculum Table">
-                <svg class="w-3.5 h-3.5 text-amber-500 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                <span>Roadmap</span>
+              <button id="btn-back-to-curriculum" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 text-zinc-200 hover:text-white border border-borderDefault text-xs font-semibold transition active:scale-95 shadow-sm group" title="Return to Sheet Roadmap (or press browser '<' back arrow)">
+                <svg class="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <span>Back to Sheet</span>
               </button>
 
               <span class="text-zinc-600">·</span>
@@ -473,14 +503,14 @@
 
           <!-- Primary Actions -->
           <div class="flex items-center space-x-3 shrink-0">
-            <!-- Open Problem on Target Platform (CSES, LeetCode, Codeforces) -->
-            <button id="btn-open-brave" class="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm flex items-center space-x-2 transition shadow-sm active:scale-98" title="Open problem on official site (Press 'B')">
+            <!-- Open Problem on Target Platform (CSES, LeetCode, Codeforces) - Universal Direct Link (Zero Popup Block) -->
+            <a id="btn-open-platform-link" href="#" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm flex items-center space-x-2 transition shadow-sm active:scale-98 cursor-pointer" title="Open problem on target site (Press 'B')">
               <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
               <span id="btn-open-platform-text">Open Problem</span>
               <span class="text-[10px] font-mono bg-black/10 px-1.5 py-0.5 rounded text-zinc-900 hidden sm:inline">B</span>
-            </button>
+            </a>
 
             <!-- Navigation Controls (Prev / Next) -->
             <div class="flex items-center bg-surface2 rounded-lg p-1 border border-borderDefault">
@@ -629,7 +659,7 @@
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
               </button>
 
-              <button id="btn-popout-timer" class="px-3 py-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-amber-400 border border-borderDefault text-xs font-semibold flex items-center space-x-1.5 transition" title="Pop-out Floating Mini HUD for LeetCode (Press 'H')">
+              <button id="btn-popout-timer" class="px-3 py-2.5 rounded-lg bg-surface2 hover:bg-surface3 text-amber-400 border border-borderDefault text-xs font-semibold flex items-center space-x-1.5 transition" title="Pop-out Floating Mini HUD Timer (Press 'H')">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                 <span>Pop-out HUD</span>
               </button>
@@ -762,9 +792,9 @@
               </div>
 
               <div class="p-3 rounded-lg bg-surface2 border border-borderMedium text-xs text-zinc-200 flex items-center justify-between">
-                <span>Submit directly on LeetCode in Brave. Your Git extension pushes it to GitHub automatically.</span>
-                <button onclick="document.getElementById('btn-open-brave').click()" class="px-3 py-1 bg-surface3 hover:bg-surface4 text-amber-400 border border-borderMedium rounded font-bold text-xs shrink-0 ml-3">
-                  Switch to Brave
+                <span id="phase3-submit-guidance">Submit directly on target site in your browser. Record outcome below to calibrate retention.</span>
+                <button id="btn-phase3-open-link" class="px-3 py-1 bg-surface3 hover:bg-surface4 text-amber-400 border border-borderMedium rounded font-bold text-xs shrink-0 ml-3">
+                  Open Problem
                 </button>
               </div>
             </div>
@@ -922,13 +952,13 @@
   <div id="modal-brave-guide" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-surface2 rounded-xl border border-borderMedium w-full max-w-lg p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between border-b border-borderSubtle pb-2.5">
-        <h3 class="text-sm font-bold text-white">Brave & LeetCode Git Push Setup</h3>
+        <h3 class="text-sm font-bold text-white">Browser & Problem Platform Setup</h3>
         <button class="btn-close-modal text-zinc-400 hover:text-white text-lg" aria-label="Close">&times;</button>
       </div>
 
       <div class="space-y-3 text-xs text-zinc-200">
         <p class="leading-relaxed">
-          When you click <strong>Open in Brave</strong>, your browser opens the problem on LeetCode. Our native Anvil Breaker extension or LeetHub automatically pushes every solved problem to your GitHub repository.
+          When you click <strong>Open Problem</strong>, your browser opens the challenge directly on LeetCode, CSES, or Codeforces. Your private database records every solve and tracks your spaced-repetition retention curves.
         </p>
 
         <div class="bg-surface1 p-3.5 rounded-lg border border-borderDefault space-y-2">

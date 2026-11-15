@@ -13,6 +13,21 @@ def slugify(title):
     clean = re.sub(r'[\s_]+', '-', clean).lower()
     return clean.strip('-')
 
+def resolve_platform(url: str, title: str = "") -> str:
+    u = (url or "").lower()
+    t = (title or "").lower()
+    if "cses.fi" in u or "[cses]" in t:
+        return "CSES"
+    if "codeforces.com" in u or "[cf]" in t or "[codeforces]" in t:
+        return "Codeforces"
+    if "geeksforgeeks.org" in u or "gfg" in t:
+        return "GeeksforGeeks"
+    if "hackerrank.com" in u:
+        return "HackerRank"
+    if "interviewbit.com" in u:
+        return "InterviewBit"
+    return "LeetCode"
+
 def get_striver_sde_sheet():
     raw_data = [
         # Day 1: Arrays
@@ -151,7 +166,7 @@ def get_striver_sde_sheet():
             "level_full": "Easy" if lvl == "E" else ("Medium" if lvl == "M" else "Hard"),
             "lists": ["Striver SDE"],
             "hint": hint,
-            "platform": "LeetCode" if "leetcode" in url else "InterviewBit",
+            "platform": resolve_platform(url, title),
             "url": url,
             "is_premium": False
         })
