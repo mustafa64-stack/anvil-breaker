@@ -78,7 +78,7 @@ def get_current_user_id(authorization: Optional[str] = None, x_user: Optional[st
     c.execute("""
     INSERT INTO users (username, email, password_hash, daily_goal, streak, last_active_date, today_solved_count, created_at)
     VALUES (?, ?, ?, 3, 1, ?, 0, ?)
-    """, (username, f"{username}@anvilbreaker.dev", database.hash_password('default'), today_str, today_str))
+    """, (username, f"{username}@anvilbreaker.is-a.dev", database.hash_password('default'), today_str, today_str))
     uid = c.lastrowid
     conn.commit()
     conn.close()
@@ -384,7 +384,7 @@ def auth_me(authorization: Optional[str] = Header(None), x_user: Optional[str] =
         "user": {
             "id": user["id"],
             "username": user["username"],
-            "email": user.get("email") or f"{user['username']}@anvilbreaker.dev",
+            "email": user.get("email") or f"{user['username']}@anvilbreaker.is-a.dev",
             "github_username": user.get("github_username") or "",
             "leetcode_username": user.get("leetcode_username") or "",
             "preferred_browser": user.get("preferred_browser") or "auto",
@@ -408,7 +408,7 @@ def auth_connect(payload: ConnectAccountsRequest, authorization: Optional[str] =
         "user": {
             "id": updated_user["id"],
             "username": updated_user["username"],
-            "email": updated_user.get("email") or f"{updated_user['username']}@anvilbreaker.dev",
+            "email": updated_user.get("email") or f"{updated_user['username']}@anvilbreaker.is-a.dev",
             "github_username": updated_user.get("github_username") or "",
             "leetcode_username": updated_user.get("leetcode_username") or "",
             "preferred_browser": updated_user.get("preferred_browser") or "auto"

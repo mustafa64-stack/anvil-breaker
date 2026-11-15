@@ -25,9 +25,9 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - APP_DOMAIN=${APP_DOMAIN:-anvilbreaker.dev}
+      - APP_DOMAIN=${APP_DOMAIN:-anvilbreaker.is-a.dev}
     command: >
-      caddy reverse-proxy --from ${APP_DOMAIN:-anvilbreaker.dev} --to app:8765
+      caddy reverse-proxy --from ${APP_DOMAIN:-anvilbreaker.is-a.dev} --to app:8765
     volumes:
       - caddy_data:/data
       - caddy_config:/config

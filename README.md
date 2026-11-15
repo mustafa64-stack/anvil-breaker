@@ -5,18 +5,18 @@
 # ⚒️ ANVIL BREAKER™
 ### Break the Tutorial Anvil. 15 Minutes or Move On.
 
-[![Live on anvilbreaker.dev](https://img.shields.io/badge/Production-anvilbreaker.dev-F59E0B.svg?logo=googlechrome&logoColor=white)](https://anvilbreaker.dev)
-[![Render Fallback](https://img.shields.io/badge/Render-Live%20Deploy-46E3B7.svg?logo=render&logoColor=white)](https://anvil-breaker.onrender.com)
+[![Live on anvilbreaker.is-a.dev](https://img.shields.io/badge/Domain-anvilbreaker.is--a.dev-F59E0B.svg?logo=googlechrome&logoColor=white)](https://anvilbreaker.is-a.dev)
+[![Render Mirror](https://img.shields.io/badge/Render-Live%20Deploy-46E3B7.svg?logo=render&logoColor=white)](https://anvil-breaker.onrender.com)
 [![GitHub](https://img.shields.io/badge/GitHub-mustafa64--stack%2Fanvil--breaker-181717.svg?logo=github)](https://github.com/mustafa64-stack/anvil-breaker)
 [![Author](https://img.shields.io/badge/Author-Mustafa%20Marjani-FFFFFF.svg?logo=github)](https://github.com/mustafa64-stack)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Version](https://img.shields.io/badge/Version-v2.3.1-amber.svg)](https://github.com/mustafa64-stack/anvil-breaker/releases)
+[![Version](https://img.shields.io/badge/Version-v2.4.1-amber.svg)](https://github.com/mustafa64-stack/anvil-breaker/releases)
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-zinc.svg)](LICENSE)
 
 **A high-performance algorithmic engineering system by Mustafa Marjani.**  
 Enforces strict protocol timeboxing (15m, 25m, 45m, custom), browser native history routing, live DOM injection HUD inside LeetCode, multi-sheet curriculum, universal multi-browser engine, and private developer vaults.
 
-[🚀 **Live Cloud App (anvilbreaker.dev)**](https://anvilbreaker.dev) • [☁️ **Render Mirror**](https://anvil-breaker.onrender.com) • [📖 **Protocol Spec**](#-1-the-15-minute-protocol) • [🧩 **Browser Extension**](#-2-floating-mini-hud--chrome-extension) • [🌐 **Custom Domain & Deploy**](#-7-custom-domain--cloud-deployment)
+[🚀 **Live Cloud App**](https://anvil-breaker.onrender.com) • [🌐 **Free Domain (anvilbreaker.is-a.dev)**](#-7-free-domain-anvilbreakeris-adev--deployment) • [📖 **Protocol Spec**](#-1-the-15-minute-protocol) • [🧩 **Browser Extension**](#-2-floating-mini-hud--chrome-extension)
 
 </div>
 
@@ -106,17 +106,28 @@ Open **`http://localhost:8765`** in Brave or Chrome.
 
 ---
 
-## 🌐 7. Custom Domain & Cloud Deployment
+## 🌐 7. Free Domain (`anvilbreaker.is-a.dev`) & Deployment
 
-### A. Pointing `anvilbreaker.dev` to Render
-`anvilbreaker.dev` is pre-configured as the official production domain. To connect it in your DNS provider (Cloudflare, Namecheap, Google Domains):
+### A. How to Claim `anvilbreaker.is-a.dev` (100% Free on GitHub)
+`is-a.dev` is a free domain service run by the open-source community for developers. To activate `anvilbreaker.is-a.dev`:
 
-| Type | Host / Name | Target / Value | Notes |
-|---|---|---|---|
-| **A** | `@` (or `anvilbreaker.dev`) | `216.24.57.1` | Render custom domain apex IP |
-| **CNAME** | `www` | `anvil-breaker.onrender.com` | Automatically provisions Let's Encrypt TLS |
-
-> **Note on `.dev` TLD:** The `.dev` top-level domain is on the HSTS preload list and requires HTTPS by default. Render automatically provisions and renews SSL certificates for `anvilbreaker.dev`.
+1. Fork the official repository: **[`is-a-dev/register`](https://github.com/is-a-dev/register)**.
+2. In the `domains/` folder, add a new file named **`anvilbreaker.json`** with the following content (pre-built in [`domains/anvilbreaker.json`](domains/anvilbreaker.json)):
+   ```json
+   {
+     "description": "Anvil Breaker - High performance algorithmic engineering platform by Mustafa Marjani",
+     "repo": "https://github.com/mustafa64-stack/anvil-breaker",
+     "owner": {
+       "username": "mustafa64-stack",
+       "email": "mustafamarjani64@gmail.com"
+     },
+     "record": {
+       "CNAME": "anvil-breaker.onrender.com"
+     }
+   }
+   ```
+3. Open a Pull Request on `is-a-dev/register`. The automated CI bot validates the record and merges it for free!
+4. In your **Render Dashboard** -> **anvil-breaker** -> **Settings** -> **Custom Domains** -> Add **`anvilbreaker.is-a.dev`**.
 
 ### B. One-Click Cloud Deployment (Render Blueprint)
 Deploy or replicate instantly to **Render.com** via [`render.yaml`](render.yaml):
@@ -125,8 +136,7 @@ Deploy or replicate instantly to **Render.com** via [`render.yaml`](render.yaml)
 
 1. Click the button above or visit `https://render.com/deploy?repo=https://github.com/mustafa64-stack/anvil-breaker`.
 2. Click **Create Blueprint**.
-3. In Render Dashboard -> **Settings** -> **Custom Domains** -> Add **`anvilbreaker.dev`**.
-4. Live Cloud Production: **`https://anvilbreaker.dev`** (Mirror: `https://anvil-breaker.onrender.com`).
+3. Live Cloud App: **`https://anvil-breaker.onrender.com`** (and `https://anvilbreaker.is-a.dev`).
 
 ---
 

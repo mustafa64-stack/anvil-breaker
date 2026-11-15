@@ -2233,7 +2233,7 @@ function openBadgeModal() {
   }
   const input = document.getElementById('badge-markdown-input');
   if (input) {
-    const origin = (window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')) ? window.location.origin : 'https://anvilbreaker.dev';
+    const origin = (window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')) ? window.location.origin : 'https://anvilbreaker.is-a.dev';
     input.value = `[![Anvil Breaker](${origin}/api/badge/${encodeURIComponent(userKey)}.svg)](${origin})`;
   }
   openModal('modal-badge-share');

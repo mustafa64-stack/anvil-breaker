@@ -5,17 +5,17 @@ class Settings:
     PROJECT_NAME: str = "Anvil Breaker™"
     PROJECT_SUBTITLE: str = "Break the Tutorial Anvil. 15 Minutes or Move On."
     FOUNDER: str = "Mustafa Marjani"
-    VERSION: str = "2.3.1"
-    DOMAIN: str = "anvilbreaker.dev"
-    BASE_URL: str = "https://anvilbreaker.dev"
+    VERSION: str = "2.4.1"
+    DOMAIN: str = "anvilbreaker.is-a.dev"
+    BASE_URL: str = "https://anvilbreaker.is-a.dev"
     API_V1_STR: str = "/api"
     
     # Allowed CORS Origins
     CORS_ORIGINS: list = [
+        "https://anvilbreaker.is-a.dev",
+        "http://anvilbreaker.is-a.dev",
         "https://anvilbreaker.dev",
         "http://anvilbreaker.dev",
-        "https://www.anvilbreaker.dev",
-        "http://www.anvilbreaker.dev",
         "https://anvil-breaker.onrender.com",
         "http://localhost:8765",
         "http://127.0.0.1:8765"
