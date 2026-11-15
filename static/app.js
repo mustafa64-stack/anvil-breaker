@@ -191,20 +191,20 @@ function applyHudPreset(presetKey, customObj = null, resetClock = true) {
   // Update Preset button styles
   document.querySelectorAll('.hud-preset-btn').forEach(btn => {
     if (btn.dataset.preset === presetKey) {
-      btn.className = "hud-preset-btn active px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold transition shadow-sm";
+      btn.className = "hud-preset-btn active px-3 py-1.5 rounded-md bg-surface3 text-amber-400 border border-borderMedium font-bold transition text-xs shadow-sm";
     } else {
-      btn.className = "hud-preset-btn px-3 py-1.5 rounded-lg bg-slate-800/90 text-slate-300 hover:text-white font-medium transition";
+      btn.className = "hud-preset-btn px-3 py-1.5 rounded-md bg-surface2 text-slate-300 hover:text-white font-medium transition text-xs";
     }
   });
 
   const customBtn = document.getElementById('btn-custom-timer');
   if (customBtn) {
     if (presetKey === 'custom') {
-      customBtn.className = "px-2.5 py-1.5 rounded-lg bg-indigo-600/30 text-indigo-300 font-bold border border-indigo-500 transition";
-      customBtn.innerHTML = `<span>⚙️ Custom (${presetData.totalMinutes}m)</span>`;
+      customBtn.className = "px-2.5 py-1.5 rounded-md bg-surface3 text-amber-400 font-bold border border-amber-500/50 transition text-xs";
+      customBtn.innerHTML = `<span>Custom (${presetData.totalMinutes}m)</span>`;
     } else {
-      customBtn.className = "px-2.5 py-1.5 rounded-lg bg-slate-800/90 text-slate-300 hover:text-cyan-300 font-medium transition border border-dashed border-slate-700 flex items-center gap-1";
-      customBtn.innerHTML = `<span>⚙️ Custom</span>`;
+      customBtn.className = "px-2.5 py-1.5 rounded-md bg-surface2 text-slate-300 hover:text-amber-400 font-medium transition border border-dashed border-borderMedium text-xs";
+      customBtn.innerHTML = `<span>Custom</span>`;
     }
   }
 
@@ -1215,6 +1215,11 @@ function setupEventListeners() {
     // If typing in input or textarea, skip global shortcuts
     if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
+    if (e.key === 'Escape') {
+      closeModals();
+      return;
+    }
+
     if (e.code === 'Space') {
       e.preventDefault();
       toggleTimer();
@@ -1259,16 +1264,15 @@ async function loadSheetsList() {
     
     container.innerHTML = sheets.map(s => {
       const isActive = s.slug === (state.activeSheetSlug || 'core-path');
-      const badgeClass = s.is_system ? 'bg-indigo-500/20 text-indigo-300' : 'bg-amber-500/20 text-amber-300';
+      const badgeClass = s.is_system ? 'bg-surface3 text-slate-300 border border-borderSubtle' : 'bg-surface3 text-amber-400 border border-amber-500/30';
       const badgeText = s.is_system ? 'Curated' : 'Custom';
       return `
-        <button class="sheet-select-btn w-full px-2.5 py-2 rounded-lg text-left text-xs transition flex items-center justify-between ${isActive ? 'bg-indigo-600/30 text-white border border-indigo-500/40 font-semibold' : 'hover:bg-slate-800 text-slate-300'}" data-slug="${s.slug}">
+        <button class="sheet-select-btn w-full px-2.5 py-2 rounded-md text-left text-xs transition flex items-center justify-between ${isActive ? 'bg-surface3 text-amber-400 border border-amber-500/40 font-semibold' : 'hover:bg-surface2 text-slate-300'}" data-slug="${s.slug}">
           <div class="truncate mr-2">
             <div class="font-medium text-slate-200 truncate flex items-center gap-1.5">
-              <span>${s.is_system ? '📘' : '⭐'}</span>
               <span>${escapeHtml(s.title)}</span>
             </div>
-            <div class="text-[10px] text-slate-500 truncate">${escapeHtml(s.author || '')} · ${s.problem_count} problems</div>
+            <div class="text-[10px] text-slate-400 truncate">${escapeHtml(s.author || '')} · ${s.problem_count} problems</div>
           </div>
           <span class="text-[9px] px-1.5 py-0.5 rounded font-mono uppercase shrink-0 ${badgeClass}">${badgeText}</span>
         </button>
@@ -1491,9 +1495,9 @@ async function openReviewsModal() {
     if (reviews.length === 0) {
       container.innerHTML = `
         <div class="py-8 text-center space-y-2">
-          <span class="text-3xl">🎉</span>
-          <p class="text-sm font-bold text-slate-200">No Re-solves Due Today!</p>
-          <p class="text-xs text-slate-500">Keep solving problems cleanly or re-attempt previously struggling ones.</p>
+          <svg class="w-8 h-8 text-amber-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p class="text-xs font-bold text-slate-200 uppercase tracking-wide">Queue Clear · No Reviews Due Today</p>
+          <p class="text-[11px] text-slate-400">Keep solving problems cleanly. Any struggle triggers the SM-2 decay matrix.</p>
         </div>
       `;
       return;
@@ -1545,7 +1549,8 @@ async function saveSetting(patch) {
 function updateSoundIcon() {
   const icon = document.getElementById('sound-icon');
   if (icon) {
-    icon.textContent = state.soundEnabled ? '🔔' : '🔕';
+    icon.textContent = state.soundEnabled ? 'AUDIO' : 'MUTE';
+    icon.className = state.soundEnabled ? "text-[10px] font-bold font-mono text-amber-400" : "text-[10px] font-bold font-mono text-slate-500";
   }
 }
 

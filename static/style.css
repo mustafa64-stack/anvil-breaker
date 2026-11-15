@@ -1,22 +1,51 @@
-/* style.css - DSA Core Path styling */
+/* style.css - Anvil Breaker Design System (Crafted, Anti-Vibe-Coded) */
 
-/* Custom subtle scrollbars */
+:root {
+  --bg-canvas: #090d16;
+  --bg-surface-1: #0d1424;
+  --bg-surface-2: #121a2d;
+  --bg-surface-3: #182239;
+  --bg-surface-4: #1e2b47;
+  
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --border-focus: rgba(245, 158, 11, 0.5);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent-amber: #f59e0b;
+  --accent-amber-hover: #d97706;
+  --accent-indigo: #6366f1;
+  --accent-emerald: #10b981;
+  --accent-rose: #f43f5e;
+}
+
+/* Tabular numbers for all clocks, counters, and statistics */
+.tabular-nums, #timer-display, #docked-timer-display, #timer-digits, .font-mono {
+  font-variant-numeric: tabular-nums;
+  -moz-font-feature-settings: "tnum";
+  -webkit-font-feature-settings: "tnum";
+  font-feature-settings: "tnum";
+}
+
+/* Subtle, functional scrollbars (respects OS theme) */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #090d16;
+  background: var(--bg-canvas);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
+  background: #25334d;
+  border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #3b4d70;
 }
 
-/* Hide horizontal scrollbar when needed */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
@@ -25,76 +54,73 @@
   scrollbar-width: none;
 }
 
-/* Stepper styles */
+/* Accessible focus rings */
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent-amber) !important;
+  outline-offset: 2px !important;
+}
+
+/* Stepper styles with semantic visual weight (No random neon glows) */
 .protocol-step {
-  background: #0c1220;
-  border-color: rgba(255, 255, 255, 0.07);
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.18s ease;
+}
+
+.protocol-step:hover {
+  background: var(--bg-surface-2);
+  border-color: var(--border-medium);
 }
 
 .protocol-step.active {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
-  border-color: rgba(99, 102, 241, 0.5);
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+  background: var(--bg-surface-2);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
   opacity: 1 !important;
 }
 
 .protocol-step[data-phase="1"].active {
-  border-color: rgba(6, 182, 212, 0.6);
-  box-shadow: 0 0 18px rgba(6, 182, 212, 0.2);
+  border-color: rgba(56, 189, 248, 0.5);
 }
 
 .protocol-step[data-phase="2"].active {
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 0 18px rgba(139, 92, 246, 0.2);
+  border-color: rgba(129, 140, 248, 0.5);
 }
 
 .protocol-step[data-phase="3"].active {
-  border-color: rgba(16, 185, 129, 0.6);
-  box-shadow: 0 0 18px rgba(16, 185, 129, 0.2);
+  border-color: rgba(52, 211, 153, 0.5);
 }
 
 .protocol-step[data-phase="4"].active {
-  border-color: rgba(244, 63, 94, 0.6);
-  box-shadow: 0 0 20px rgba(244, 63, 94, 0.25);
-  animation: pulse-border 2s infinite ease-in-out;
-}
-
-@keyframes pulse-border {
-  0%, 100% {
-    border-color: rgba(244, 63, 94, 0.6);
-  }
-  50% {
-    border-color: rgba(244, 63, 94, 0.9);
-  }
+  border-color: rgba(251, 113, 133, 0.6);
 }
 
 /* Pattern pill active state */
 .pattern-pill.active {
-  background: rgba(139, 92, 246, 0.3) !important;
-  border-color: #8b5cf6 !important;
-  color: #c4b5fd !important;
-  font-weight: 700;
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  color: #fbbf24 !important;
+  font-weight: 600;
 }
 
-/* Sidebar problem row hover */
+/* Problem item active and hover */
 .problem-item {
-  transition: all 0.15s ease-in-out;
+  transition: background-color 0.12s ease;
 }
 .problem-item:hover {
-  background-color: rgba(30, 41, 59, 0.5);
+  background-color: var(--bg-surface-2);
 }
 .problem-item.active {
-  background: linear-gradient(90deg, rgba(79, 70, 229, 0.2) 0%, rgba(15, 23, 42, 0.5) 100%);
-  border-left: 3px solid #6366f1;
+  background-color: var(--bg-surface-3);
+  border-left: 3px solid var(--accent-amber);
 }
 
-/* Animations */
+/* Micro-animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(3px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .phase-panel {
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
