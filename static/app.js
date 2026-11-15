@@ -1997,6 +1997,9 @@ function setupEventListeners() {
   const btnLogout = document.getElementById('btn-logout-user');
   if (btnLogout) btnLogout.addEventListener('click', handleLogout);
 
+  const btnHeaderLogout = document.getElementById('btn-header-logout');
+  if (btnHeaderLogout) btnHeaderLogout.addEventListener('click', handleLogout);
+
   const btnGuest = document.getElementById('btn-auth-guest');
   if (btnGuest) btnGuest.addEventListener('click', () => closeModals());
 
@@ -2319,9 +2322,11 @@ function updateUserUI(user) {
   const pillEl = document.getElementById('user-connected-pill');
   const ghStatus = document.getElementById('setting-gh-status');
   const lcStatus = document.getElementById('setting-lc-status');
+  const logoutBtn = document.getElementById('btn-header-logout');
 
   if (user) {
-    if (nameEl) nameEl.textContent = user.username || user.email.split('@')[0];
+    if (logoutBtn) logoutBtn.classList.remove('hidden');
+    if (nameEl) nameEl.textContent = `@${user.username || user.email.split('@')[0]}`;
     if (avatarEl) {
       if (user.github_username) {
         avatarEl.innerHTML = `<img src="https://github.com/${escapeHtml(user.github_username)}.png?size=40" class="w-full h-full rounded-full object-cover" onerror="this.innerText='${(user.username || 'U')[0].toUpperCase()}'">`;
@@ -2339,7 +2344,7 @@ function updateUserUI(user) {
         pillEl.textContent = 'GH Sync';
         pillEl.className = 'hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono bg-indigo-500/20 text-indigo-400 border border-indigo-500/30';
       } else {
-        pillEl.textContent = 'Cloud Vault';
+        pillEl.textContent = 'Private Vault';
         pillEl.className = 'hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono bg-amber-500/20 text-amber-400 border border-amber-500/30';
       }
     }
@@ -2353,6 +2358,7 @@ function updateUserUI(user) {
     const lcInput = document.getElementById('connect-leetcode-input');
     if (lcInput) lcInput.value = user.leetcode_username || '';
   } else {
+    if (logoutBtn) logoutBtn.classList.add('hidden');
     if (nameEl) nameEl.textContent = 'Sign In';
     if (avatarEl) avatarEl.textContent = 'U';
     if (pillEl) {
@@ -2367,6 +2373,11 @@ function updateUserUI(user) {
 async function initAuth() {
   const token = localStorage.getItem('anvil_token');
   if (!token) {
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('/app') || path.includes('/workspace') || path.includes('/solver') || path.includes('/dashboard')) {
+      window.location.href = '/';
+      return;
+    }
     updateUserUI(null);
     return;
   }
@@ -2379,8 +2390,10 @@ async function initAuth() {
       updateUserUI(data.user);
     } else {
       localStorage.removeItem('anvil_token');
+      localStorage.removeItem('anvil_user');
       state.token = '';
       updateUserUI(null);
+      window.location.href = '/';
     }
   } catch (err) {
     console.warn("Auth check failed:", err);
@@ -2511,12 +2524,13 @@ async function handleSaveConnections() {
 
 function handleLogout() {
   localStorage.removeItem('anvil_token');
+  localStorage.removeItem('anvil_user');
   state.token = '';
   state.user = null;
   updateUserUI(null);
   closeModals();
   showNotification("Signed out of private vault.");
-  initApp();
+  window.location.href = '/';
 }
 
 function openModal(id) {

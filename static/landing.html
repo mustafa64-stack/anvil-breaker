@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anvil Breaker™ — Break the Tutorial Anvil</title>
+  <title>Anvil Breaker™ — Break the LeetCode Anvil. 15 Minutes or Move On.</title>
+  <meta name="description" content="Anvil Breaker™ — High-performance algorithmic engineering system by Mustafa Marjani. Master DSA with the 15-minute protocol, private developer vaults, and multi-sheet curriculum.">
   <link rel="icon" type="image/png" href="/static/favicon.png">
   <link rel="shortcut icon" href="/static/favicon.ico">
-  
+  <link rel="apple-touch-icon" href="/static/icon-192.png">
+
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -24,8 +27,15 @@
             surface2: '#121215',
             surface3: '#18181b',
             surface4: '#27272a',
+            borderSubtle: 'rgba(255, 255, 255, 0.05)',
             borderDefault: 'rgba(255, 255, 255, 0.08)',
-            borderMedium: 'rgba(255, 255, 255, 0.14)'
+            borderMedium: 'rgba(255, 255, 255, 0.14)',
+            amberAccent: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
           },
           fontFamily: {
             sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
@@ -37,147 +47,555 @@
   </script>
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body class="bg-canvas text-white font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500/25 selection:text-white">
+<body class="bg-canvas text-white font-sans min-h-screen flex flex-col selection:bg-amber-500/25 selection:text-white">
 
   <!-- TOP NAVBAR -->
-  <header class="max-w-6xl mx-auto w-full px-6 py-5 flex items-center justify-between border-b border-borderDefault">
+  <header class="border-b border-borderDefault bg-surface1/95 backdrop-blur sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between">
     <div class="flex items-center space-x-3.5">
-      <img src="/static/logo-nav.png" class="w-9 h-9 rounded-xl border border-white/10 shadow-sm object-cover" alt="Anvil Breaker Logo">
-      <div>
-        <h1 class="text-sm font-bold tracking-wider text-white uppercase flex items-center gap-1.5">
-          ANVIL BREAKER <span class="text-[9px] text-amber-400 font-mono font-semibold">PRO</span>
-        </h1>
-        <p class="text-[10px] text-zinc-400 font-mono">By Mustafa Marjani</p>
-      </div>
+      <a href="/" class="flex items-center space-x-2.5 group">
+        <div class="relative shrink-0">
+          <img src="/static/logo-nav.png" class="w-8 h-8 rounded-lg border border-white/10 shadow-sm object-cover transition-transform group-hover:scale-105" alt="Anvil Breaker Logo">
+          <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-white/10 pointer-events-none"></div>
+        </div>
+        <div>
+          <h1 class="text-xs font-bold tracking-wider text-white uppercase flex items-center gap-1.5">
+            ANVIL BREAKER <span class="text-[9px] text-amber-400 font-mono font-semibold">PRO</span>
+          </h1>
+          <p class="text-[10px] text-zinc-400 font-mono hidden sm:block">By Mustafa Marjani</p>
+        </div>
+      </a>
+
+      <!-- Quick Nav Links -->
+      <nav class="hidden md:flex items-center space-x-5 text-xs font-medium text-zinc-400 ml-6">
+        <a href="#features" class="hover:text-white transition">Features</a>
+        <a href="#protocol" class="hover:text-white transition">15m Protocol</a>
+        <a href="#sheets" class="hover:text-white transition">Curriculum Sheets</a>
+        <a href="#private-vault" class="hover:text-white transition">Private Vaults</a>
+      </nav>
     </div>
+
+    <!-- Right Header Controls -->
     <div class="flex items-center space-x-3">
-      <a href="https://github.com/mustafa64-stack/anvil-breaker" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-zinc-200 text-xs font-semibold transition flex items-center gap-1.5">
+      <a href="https://github.com/mustafa64-stack/anvil-breaker" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-zinc-300 text-xs font-semibold transition">
         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
         <span>GitHub</span>
       </a>
-      <a href="/" class="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs transition shadow-sm">
-        Launch Command Center ➔
-      </a>
-    </div>
-  </header>
 
-  <!-- HERO SECTION -->
-  <main class="max-w-4xl mx-auto px-6 py-12 text-center space-y-10 flex-1 flex flex-col justify-center">
-    
-    <!-- Hero Art: Realistic Shattering Anvil Logo with Ambient Depth -->
-    <div class="flex justify-center">
-      <div class="relative">
-        <div class="absolute -inset-2 rounded-3xl bg-amber-500/10 blur-xl pointer-events-none"></div>
-        <img src="/static/hero_logo.jpg" class="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl shadow-2xl border border-borderMedium object-cover" alt="Anvil Breaker Icon">
-      </div>
-    </div>
-
-    <!-- Badge Pill -->
-    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-surface2 border border-borderDefault text-zinc-200 text-xs font-semibold mx-auto">
-      <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-      <span class="text-white">The 15-Minute Protocol</span>
-      <span class="text-zinc-500">·</span>
-      <span class="text-zinc-400">Stop Tutorial Hell</span>
-    </div>
-
-    <!-- Main Headline -->
-    <div class="space-y-4">
-      <h2 class="text-4xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-        Break the LeetCode Anvil.<br>
-        <span class="text-amber-400">15 Minutes or Move On.</span>
-      </h2>
-
-      <p class="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-        Spending 90 minutes stuck on one problem isn’t learning—it’s cognitive friction and ego trap. Anvil Breaker enforces an algorithmic 4-phase timebox, live DOM injection in LeetCode, and SuperMemo-2 memory decay curves so you never struggle aimlessly again.
-      </p>
-    </div>
-
-    <!-- 4-Phase Protocol Visual Timeline -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-left max-w-3xl mx-auto">
-      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
-        <div class="flex items-center justify-between text-[11px] font-mono text-sky-400 font-bold">
-          <span>PHASE 1</span>
-          <span>00–03m</span>
-        </div>
-        <div class="text-xs font-bold text-white">Read & Trace</div>
-        <div class="text-[11px] text-zinc-400 leading-snug">Dry-run test cases on pen & paper. No typing.</div>
-      </div>
-
-      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
-        <div class="flex items-center justify-between text-[11px] font-mono text-indigo-400 font-bold">
-          <span>PHASE 2</span>
-          <span>03–07m</span>
-        </div>
-        <div class="text-xs font-bold text-white">Pick a Pattern</div>
-        <div class="text-[11px] text-zinc-400 leading-snug">Map to Two Pointers, DP, Stack. Find brute force.</div>
-      </div>
-
-      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
-        <div class="flex items-center justify-between text-[11px] font-mono text-emerald-400 font-bold">
-          <span>PHASE 3</span>
-          <span>07–13m</span>
-        </div>
-        <div class="text-xs font-bold text-white">Code & Test</div>
-        <div class="text-[11px] text-zinc-400 leading-snug">Clean implementation without AI autocomplete.</div>
-      </div>
-
-      <div class="p-3.5 rounded-xl bg-surface1 border border-borderDefault space-y-1">
-        <div class="flex items-center justify-between text-[11px] font-mono text-rose-400 font-bold">
-          <span>PHASE 4</span>
-          <span>13–15m</span>
-        </div>
-        <div class="text-xs font-bold text-white">Cut Your Losses</div>
-        <div class="text-[11px] text-zinc-400 leading-snug">Hard stop. Read hint, understand WHY, re-code.</div>
-      </div>
-    </div>
-
-    <!-- 3-Step Setup Checklist Card -->
-    <div class="bg-surface1 rounded-2xl border border-borderDefault p-6 text-left max-w-xl mx-auto space-y-4 shadow-xl">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xs font-mono font-bold uppercase text-amber-400 tracking-wider">Fast Setup Checklist</h3>
-        <span class="text-[11px] text-zinc-400 font-mono">3 Steps · 2 Minutes</span>
-      </div>
-
-      <div class="space-y-3 text-xs">
-        <div class="flex items-start space-x-3 p-3 rounded-xl bg-surface2 border border-borderDefault">
-          <span class="w-6 h-6 rounded-full bg-surface3 text-amber-400 border border-borderMedium flex items-center justify-center font-bold font-mono text-[11px] shrink-0">1</span>
-          <div>
-            <div class="font-bold text-white">Load Browser Extension</div>
-            <div class="text-zinc-400 text-[11px]">Load unpacked folder <code class="text-amber-400 font-mono bg-surface3 px-1 rounded">extension/</code> in Brave or Chrome (<code class="text-zinc-200">chrome://extensions</code>).</div>
-          </div>
-        </div>
-
-        <div class="flex items-start space-x-3 p-3 rounded-xl bg-surface2 border border-borderDefault">
-          <span class="w-6 h-6 rounded-full bg-surface3 text-amber-400 border border-borderMedium flex items-center justify-center font-bold font-mono text-[11px] shrink-0">2</span>
-          <div>
-            <div class="font-bold text-white">Select Your Sheet Roadmap</div>
-            <div class="text-zinc-400 text-[11px]">Switch between Striver's SDE (95), NeetCode 150, Blind 75, Core Path (610), or create your own Self-Made sheet.</div>
-          </div>
-        </div>
-
-        <div class="flex items-start space-x-3 p-3 rounded-xl bg-surface2 border border-borderDefault">
-          <span class="w-6 h-6 rounded-full bg-surface3 text-amber-400 border border-borderMedium flex items-center justify-center font-bold font-mono text-[11px] shrink-0">3</span>
-          <div>
-            <div class="font-bold text-white">Automate LeetCode to Git Sync</div>
-            <div class="text-zinc-400 text-[11px]">Accepted submissions are automatically recorded in your SQLite database and pushed to Git.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="pt-2">
-        <a href="/" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-extrabold text-sm flex items-center justify-center space-x-2 shadow-md transition active:scale-98">
-          <span>Enter Command Center</span>
-          <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      <!-- Header Auth / Workspace Button (Dynamic) -->
+      <div id="header-auth-container">
+        <a href="#auth-card" class="px-3.5 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 border border-amber-500/40 text-amber-400 font-semibold text-xs transition">
+          Sign In
         </a>
       </div>
     </div>
+  </header>
 
-  </main>
+  <!-- ==================== HERO SECTION & AUTH VAULT ==================== -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-8 py-12 lg:py-20 flex-1 flex flex-col justify-center">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      
+      <!-- LEFT HERO COLUMN: VALUE PROPOSITION -->
+      <div class="lg:col-span-7 space-y-6 text-left">
+        
+        <!-- Badge Pill -->
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-surface2 border border-borderDefault text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span class="text-white font-mono uppercase tracking-wider text-[11px]">The 15-Minute Protocol</span>
+          <span class="text-zinc-600">·</span>
+          <span class="text-zinc-400">Stop Tutorial Hell</span>
+        </div>
 
-  <!-- FOOTER -->
-  <footer class="max-w-6xl mx-auto w-full px-6 py-6 text-center text-xs text-zinc-500 border-t border-borderDefault">
-    <p>© 2026 Mustafa Marjani. All Rights Reserved. Anvil Breaker™ Proprietary Performance Architecture.</p>
+        <!-- Headline -->
+        <div class="space-y-3">
+          <h2 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.08]">
+            Break the LeetCode Anvil.<br>
+            <span class="text-amber-400">15 Minutes or Move On.</span>
+          </h2>
+          <p class="text-sm sm:text-base text-zinc-400 max-w-xl leading-relaxed">
+            Spending 90 minutes stuck on one problem isn’t learning—it’s cognitive friction and ego trap. Anvil Breaker gives every engineer a <strong class="text-white font-semibold">100% private database vault</strong> with strict 4-phase timeboxing, multi-sheet curriculum roadmaps, and SuperMemo-2 retention decay curves.
+          </p>
+        </div>
+
+        <!-- Trust & Architecture Badges -->
+        <div class="flex flex-wrap gap-2.5 pt-2 text-xs font-mono">
+          <span class="px-2.5 py-1 rounded-lg bg-surface2 border border-borderDefault text-zinc-300 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Private Database Vault
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-surface2 border border-borderDefault text-zinc-300 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            Striver SDE 95 & NeetCode 150
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-surface2 border border-borderDefault text-zinc-300 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+            Multi-Browser Engine
+          </span>
+        </div>
+
+        <!-- Founder Quote -->
+        <div class="pt-2 flex items-center space-x-3 text-xs text-zinc-400">
+          <img src="/static/hero_logo.jpg" class="w-10 h-10 rounded-xl border border-white/10 object-cover shrink-0" alt="Anvil Breaker Icon">
+          <div>
+            <div class="text-white font-semibold">Architected by Mustafa Marjani</div>
+            <div class="text-zinc-500 text-[11px] font-mono">High-throughput interview preparation engineering</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT HERO COLUMN: THE DYNAMIC WELCOME & AUTH VAULT -->
+      <div class="lg:col-span-5" id="auth-card">
+        <div class="relative">
+          <!-- Ambient Glow -->
+          <div class="absolute -inset-1 rounded-3xl bg-gradient-to-b from-amber-500/20 via-orange-500/5 to-transparent blur-xl pointer-events-none"></div>
+
+          <div class="relative bg-surface1 border border-borderMedium rounded-2xl p-6 sm:p-7 shadow-2xl space-y-5">
+            
+            <!-- Auth Header -->
+            <div class="space-y-1 text-left">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">Private Engineering Vault</span>
+                <span class="text-[10px] font-mono text-zinc-500">v2.3.1</span>
+              </div>
+              <h3 id="auth-box-title" class="text-xl font-bold text-white tracking-tight">Create Private Vault</h3>
+              <p id="auth-box-sub" class="text-xs text-zinc-400">Sign up with your email to unlock your private database.</p>
+            </div>
+
+            <!-- Tab Switcher (Sign Up vs Sign In) -->
+            <div class="grid grid-cols-2 p-1 bg-surface2 rounded-xl border border-borderDefault text-xs font-semibold">
+              <button id="btn-tab-register" class="py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm">
+                Create Account
+              </button>
+              <button id="btn-tab-login" class="py-2 rounded-lg text-zinc-400 hover:text-white transition">
+                Sign In
+              </button>
+            </div>
+
+            <!-- Alert Box (Errors / Success) -->
+            <div id="auth-alert" class="hidden p-3 rounded-xl text-xs font-medium border"></div>
+
+            <!-- Interactive Auth Form -->
+            <form id="home-auth-form" class="space-y-3.5 text-left">
+              
+              <!-- Username Field (Sign Up mode only) -->
+              <div id="field-group-username" class="space-y-1">
+                <label class="text-[11px] font-mono font-semibold text-zinc-400 block">Developer Username:</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-2.5 text-zinc-500 font-mono text-xs">@</span>
+                  <input type="text" id="auth-username" placeholder="alex_dev" class="w-full bg-surface2 text-xs text-zinc-100 rounded-lg pl-7 pr-3 py-2.5 border border-borderDefault focus:border-amber-500 focus:outline-none transition">
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div class="space-y-1">
+                <label class="text-[11px] font-mono font-semibold text-zinc-400 block">Email Address (Gmail / Dev):</label>
+                <input type="email" id="auth-email" required placeholder="alex@gmail.com" class="w-full bg-surface2 text-xs text-zinc-100 rounded-lg px-3 py-2.5 border border-borderDefault focus:border-amber-500 focus:outline-none transition">
+                <span class="text-[10px] text-zinc-400 font-mono block">Your database progress is private to this email.</span>
+              </div>
+
+              <!-- Password Field -->
+              <div class="space-y-1">
+                <label class="text-[11px] font-mono font-semibold text-zinc-400 block">Password:</label>
+                <input type="password" id="auth-password" required placeholder="••••••••" minlength="6" class="w-full bg-surface2 text-xs text-zinc-100 rounded-lg px-3 py-2.5 border border-borderDefault focus:border-amber-500 focus:outline-none transition">
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" id="btn-auth-submit" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition flex items-center justify-center space-x-2 shadow-lg active:scale-98">
+                <span id="btn-submit-text">Create Private Vault & Enter ➔</span>
+              </button>
+
+            </form>
+
+            <!-- Active Logged In Session State (Shown if user already has token) -->
+            <div id="logged-in-box" class="hidden space-y-4 pt-1 text-left">
+              <div class="p-3.5 rounded-xl bg-surface2 border border-amber-500/30 flex items-center space-x-3">
+                <div id="active-user-avatar" class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold font-mono text-sm shrink-0">
+                  U
+                </div>
+                <div class="truncate">
+                  <div class="text-xs font-bold text-white truncate" id="active-user-name">alex_dev</div>
+                  <div class="text-[11px] text-zinc-400 truncate" id="active-user-email">alex@gmail.com</div>
+                </div>
+              </div>
+
+              <a href="/app" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition flex items-center justify-center space-x-2 shadow-lg active:scale-98">
+                <span>Enter My Private Workspace ➔</span>
+              </a>
+
+              <div class="text-center">
+                <button id="btn-switch-account" class="text-xs text-zinc-400 hover:text-white transition font-medium">
+                  Switch Account or Sign Out
+                </button>
+              </div>
+            </div>
+
+            <!-- Privacy Guarantee Note -->
+            <div class="pt-2 border-t border-borderSubtle text-[11px] text-zinc-400 text-center font-mono">
+              🔒 Private SQLite Vault · Isolated User DB · Zero Tracking
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== 15-MINUTE PROTOCOL VISUALIZER ==================== -->
+  <section id="protocol" class="border-t border-borderDefault bg-surface1/60 py-16 px-4 sm:px-8">
+    <div class="max-w-6xl mx-auto space-y-10 text-center">
+      
+      <div class="space-y-2 max-w-2xl mx-auto">
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400">Strict Timeboxed Execution</span>
+        <h3 class="text-3xl font-black text-white tracking-tight">The 15-Minute Protocol Architecture</h3>
+        <p class="text-xs sm:text-sm text-zinc-400">
+          Four distinct cognitive phases designed to systematically eliminate tutorial hell, prevent ego-traps, and rewire interview problem solving.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+        
+        <!-- Phase 1 -->
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-2.5 relative group hover:border-sky-500/50 transition">
+          <div class="flex items-center justify-between text-xs font-mono font-bold text-sky-400">
+            <span>PHASE 1</span>
+            <span class="px-2 py-0.5 rounded bg-sky-500/10 border border-sky-500/20">00–03m</span>
+          </div>
+          <h4 class="text-base font-bold text-white">Read & Trace</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Hands off the keyboard. Dissect constraints, identify invariants, and trace 2 custom edge cases on pen and paper.
+          </p>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-2.5 relative group hover:border-indigo-500/50 transition">
+          <div class="flex items-center justify-between text-xs font-mono font-bold text-indigo-400">
+            <span>PHASE 2</span>
+            <span class="px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">03–07m</span>
+          </div>
+          <h4 class="text-base font-bold text-white">Pick a Pattern</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Map to known paradigms: Two Pointers, Monotonic Stack, Sliding Window, BFS/DFS, or DP. Formulate brute-force baseline.
+          </p>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-2.5 relative group hover:border-emerald-500/50 transition">
+          <div class="flex items-center justify-between text-xs font-mono font-bold text-emerald-400">
+            <span>PHASE 3</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">07–13m</span>
+          </div>
+          <h4 class="text-base font-bold text-white">Code & Test</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Write clean production-ready code. No copy-pasting, no AI autocomplete crutches. Dry-run sample edge cases before submitting.
+          </p>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-2.5 relative group hover:border-rose-500/50 transition">
+          <div class="flex items-center justify-between text-xs font-mono font-bold text-rose-400">
+            <span>PHASE 4</span>
+            <span class="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">13–15m</span>
+          </div>
+          <h4 class="text-base font-bold text-white">Cut Your Losses (Rule 2)</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Hard stop. If stuck at minute 13, open hints, understand the mathematical proof, and re-implement from scratch from memory.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== CURRICULUM SHEETS SHOWCASE ==================== -->
+  <section id="sheets" class="py-16 px-4 sm:px-8 border-t border-borderDefault">
+    <div class="max-w-6xl mx-auto space-y-10 text-center">
+      
+      <div class="space-y-2 max-w-2xl mx-auto">
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400">Curriculum Roadmaps</span>
+        <h3 class="text-3xl font-black text-white tracking-tight">The Gold Standard DSA Roadmaps</h3>
+        <p class="text-xs sm:text-sm text-zinc-400">
+          Switch seamlessly between curated roadmaps or create your own custom self-made sheets.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+        
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-amber-400">95 PROBLEMS</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-surface3 text-zinc-300 border border-borderSubtle">FAANG</span>
+          </div>
+          <h4 class="text-base font-bold text-white">Striver's SDE Sheet</h4>
+          <p class="text-xs text-zinc-400">
+            19 high-yield chapters covering Arrays, Linked Lists, Greedy, Recursion, Binary Trees, and Dynamic Programming.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-amber-400">151 PROBLEMS</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-surface3 text-zinc-300 border border-borderSubtle">PATTERNS</span>
+          </div>
+          <h4 class="text-base font-bold text-white">NeetCode 150</h4>
+          <p class="text-xs text-zinc-400">
+            Comprehensive algorithmic pattern mastery across sliding windows, graphs, heaps, and advanced backtracking.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-amber-400">75 PROBLEMS</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-surface3 text-zinc-300 border border-borderSubtle">SPRINT</span>
+          </div>
+          <h4 class="text-base font-bold text-white">Blind 75</h4>
+          <p class="text-xs text-zinc-400">
+            The legendary high-velocity interview syllabus distilled to the most frequently asked core patterns.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-surface1 border border-borderDefault space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-amber-400">610 PROBLEMS</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-surface3 text-zinc-300 border border-borderSubtle">MASTERY</span>
+          </div>
+          <h4 class="text-base font-bold text-white">The Core Path</h4>
+          <p class="text-xs text-zinc-400">
+            Complete foundations to advanced competitive programming curriculum with full chapter accordions.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== PRIVATE VAULT FEATURES ==================== -->
+  <section id="private-vault" class="py-16 px-4 sm:px-8 border-t border-borderDefault bg-surface1/40">
+    <div class="max-w-6xl mx-auto space-y-10 text-center">
+      
+      <div class="space-y-2 max-w-2xl mx-auto">
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400">Engineered for Privacy</span>
+        <h3 class="text-3xl font-black text-white tracking-tight">Your Private Database Vault</h3>
+        <p class="text-xs sm:text-sm text-zinc-400">
+          No shared progress. Every engineer gets an isolated account with private streaks, failure notes, and SM-2 memory retention.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+        
+        <div class="p-6 rounded-2xl bg-surface1 border border-borderDefault space-y-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-bold text-lg mb-2">
+            🧠
+          </div>
+          <h4 class="text-sm font-bold text-white">SuperMemo-2 Spaced Repetition</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Mathematical review scheduling based on your ease factor and struggle metrics. Never forget a solved problem right before an interview.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-surface1 border border-borderDefault space-y-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-bold text-lg mb-2">
+            🏷️
+          </div>
+          <h4 class="text-sm font-bold text-white">5-Tier Failure Diagnostics</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Categorize failures systematically: Pattern Blindspot, Invariant Proof Failure, Boundary Bug, TLE, or Language Gotcha.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-surface1 border border-borderDefault space-y-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-bold text-lg mb-2">
+            🌐
+          </div>
+          <h4 class="text-sm font-bold text-white">Multi-Browser Engine</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Native executable launcher supporting Brave, Chrome, Edge, and Firefox. Direct practice links with automatic platform resolver (CSES, LeetCode, Codeforces).
+          </p>
+        </div>
+
+      </div>
+
+      <!-- CTA Banner -->
+      <div class="p-8 rounded-3xl bg-surface2 border border-borderMedium max-w-3xl mx-auto space-y-4 shadow-2xl">
+        <h4 class="text-2xl font-black text-white">Ready to Break the Tutorial Anvil?</h4>
+        <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">
+          Create your private vault in 10 seconds. 100% free forever.
+        </p>
+        <div>
+          <a href="#auth-card" class="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition shadow-lg active:scale-98">
+            <span>Create Private Account & Start ➔</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="border-t border-borderDefault bg-surface1 px-6 py-8 mt-auto">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
+      <div class="flex items-center space-x-3">
+        <img src="/static/logo-nav.png" class="w-6 h-6 rounded-md border border-white/10 object-cover" alt="Anvil Breaker Icon">
+        <div>
+          <span class="font-bold text-white tracking-wider">ANVIL BREAKER™</span>
+          <span class="text-zinc-500 mx-2">·</span>
+          <span>Created with obsessive focus by <strong class="text-white font-semibold">Mustafa Marjani</strong></span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4 font-mono text-[11px]">
+        <a href="https://github.com/mustafa64-stack/anvil-breaker" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">GitHub Repo</a>
+        <span class="text-zinc-700">|</span>
+        <a href="/app" class="text-amber-400 hover:text-amber-300 transition font-bold">Workspace</a>
+      </div>
+    </div>
   </footer>
+
+  <!-- ==================== AUTH LOGIC & DYNAMIC VAULT CONTROLLER ==================== -->
+  <script>
+    let authMode = 'register'; // 'register' or 'login'
+
+    const form = document.getElementById('home-auth-form');
+    const btnTabRegister = document.getElementById('btn-tab-register');
+    const btnTabLogin = document.getElementById('btn-tab-login');
+    const boxTitle = document.getElementById('auth-box-title');
+    const boxSub = document.getElementById('auth-box-sub');
+    const fieldUsername = document.getElementById('field-group-username');
+    const btnSubmitText = document.getElementById('btn-submit-text');
+    const alertBox = document.getElementById('auth-alert');
+    const loggedInBox = document.getElementById('logged-in-box');
+    const headerAuthContainer = document.getElementById('header-auth-container');
+
+    function showAlert(msg, isError = true) {
+      alertBox.textContent = msg;
+      alertBox.className = `p-3 rounded-xl text-xs font-medium border ${isError ? 'bg-rose-500/10 text-rose-300 border-rose-500/30' : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'}`;
+      alertBox.classList.remove('hidden');
+    }
+
+    function switchMode(mode) {
+      authMode = mode;
+      alertBox.classList.add('hidden');
+      if (mode === 'register') {
+        btnTabRegister.className = "py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm";
+        btnTabLogin.className = "py-2 rounded-lg text-zinc-400 hover:text-white transition";
+        boxTitle.textContent = "Create Private Vault";
+        boxSub.textContent = "Sign up with your email to unlock your private database.";
+        fieldUsername.classList.remove('hidden');
+        btnSubmitText.textContent = "Create Private Vault & Enter ➔";
+      } else {
+        btnTabLogin.className = "py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm";
+        btnTabRegister.className = "py-2 rounded-lg text-zinc-400 hover:text-white transition";
+        boxTitle.textContent = "Sign In to Vault";
+        boxSub.textContent = "Enter your credentials to access your private problems.";
+        fieldUsername.classList.add('hidden');
+        btnSubmitText.textContent = "Sign In & Enter Command Center ➔";
+      }
+    }
+
+    btnTabRegister.addEventListener('click', () => switchMode('register'));
+    btnTabLogin.addEventListener('click', () => switchMode('login'));
+
+    // Check existing login session on home page load
+    async function checkExistingSession() {
+      const token = localStorage.getItem('anvil_token');
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const user = data.user;
+          // Show active logged in box
+          form.classList.add('hidden');
+          btnTabRegister.parentElement.classList.add('hidden');
+          boxTitle.textContent = "Vault Unlocked";
+          boxSub.textContent = "Your private database session is active.";
+          loggedInBox.classList.remove('hidden');
+
+          document.getElementById('active-user-name').textContent = `@${user.username}`;
+          document.getElementById('active-user-email').textContent = user.email || `${user.username}@anvilbreaker.dev`;
+          document.getElementById('active-user-avatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
+
+          // Header button
+          headerAuthContainer.innerHTML = `
+            <a href="/app" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition flex items-center gap-1.5">
+              <span>My Workspace ➔</span>
+            </a>
+          `;
+        } else {
+          localStorage.removeItem('anvil_token');
+          localStorage.removeItem('anvil_user');
+        }
+      } catch (e) {
+        console.warn("Session check error:", e);
+      }
+    }
+
+    // Switch account / Sign out button on home page
+    const btnSwitch = document.getElementById('btn-switch-account');
+    if (btnSwitch) {
+      btnSwitch.addEventListener('click', () => {
+        localStorage.removeItem('anvil_token');
+        localStorage.removeItem('anvil_user');
+        loggedInBox.classList.add('hidden');
+        form.classList.remove('hidden');
+        btnTabRegister.parentElement.classList.remove('hidden');
+        switchMode('login');
+      });
+    }
+
+    // Handle Form Submit (Register or Login)
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertBox.classList.add('hidden');
+
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const username = document.getElementById('auth-username').value.trim();
+
+      const submitBtn = document.getElementById('btn-auth-submit');
+      const origText = btnSubmitText.textContent;
+      submitBtn.disabled = true;
+      btnSubmitText.textContent = "Connecting to Vault...";
+
+      try {
+        const url = authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+        const body = authMode === 'register' ? { email, password, username } : { email, password };
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || "Authentication failed");
+        }
+
+        // Save session
+        localStorage.setItem('anvil_token', data.token);
+        localStorage.setItem('anvil_user', JSON.stringify(data.user));
+
+        showAlert(authMode === 'register' ? "Private Vault Created! Launching..." : "Welcome back! Launching...", false);
+
+        // Forward to private workspace
+        setTimeout(() => {
+          window.location.href = '/app';
+        }, 500);
+
+      } catch (err) {
+        showAlert(err.message, true);
+      } finally {
+        submitBtn.disabled = false;
+        btnSubmitText.textContent = origText;
+      }
+    });
+
+    checkExistingSession();
+  </script>
 
 </body>
 </html>

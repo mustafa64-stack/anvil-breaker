@@ -150,13 +150,18 @@
       </button>
 
       <!-- Dynamic User Profile & Cloud Vault Chip -->
-      <div class="relative pl-1">
+      <div class="relative pl-1 flex items-center space-x-1.5">
         <button id="btn-auth-user" class="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault transition text-xs font-medium" title="Account & Connected Platforms">
           <div id="user-avatar-badge" class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold font-mono text-[10px]">
             U
           </div>
           <span id="user-display-name" class="text-zinc-200 hidden md:inline truncate max-w-[100px]">Sign In</span>
           <span id="user-connected-pill" class="hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono bg-surface3 text-zinc-400 border border-borderSubtle">Vault</span>
+        </button>
+
+        <!-- Fast Sign Out Button -->
+        <button id="btn-header-logout" class="p-2 rounded-lg bg-surface2 hover:bg-surface3 border border-borderDefault text-zinc-400 hover:text-rose-400 transition" title="Sign Out of Private Vault" aria-label="Sign Out">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
         </button>
       </div>
     </div>

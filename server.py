@@ -664,21 +664,30 @@ def open_in_brave_legacy(payload: OpenBrowserRequest):
 # Serve Frontend
 app.mount("/static", StaticFiles(directory=settings.STATIC_DIR), name="static")
 
+# Official Home Page & Landing (Dynamic Sign Up / Sign In Vault)
 @app.get("/")
-def serve_index():
+@app.get("/home")
+@app.get("/welcome")
+@app.get("/landing")
+@app.get("/login")
+@app.get("/register")
+@app.get("/signup")
+def serve_home():
+    landing_file = os.path.join(settings.STATIC_DIR, "landing.html")
+    if os.path.exists(landing_file):
+        return FileResponse(landing_file)
+    return FileResponse(os.path.join(settings.STATIC_DIR, "index.html"))
+
+# Private Workspace Command Center (Authenticated Personal Vault)
+@app.get("/app")
+@app.get("/workspace")
+@app.get("/solver")
+@app.get("/dashboard")
+def serve_app():
     index_file = os.path.join(settings.STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
     return JSONResponse({"message": f"{settings.PROJECT_NAME} API Ready"})
-
-# Landing & Fast Onboarding Page
-@app.get("/welcome")
-@app.get("/landing")
-def serve_landing():
-    landing_file = os.path.join(settings.STATIC_DIR, "landing.html")
-    if os.path.exists(landing_file):
-        return FileResponse(landing_file)
-    return serve_index()
 
 # Floating Pop-Up Mini HUD Endpoint
 @app.get("/mini-hud")
