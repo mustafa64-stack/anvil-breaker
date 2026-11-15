@@ -91,3 +91,4 @@ def logout_endpoint(user_id: int = Depends(get_authenticated_user_id)):
     conn.commit()
     conn.close()
     return {"status": "ok", "message": "Signed out successfully"}
+

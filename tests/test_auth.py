@@ -47,3 +47,4 @@ def test_optional_user_id_does_not_create_users_from_untrusted_input():
     conn.close()
 
     assert count_after == count_before
+

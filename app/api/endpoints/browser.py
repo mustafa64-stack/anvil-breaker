@@ -119,3 +119,4 @@ def open_brave_legacy(payload: OpenBrowserRequest):
     """Backward compatibility endpoint for older clients"""
     payload.browser = "brave"
     return open_browser_endpoint(payload)
+

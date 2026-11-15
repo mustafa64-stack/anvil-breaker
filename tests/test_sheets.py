@@ -60,3 +60,4 @@ def test_sheet_problem_counts_driven_from_loaded_data():
     assert striver["problem_count"] == 95
     assert neetcode["problem_count"] >= 150
     assert blind["problem_count"] == 75
+

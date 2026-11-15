@@ -195,3 +195,4 @@ def delete_custom_sheet_endpoint(
     
     database.delete_custom_sheet(user_id=user_id, slug=slug)
     return {"status": "ok", "deleted_slug": slug}
+

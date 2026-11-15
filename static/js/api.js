@@ -59,3 +59,4 @@ const AnvilAPI = {
     localStorage.removeItem('anvil_user');
   }
 };
+

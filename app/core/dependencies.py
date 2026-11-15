@@ -46,3 +46,4 @@ def get_optional_user_id(authorization: Optional[str] = Header(None)) -> int:
     if row:
         return row["id"]
     return 1
+

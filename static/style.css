@@ -1,4 +1,5 @@
-/* style.css - Anvil Breaker™ Design System (Crafted, Anti-Vibe-Coded, Premium Dark) */
+/* style.css - Anvil Breaker™ High-Performance Design System
+   Crafted, Anti-Vibe-Coded, Engineering Grade Dark Architecture */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
@@ -10,23 +11,22 @@
   
   --border-default: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  --border-medium: rgba(255, 255, 255, 0.14);
+  --border-hover: rgba(255, 255, 255, 0.20);
   --border-focus: #f59e0b;
 
   --text-primary: #ffffff;
   --text-secondary: #d4d4d8;
-  --text-muted: #71717a;
+  --text-muted: #a1a1aa;
 
   --accent-amber: #f59e0b;
   --accent-amber-hover: #d97706;
-  --accent-indigo: #6366f1;
   --accent-emerald: #10b981;
-  --accent-rose: #ef4444;
-  --accent-sky: #0ea5e9;
+  --accent-rose: #f43f5e;
 
-  --shadow-level-1: 0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-level-2: 0 4px 16px rgba(0, 0, 0, 0.45);
-  --shadow-level-3: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-level-1: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-level-2: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-level-3: 0 12px 32px rgba(0, 0, 0, 0.7);
 }
 
 body {
@@ -35,10 +35,11 @@ body {
   color: var(--text-primary);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Tabular numbers for clocks, counters, and statistics to eliminate layout jitter */
-.tabular-nums, #timer-display, #docked-timer-display, #timer-digits, .font-mono {
+/* Tabular mono numbers for clocks, counters, and metrics to eliminate layout jitter */
+.tabular-nums, #timer-display, #docked-timer-display, #curriculum-timer-display, #timer-digits, .font-mono {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
   -moz-font-feature-settings: "tnum";
@@ -46,13 +47,13 @@ body {
   font-feature-settings: "tnum";
 }
 
-/* Subtle, functional scrollbars */
+/* Functional, sleek scrollbars */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--bg-canvas);
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #27272a;
@@ -76,44 +77,28 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   outline-offset: 2px !important;
 }
 
-/* Protocol Stepper with Semantic Visual Weight */
+/* Protocol Stepper with Semantic Progression (Anti-Vibe-Coded, Zero Rainbow Clutter) */
 .protocol-step {
-  background: var(--bg-surface-1);
+  background: var(--bg-surface-2);
   border: 1px solid var(--border-default);
   transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .protocol-step:hover {
-  background: var(--bg-surface-2);
+  background: var(--bg-surface-3);
   border-color: var(--border-hover);
 }
 
 .protocol-step.active {
-  background: var(--bg-surface-2);
+  background: var(--bg-surface-3);
   border-color: rgba(245, 158, 11, 0.6);
-  box-shadow: var(--shadow-level-1);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3);
   opacity: 1 !important;
-}
-
-.protocol-step[data-phase="1"].active {
-  border-color: rgba(14, 165, 233, 0.7);
-}
-
-.protocol-step[data-phase="2"].active {
-  border-color: rgba(99, 102, 241, 0.7);
-}
-
-.protocol-step[data-phase="3"].active {
-  border-color: rgba(16, 185, 129, 0.7);
-}
-
-.protocol-step[data-phase="4"].active {
-  border-color: rgba(239, 68, 68, 0.7);
 }
 
 /* Pattern pill active state */
 .pattern-pill {
-  transition: all 150ms ease;
+  transition: all 140ms ease;
 }
 .pattern-pill:hover {
   background: var(--bg-surface-3);
@@ -121,21 +106,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .pattern-pill.active {
   background: rgba(245, 158, 11, 0.15) !important;
-  border-color: rgba(245, 158, 11, 0.5) !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
   color: #fbbf24 !important;
   font-weight: 600;
 }
 
 /* Chapter Accordion */
 .chapter-header {
-  transition: background-color 150ms ease;
+  transition: background-color 140ms ease;
   border-bottom: 1px solid var(--border-subtle);
 }
 .chapter-header:hover {
   background-color: var(--bg-surface-2) !important;
 }
 
-/* Problem Row item (TakeUForward styled, enhanced for dark mode) */
+/* Problem Row item */
 .problem-item {
   transition: all 140ms ease;
   border-left: 3px solid transparent;
@@ -153,7 +138,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   transition: background-color 120ms ease;
 }
 .curriculum-row:hover {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 .curriculum-row.solved-row {
   opacity: 0.85;
@@ -171,21 +156,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   transition: stroke-dashoffset 0.4s ease;
 }
 
-/* Micro-animations */
+/* Smooth micro-animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(3px); }
+  from { opacity: 0; transform: translateY(2px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .phase-panel {
-  animation: fadeIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Custom Checkbox Design */
 .custom-checkbox {
   appearance: none;
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   border: 1.5px solid #52525b;
   border-radius: 4px;
   background-color: transparent;
@@ -203,8 +188,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .custom-checkbox:checked::before {
   content: "";
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   background-color: #000000;
   clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 }

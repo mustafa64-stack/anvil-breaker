@@ -39,3 +39,4 @@ def test_export_backup_scrubs_sensitive_credentials():
     # Check progress data is present
     assert len(payload["progress"]) >= 1
     assert payload["progress"][0]["problem_id"] == 1
+

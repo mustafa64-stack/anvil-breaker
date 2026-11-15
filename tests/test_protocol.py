@@ -73,3 +73,4 @@ def test_sm2_state_persisted_in_database_and_reviews_deduplicated():
     conn.close()
 
     assert review_count == 1
+

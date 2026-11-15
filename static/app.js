@@ -90,29 +90,29 @@ async function apiFetch(url, options = {}) {
 
 // Dynamic Platform Resolver (CSES, LeetCode, Codeforces, HackerRank, GeeksforGeeks, InterviewBit)
 function getProblemPlatform(prob) {
-  if (!prob) return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25", defaultUrl: "https://leetcode.com" };
+  if (!prob) return { name: "LeetCode", color: "amber", short: "LC", class: "bg-surface3 text-amber-400 border border-amber-500/25", defaultUrl: "https://leetcode.com" };
   const url = (prob.url || "").toLowerCase();
   const title = (prob.title || "").toLowerCase();
-  const rawPlatform = (prob.platform || "").toUpperCase();
+  const rawPlatform = (prob.platform || "").toUpperCase().trim();
 
-  if (rawPlatform === "CSES" || url.includes("cses.fi") || title.includes("[cses]") || title.includes("cses")) {
+  if (rawPlatform === "CSES" || url.includes("cses.fi") || url.includes("cses") || title.includes("[cses]") || title.includes("cses")) {
     const cleanTitle = title.replace(/\[cses\]/gi, '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const fallbackUrl = `https://cses.fi/problemset/task/${cleanTitle}`;
-    return { name: "CSES", color: "cyan", short: "CSES", class: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/25", defaultUrl: fallbackUrl };
+    return { name: "CSES", color: "amber", short: "CSES", class: "bg-surface3 text-amber-400 border border-amber-500/25", defaultUrl: prob.url || fallbackUrl };
   }
-  if (rawPlatform === "CODEFORCES" || url.includes("codeforces.com") || title.includes("[cf]") || title.includes("[codeforces]")) {
-    return { name: "Codeforces", color: "sky", short: "CF", class: "bg-sky-500/15 text-sky-400 border border-sky-500/25", defaultUrl: "https://codeforces.com" };
+  if (rawPlatform === "CODEFORCES" || url.includes("codeforces.com") || url.includes("codeforces") || title.includes("[cf]") || title.includes("[codeforces]")) {
+    return { name: "Codeforces", color: "zinc", short: "CF", class: "bg-surface3 text-zinc-200 border border-borderDefault", defaultUrl: prob.url || "https://codeforces.com" };
   }
   if (rawPlatform === "GFG" || rawPlatform === "GEEKSFORGEEKS" || url.includes("geeksforgeeks.org") || title.includes("[gfg]")) {
-    return { name: "GeeksforGeeks", color: "emerald", short: "GFG", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25", defaultUrl: "https://practice.geeksforgeeks.org" };
+    return { name: "GeeksforGeeks", color: "emerald", short: "GFG", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25", defaultUrl: prob.url || "https://practice.geeksforgeeks.org" };
   }
   if (rawPlatform === "HACKERRANK" || url.includes("hackerrank.com")) {
-    return { name: "HackerRank", color: "emerald", short: "HR", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25", defaultUrl: "https://hackerrank.com" };
+    return { name: "HackerRank", color: "emerald", short: "HR", class: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25", defaultUrl: prob.url || "https://hackerrank.com" };
   }
   if (rawPlatform === "INTERVIEWBIT" || url.includes("interviewbit.com")) {
-    return { name: "InterviewBit", color: "orange", short: "IB", class: "bg-orange-500/15 text-orange-400 border border-orange-500/25", defaultUrl: "https://interviewbit.com" };
+    return { name: "InterviewBit", color: "amber", short: "IB", class: "bg-surface3 text-amber-400 border border-amber-500/25", defaultUrl: prob.url || "https://interviewbit.com" };
   }
-  return { name: "LeetCode", color: "amber", short: "LC", class: "bg-amber-500/15 text-amber-400 border border-amber-500/25", defaultUrl: `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title || '')}` };
+  return { name: "LeetCode", color: "amber", short: "LC", class: "bg-surface3 text-amber-400 border border-amber-500/25", defaultUrl: prob.url || `https://leetcode.com/problemset/all/?search=${encodeURIComponent(prob.title || '')}` };
 }
 
 // Bi-directional BroadcastChannel for Always-On-Top Mini HUD
@@ -555,47 +555,45 @@ function setPhase(phaseNum) {
 
   if (phaseNum === 1) {
     if (glow) glow.className = "hidden";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-sky-500/15 text-sky-400 border border-sky-500/30";
+    phaseTag.className = "text-xs font-mono px-2.5 py-0.5 rounded font-bold uppercase bg-surface3 text-amber-400 border border-amber-500/20";
     phaseTag.textContent = `Phase 1: ${phaseName} (${phaseRange})`;
     instruction.textContent = "Read constraints and sketch edge cases on pen & paper.";
   } else if (phaseNum === 2) {
     if (glow) glow.className = "hidden";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-indigo-500/15 text-indigo-400 border border-indigo-500/30";
+    phaseTag.className = "text-xs font-mono px-2.5 py-0.5 rounded font-bold uppercase bg-surface3 text-amber-400 border border-amber-500/20";
     phaseTag.textContent = `Phase 2: ${phaseName} (${phaseRange})`;
     instruction.textContent = "Map to known pattern. Start with brute force if needed.";
   } else if (phaseNum === 3) {
     if (glow) glow.className = "hidden";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+    phaseTag.className = "text-xs font-mono px-2.5 py-0.5 rounded font-bold uppercase bg-surface3 text-amber-400 border border-amber-500/20";
     phaseTag.textContent = `Phase 3: ${phaseName} (${phaseRange})`;
-    instruction.textContent = "Code cleanly in Brave. Dry-run test cases before submitting.";
+    instruction.textContent = "Code cleanly in your browser. Dry-run test cases before submitting.";
   } else if (phaseNum === 4) {
     if (glow) glow.className = "hidden";
-    phaseTag.className = "text-xs font-mono px-2 py-0.5 rounded font-bold uppercase bg-rose-500/15 text-rose-400 border border-rose-500/30";
+    phaseTag.className = "text-xs font-mono px-2.5 py-0.5 rounded font-bold uppercase bg-surface3 text-rose-400 border border-rose-500/30";
     phaseTag.textContent = `Phase 4: ${phaseName} (${phaseRange})`;
     instruction.textContent = "Time cap reached! Stop struggling. Read the hint, understand WHY, code from memory.";
+  }
+
+  // Update Phase Bars highlight
+  for (let b = 1; b <= 4; b++) {
+    const barEl = document.getElementById(`phase-bar-${b}`);
+    if (barEl) {
+      if (b === phaseNum) {
+        barEl.className = "h-full bg-amber-500 transition-all duration-300";
+      } else {
+        barEl.className = "h-full bg-zinc-700 transition-all duration-300";
+      }
+    }
   }
 
   // Update In-Page Docked Floating Mini Timer
   const dockedDot = document.getElementById('docked-phase-dot');
   const dockedName = document.getElementById('docked-phase-name');
   if (dockedDot && dockedName) {
-    if (phaseNum === 1) {
-      dockedDot.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse";
-      dockedName.className = "text-[9px] font-mono font-bold px-1 rounded bg-cyan-500/20 text-cyan-300";
-      dockedName.textContent = "P1 Read";
-    } else if (phaseNum === 2) {
-      dockedDot.className = "w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse";
-      dockedName.className = "text-[9px] font-mono font-bold px-1 rounded bg-violet-500/20 text-violet-300";
-      dockedName.textContent = "P2 Pattern";
-    } else if (phaseNum === 3) {
-      dockedDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
-      dockedName.className = "text-[9px] font-mono font-bold px-1 rounded bg-emerald-500/20 text-emerald-300";
-      dockedName.textContent = "P3 Code";
-    } else if (phaseNum === 4) {
-      dockedDot.className = "w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping";
-      dockedName.className = "text-[9px] font-mono font-bold px-1 rounded bg-rose-500/20 text-rose-300";
-      dockedName.textContent = "P4 Cut Losses";
-    }
+    dockedDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+    dockedName.className = "text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-surface3 text-zinc-300 border border-white/5";
+    dockedName.textContent = `P${phaseNum} ${phaseName.split(' ')[0]}`;
   }
 
   broadcastHudState();
@@ -779,6 +777,55 @@ function selectProblem(problemId, autoScroll = true, updateHistory = false) {
 
   // Update current badge text in sidebar
   document.getElementById('current-badge-text').textContent = `#${prob.id} ${prob.title.slice(0, 16)}`;
+
+  // Update SM-2 Spaced Repetition card and Sequence progression
+  const repetitionsEl = document.getElementById('retention-repetitions');
+  const efEl = document.getElementById('retention-ef');
+  const intervalEl = document.getElementById('retention-interval');
+  const failRateEl = document.getElementById('retention-fail-rate');
+  const seqCounterEl = document.getElementById('sequence-counter-text');
+  const retentionBadge = document.getElementById('retention-status-badge');
+
+  if (repetitionsEl) {
+    const reps = probData.repetitions !== undefined ? probData.repetitions : (probData.status === 'clean' ? 1 : 0);
+    repetitionsEl.textContent = `${reps} ${reps === 1 ? 'solve' : 'solves'}`;
+  }
+  if (efEl) {
+    const ef = probData.easiness_factor !== undefined ? Number(probData.easiness_factor).toFixed(2) : "2.50";
+    efEl.textContent = ef;
+  }
+  if (intervalEl) {
+    const interval = probData.interval !== undefined ? probData.interval : 1;
+    intervalEl.textContent = `${interval} ${interval === 1 ? 'day' : 'days'}`;
+  }
+  if (failRateEl) {
+    const chProbs = state.problems.filter(p => p.chapter_id === prob.chapter_id);
+    const failedCount = chProbs.filter(p => {
+      const d = (state.progress.problems && state.progress.problems[String(p.id)]) || {};
+      return d.status === 'help' || d.status === 'failed';
+    }).length;
+    const rate = chProbs.length ? Math.round((failedCount / chProbs.length) * 100) : 0;
+    failRateEl.textContent = `${rate}%`;
+    failRateEl.className = rate > 30 ? "font-mono text-sm font-bold text-amber-400 tabular-nums" : "font-mono text-sm font-bold text-emerald-400 tabular-nums";
+  }
+  if (retentionBadge) {
+    if (probData.status === 'clean') {
+      retentionBadge.textContent = "Mastered";
+      retentionBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+    } else if (probData.status === 'help' || probData.status === 'failed') {
+      retentionBadge.textContent = "In Review Loop";
+      retentionBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30";
+    } else {
+      retentionBadge.textContent = "Active Loop";
+      retentionBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-surface3 text-zinc-300 border border-white/10";
+    }
+  }
+  if (seqCounterEl) {
+    const totalCount = state.problems.length || 610;
+    const currIdx = state.problems.findIndex(p => p.id === prob.id);
+    const displayNum = currIdx >= 0 ? currIdx + 1 : prob.id;
+    seqCounterEl.textContent = `#${displayNum} of ${totalCount}`;
+  }
 
   // Save current problem ID to settings
   saveSetting({ current_problem_id: prob.id });
@@ -2779,9 +2826,19 @@ async function saveSetting(patch) {
 
 function updateSoundIcon() {
   const icon = document.getElementById('sound-icon');
+  const svg = document.getElementById('sound-icon-svg');
   if (icon) {
-    icon.textContent = state.soundEnabled ? 'AUDIO' : 'MUTE';
-    icon.className = state.soundEnabled ? "text-[10px] font-bold font-mono text-amber-400" : "text-[10px] font-bold font-mono text-zinc-500";
+    icon.textContent = state.soundEnabled ? 'Audio' : 'Muted';
+    icon.className = state.soundEnabled ? "text-[11px] font-mono font-semibold text-zinc-200 hidden md:inline" : "text-[11px] font-mono font-semibold text-zinc-500 hidden md:inline";
+  }
+  if (svg) {
+    if (state.soundEnabled) {
+      svg.className = "w-4 h-4 text-amber-400";
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>';
+    } else {
+      svg.className = "w-4 h-4 text-zinc-500";
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>';
+    }
   }
 }
 
