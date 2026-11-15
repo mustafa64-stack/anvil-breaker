@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Anvil Breaker™ — 15m LeetCode Protocol HUD",
+  "version": "1.0.0",
+  "description": "Strict 15-Minute Protocol HUD injected directly into LeetCode. Break the tutorial anvil.",
+  "author": "Mustafa Marjani",
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "*://*.leetcode.com/*",
+    "http://localhost:8765/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Anvil Breaker Protocol HUD"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.leetcode.com/problems/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

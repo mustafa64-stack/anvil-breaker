@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA 15m Protocol Mini HUD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0b0f19;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      overflow: hidden;
+    }
+    .phase-glow-1 { text-shadow: 0 0 20px rgba(6, 182, 212, 0.6); }
+    .phase-glow-2 { text-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
+    .phase-glow-3 { text-shadow: 0 0 20px rgba(16, 185, 129, 0.6); }
+    .phase-glow-4 { text-shadow: 0 0 20px rgba(244, 63, 94, 0.7); animation: pulse-glow 1.5s infinite alternate; }
+    
+    @keyframes pulse-glow {
+      from { text-shadow: 0 0 10px rgba(244, 63, 94, 0.4); }
+      to { text-shadow: 0 0 25px rgba(244, 63, 94, 0.9); }
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col justify-between p-3 box-border bg-[#0b0f19] border border-slate-800">
+
+  <!-- Top Bar: Problem ID, Title, Sync indicator -->
+  <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-1.5">
+    <div class="flex items-center space-x-1.5 truncate max-w-[240px]">
+      <span id="prob-badge" class="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px]">#1</span>
+      <span id="prob-title" class="font-semibold text-slate-200 truncate text-[11px]">Two Sum</span>
+      <span id="prob-level" class="px-1 rounded text-[9px] font-bold font-mono bg-emerald-500/20 text-emerald-400">EASY</span>
+    </div>
+
+    <!-- Live Sync Status -->
+    <div class="flex items-center space-x-1 text-[10px] text-emerald-400 font-mono">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="sync-label">SYNCED</span>
+    </div>
+  </div>
+
+  <!-- Center: Digital Timer Display & Phase Tag -->
+  <div class="flex items-center justify-between my-auto py-1">
+    <div>
+      <div class="flex items-baseline space-x-2">
+        <span id="timer-digits" class="text-4xl font-mono font-black tracking-tight text-white phase-glow-1">15:00</span>
+        <span id="phase-tag" class="text-[10px] font-mono px-1.5 py-0.5 rounded font-bold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+          Phase 1: Read & Trace
+        </span>
+      </div>
+      <!-- Mini Segment Progress Bar -->
+      <div class="w-48 h-1 bg-slate-800 rounded-full mt-1.5 overflow-hidden flex">
+        <div id="bar-1" class="h-full bg-cyan-400 transition-all duration-300" style="width: 20%"></div>
+        <div id="bar-2" class="h-full bg-violet-400 transition-all duration-300" style="width: 26%"></div>
+        <div id="bar-3" class="h-full bg-emerald-400 transition-all duration-300" style="width: 40%"></div>
+        <div id="bar-4" class="h-full bg-rose-400 transition-all duration-300" style="width: 14%"></div>
+      </div>
+    </div>
+
+    <!-- Quick Play/Pause Action Button -->
+    <button id="btn-toggle" class="w-11 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 transition transform active:scale-90 shrink-0">
+      <svg id="icon-play" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Bottom Toolbar: Reset, Next Phase, +1m, Sound, Focus Main -->
+  <div class="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-800/80">
+    <div class="flex items-center space-x-1.5">
+      <button id="btn-reset" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Reset (R)">
+        ↺ Reset
+      </button>
+      <button id="btn-next-phase" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Next Phase">
+        ⏭ Phase
+      </button>
+      <button id="btn-add-1m" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 font-mono transition" title="Add 1 minute">
+        +1m
+      </button>
+    </div>
+
+    <div class="flex items-center space-x-1.5">
+      <button id="btn-sound" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Toggle Sound">
+        🔔
+      </button>
+      <button id="btn-focus-main" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition text-[10px]" title="Focus Main Command Center">
+        ↗ Main
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Broadcast Channel for bi-directional live sync with main app window
+    const bc = new BroadcastChannel('dsa_mini_hud_channel');
+    
+    let state = {
+      timerSeconds: 15 * 60,
+      timerRunning: false,
+      activePhase: 1,
+      soundEnabled: true,
+      problem: { id: 1, title: 'Two Sum', level: 'E' },
+      phaseConfig: null
+    };
+
+    // Sound Synthesis (fallback standalone audio)
+    let audioCtx = null;
+    function playChime(freq, dur = 0.3) {
+      if (!state.soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    function renderUI() {
+      // Timer Digits
+      const mins = Math.floor(state.timerSeconds / 60);
+      const secs = state.timerSeconds % 60;
+      const digitsEl = document.getElementById('timer-digits');
+      digitsEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      // Phase Tag & Glow
+      const tagEl = document.getElementById('phase-tag');
+      digitsEl.className = `text-4xl font-mono font-black tracking-tight text-white phase-glow-${state.activePhase}`;
+
+      const phases = [
+        { name: "Read & Trace", class: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30" },
+        { name: "Pick a Pattern", class: "bg-violet-500/20 text-violet-300 border-violet-500/30" },
+        { name: "Code & Test", class: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
+        { name: "Cut Losses", class: "bg-rose-500/20 text-rose-300 border-rose-500/30" }
+      ];
+      const cur = phases[state.activePhase - 1] || phases[0];
+      tagEl.className = `text-[10px] font-mono px-1.5 py-0.5 rounded font-bold uppercase border ${cur.class}`;
+      tagEl.textContent = `P${state.activePhase}: ${cur.name}`;
+
+      // Problem info
+      if (state.problem) {
+        document.getElementById('prob-badge').textContent = `#${state.problem.id}`;
+        document.getElementById('prob-title').textContent = state.problem.title;
+        const lvlEl = document.getElementById('prob-level');
+        const lvl = state.problem.level || 'M';
+        if (lvl === 'E') {
+          lvlEl.textContent = 'EASY';
+          lvlEl.className = 'px-1 rounded text-[9px] font-bold font-mono bg-emerald-500/20 text-emerald-400';
+        } else if (lvl === 'M') {
+          lvlEl.textContent = 'MED';
+          lvlEl.className = 'px-1 rounded text-[9px] font-bold font-mono bg-amber-500/20 text-amber-400';
+        } else {
+          lvlEl.textContent = 'HARD';
+          lvlEl.className = 'px-1 rounded text-[9px] font-bold font-mono bg-rose-500/20 text-rose-400';
+        }
+      }
+
+      // Play/Pause button
+      const btnToggle = document.getElementById('btn-toggle');
+      const iconPlay = document.getElementById('icon-play');
+      if (state.timerRunning) {
+        btnToggle.className = "w-11 h-11 rounded-xl bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-600/30 transition transform active:scale-90 shrink-0";
+        iconPlay.innerHTML = `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>`;
+      } else {
+        btnToggle.className = "w-11 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 transition transform active:scale-90 shrink-0";
+        iconPlay.innerHTML = `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>`;
+      }
+
+      // Sound button
+      document.getElementById('btn-sound').textContent = state.soundEnabled ? '🔔' : '🔕';
+    }
+
+    // Handle messages received from main window
+    bc.onmessage = (event) => {
+      const msg = event.data;
+      if (!msg) return;
+
+      if (msg.action === 'STATE_UPDATE') {
+        state.timerSeconds = msg.timerSeconds;
+        state.timerRunning = msg.timerRunning;
+        state.activePhase = msg.activePhase;
+        if (msg.problem) state.problem = msg.problem;
+        if (msg.soundEnabled !== undefined) state.soundEnabled = msg.soundEnabled;
+        if (msg.phaseConfig) state.phaseConfig = msg.phaseConfig;
+        renderUI();
+      }
+    };
+
+    // User Actions -> Broadcast to Main Window
+    document.getElementById('btn-toggle').addEventListener('click', () => {
+      bc.postMessage({ action: 'TOGGLE_TIMER' });
+      state.timerRunning = !state.timerRunning;
+      renderUI();
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      bc.postMessage({ action: 'RESET_TIMER' });
+      renderUI();
+    });
+
+    document.getElementById('btn-next-phase').addEventListener('click', () => {
+      bc.postMessage({ action: 'NEXT_PHASE' });
+    });
+
+    document.getElementById('btn-add-1m').addEventListener('click', () => {
+      bc.postMessage({ action: 'ADD_TIME', minutes: 1 });
+      playChime(660, 0.15);
+    });
+
+    document.getElementById('btn-sound').addEventListener('click', () => {
+      state.soundEnabled = !state.soundEnabled;
+      bc.postMessage({ action: 'TOGGLE_SOUND', enabled: state.soundEnabled });
+      renderUI();
+    });
+
+    document.getElementById('btn-focus-main').addEventListener('click', () => {
+      if (window.opener && !window.opener.closed) {
+        window.opener.focus();
+      }
+    });
+
+    // Keyboard shortcuts in mini HUD
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        bc.postMessage({ action: 'TOGGLE_TIMER' });
+      } else if (e.key === 'r' || e.key === 'R') {
+        bc.postMessage({ action: 'RESET_TIMER' });
+      } else if (e.key === '+' || e.key === '=') {
+        bc.postMessage({ action: 'ADD_TIME', minutes: 1 });
+      } else if (['1', '2', '3', '4'].includes(e.key)) {
+        bc.postMessage({ action: 'SET_PHASE', phase: parseInt(e.key) });
+      }
+    });
+
+    // Request initial state from main window immediately on startup
+    bc.postMessage({ action: 'REQUEST_STATE' });
+
+    // Fallback load from localStorage if main window is waking up
+    try {
+      const saved = localStorage.getItem('dsa_mini_hud_cache');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        Object.assign(state, parsed);
+        renderUI();
+      }
+    } catch (e) {}
+  </script>
+</body>
+</html>
+

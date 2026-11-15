@@ -1,0 +1,411 @@
+[
+  {
+    "id": 1,
+    "name": "Foundations & Programming Basics",
+    "phase": "Phase 0 · Foundations",
+    "count": 13,
+    "budget": "5.3 h",
+    "patterns": [
+      "Constraint to complexity: n<=10 -> O(n!); n<=20 -> O(2^n * n); n<=500 -> O(n^3); n<=5000 -> O(n^2); n<=1e5..2e5 -> O(n log n); n<=1e6..1e7 -> O(n); n<=1e18 -> O(log n) / O(1).",
+      "Always test: empty input, single element, all equal, sorted, reverse sorted, maximum size, negative numbers, overflow.",
+      "Solve on paper first. If you cannot explain your approach in 3 sentences, you do not have it yet."
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Arrays & Matrices",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 20,
+    "budget": "10.6 h",
+    "patterns": [
+      "If array values lie in [1..n] -> try cyclic sort / negative-marking to detect duplicates & missing.",
+      "If 'in-place with O(1) space' -> read pointer + write pointer, or reversal tricks.",
+      "If 'subarray sum/product' -> Kadane or prefix technique. If 'subsequence' -> think DP/greedy.",
+      "Matrix rotation = transpose + reverse rows. Spiral = maintain 4 boundaries."
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Strings",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 15,
+    "budget": "7.2 h",
+    "patterns": [
+      "'Anagram / permutation' -> frequency array of 26 with a fixed-size window.",
+      "'Longest substring with property' -> sliding window. 'Number of substrings' -> count contributions.",
+      "'Compare/pair characters from both ends' -> two pointers. 'Palindrome' -> centre expansion.",
+      "Building strings in a loop with + is O(n^2) in Java/Python; use join / StringBuilder / reserve."
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Hashing (HashMap / HashSet / Counting)",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 19,
+    "budget": "10.0 h",
+    "patterns": [
+      "'Find pair/triple with property' -> complement in a set/map.",
+      "'Count subarrays with sum K / divisible by K' -> prefix sums + hash map of prefix frequencies.",
+      "'Group items that are equivalent' -> map from canonical key to list.",
+      "'Longest sequence of consecutive integers' -> set + start-of-chain check."
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Sorting & Custom Comparators",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 15,
+    "budget": "8.8 h",
+    "patterns": [
+      "'Sort then greedy scan' (meeting rooms, intervals, assignment).",
+      "'Sort by one key, process with another structure' (heap / BIT / set) - the offline pattern.",
+      "A comparator must be consistent: never return true for equal elements.",
+      "If values are small integers (<= 1e6) consider counting sort / bucket sort."
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Binary Search (incl. Search on Answer)",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 17,
+    "budget": "10.2 h",
+    "patterns": [
+      "Ask: 'Is there a monotone yes/no question over the answer space?' If yes -> binary search on answer.",
+      "'Minimise the maximum' / 'maximise the minimum' / 'smallest x such that feasible' are the classic trigger phrases.",
+      "Write the predicate first as a separate function; then the search loop is mechanical.",
+      "For doubles: loop 100 iterations instead of while(hi-lo>eps)."
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Two Pointers & Sliding Window",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 21,
+    "budget": "13.3 h",
+    "patterns": [
+      "Window validity must be monotone: growing the window can only make it 'more valid' (or the reverse).",
+      "Longest window: shrink only when invalid. Shortest window: shrink while valid.",
+      "Counting subarrays: for each right end, add (right - left + 1) valid starts.",
+      "All positives + 'sum >= K' or 'sum <= K' -> window. Mixed signs -> prefix sums."
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Prefix Sums, Difference Arrays, Intervals & Sweep Line",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 20,
+    "budget": "11.6 h",
+    "patterns": [
+      "'Many range updates, one final read' -> difference array.",
+      "'Many range sum queries, no updates' -> prefix sums. With updates -> Fenwick/segment tree.",
+      "'Overlapping intervals' -> sort by start (merge) or by end (max disjoint set).",
+      "'Max simultaneous / minimum rooms' -> sweep events, or a min-heap of end times."
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Linked Lists",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 20,
+    "budget": "11.0 h",
+    "patterns": [
+      "Always draw boxes and arrows. Track prev/curr/next explicitly.",
+      "Use a dummy head when the head can change (delete, merge, partition).",
+      "'Nth from end' -> two pointers n apart. 'Middle' -> slow/fast. 'Cycle' -> Floyd.",
+      "Recursion on lists uses O(n) stack; prefer iteration when n is large."
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Stacks, Queues & Monotonic Structures",
+    "phase": "Phase 1 · Core Data Structures",
+    "count": 20,
+    "budget": "12.6 h",
+    "patterns": [
+      "'Next greater/smaller to the left/right' -> monotonic stack, O(n).",
+      "'Sum over all subarrays of min/max' -> find left/right span with monotonic stack, multiply.",
+      "'Remove k digits/characters to get smallest/largest' -> greedy with monotonic stack.",
+      "'Nested structure' (brackets, decode, tags) -> stack of partial results."
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Recursion & Backtracking",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 22,
+    "budget": "14.7 h",
+    "patterns": [
+      "'Generate all ...' -> backtracking. 'Count ways' -> maybe DP; if state repeats, memoise.",
+      "Duplicates in input: sort, then skip candidate if it equals the previous one at the same depth.",
+      "Each level of recursion picks ONE thing (index or position); loops over choices at that level.",
+      "If n <= 20 think bitmask; if n <= 40 think meet in the middle."
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Bit Manipulation",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 16,
+    "budget": "8.0 h",
+    "patterns": [
+      "'Every element appears twice except one' -> XOR everything.",
+      "'Subsets of a small set (n<=20)' -> bitmask loop. 'Assignments over n items' -> bitmask DP.",
+      "'Maximise XOR' -> binary trie (greedy from high bit) or XOR basis.",
+      "'Range AND' -> common prefix of the endpoints."
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Math, Number Theory & Combinatorics",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 22,
+    "budget": "13.2 h",
+    "patterns": [
+      "'Answer modulo 1e9+7' -> keep everything modded; division = multiply by modular inverse.",
+      "'n up to 1e18' -> matrix exponentiation / closed form / cycle detection.",
+      "'Count pairs with gcd = 1' -> Mobius / inclusion-exclusion. 'Sum over divisors' -> sieve harmonic loops O(n log n).",
+      "'Expected number of ...' -> linearity of expectation; do not enumerate outcomes."
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Greedy Algorithms",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 21,
+    "budget": "12.9 h",
+    "patterns": [
+      "Try to sort by some key; if adjacent swap never hurts, that key is right (exchange argument).",
+      "'Regret' greedy: take now, but keep a heap so you can undo the worst choice later.",
+      "'Minimum number of X to cover' -> sort + sweep + always extend as far as possible.",
+      "Prove or find a counter-example in 5 minutes; if none, code it. Otherwise fall back to DP."
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Heaps & Priority Queues",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 14,
+    "budget": "9.3 h",
+    "patterns": [
+      "'K largest / smallest / most frequent' -> heap of size K. 'Merge K sorted things' -> heap of heads.",
+      "'Median of a stream' -> max-heap for lower half + min-heap for upper half, rebalance.",
+      "'Repeatedly take best available now, new items become available later' -> two heaps (availability + value).",
+      "Dijkstra / Prim use a min-heap; with lazy deletion you push duplicates and skip stale entries."
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Binary Trees",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 30,
+    "budget": "16.7 h",
+    "patterns": [
+      "Postorder ('bottom-up') for anything depending on children: height, diameter, balanced, max path sum.",
+      "Preorder ('top-down') for anything depending on path from root: path sum, good nodes, root-to-leaf.",
+      "BFS with a queue when the answer depends on levels; track level size.",
+      "When answer can span through a node: compute best downward path per child and combine at node."
+    ]
+  },
+  {
+    "id": 17,
+    "name": "BST, Balanced Trees & Ordered Sets",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 15,
+    "budget": "8.4 h",
+    "patterns": [
+      "'Floor/ceiling/nearest key with insertions' -> ordered set.",
+      "'Validate BST' -> pass (min,max) bounds or use in-order strictly increasing.",
+      "'k-th smallest with updates' -> size-augmented BST / BIT over compressed values / treap.",
+      "'Sliding window + order statistics' -> multiset with erase-one-occurrence."
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Tries (Prefix Trees)",
+    "phase": "Phase 2 · Core Algorithms",
+    "count": 10,
+    "budget": "7.5 h",
+    "patterns": [
+      "'Prefix' in statement -> trie. 'Maximum XOR' -> binary trie.",
+      "Store count/word-id at nodes for 'how many words start with p' or 'which words'.",
+      "Search many words on a grid: build trie from words, DFS grid once, prune found branches."
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Graphs I: Traversal, Grids & Connectivity",
+    "phase": "Phase 3 · Graph Algorithms",
+    "count": 29,
+    "budget": "16.8 h",
+    "patterns": [
+      "'Shortest number of steps, unit cost' -> BFS. 'Any path / component / reachability' -> DFS or BFS.",
+      "'Simultaneous spreading' (rotting oranges, fire) -> multi-source BFS from all sources at once.",
+      "'Minimum moves to transform state' -> BFS on the state graph; encode state compactly.",
+      "'Is it two-colourable / odd cycle?' -> BFS/DFS colouring."
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Graphs II: Topological Sort, DSU, Shortest Paths & MST",
+    "phase": "Phase 3 · Graph Algorithms",
+    "count": 30,
+    "budget": "18.8 h",
+    "patterns": [
+      "'Order tasks with prerequisites' -> topo sort. 'Cannot finish' -> cycle.",
+      "'Are X and Y connected after unions' -> DSU. 'Group things' -> DSU.",
+      "'Minimum cost path' -> Dijkstra; when state includes extra dimensions add them to node key.",
+      "'Connect everything with minimum total cost' -> MST."
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Graphs III: Advanced (SCC, Bridges, Euler, Flows, Matching)",
+    "phase": "Phase 4 · Advanced",
+    "count": 18,
+    "budget": "15.9 h",
+    "patterns": [
+      "'Mutual reachability' -> SCC. 'Critical connection' -> bridge. 'Robots must not disconnect' -> articulation points.",
+      "'Pair up / assign each X to distinct Y' -> bipartite matching or flow. 'Minimum cut' -> max flow.",
+      "'Boolean variables with pairwise constraints' -> 2-SAT.",
+      "'Traverse every edge exactly once' -> Euler path."
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Trees II: LCA, Binary Lifting, Euler Tour, HLD, Centroid, Rerooting",
+    "phase": "Phase 4 · Advanced",
+    "count": 23,
+    "budget": "17.9 h",
+    "patterns": [
+      "'Subtree query' -> Euler tour range. 'Path query' -> LCA + prefix or HLD.",
+      "'For each node as root' -> rerooting DP with prefix/suffix aggregates.",
+      "'Count/find paths of length K / with property' -> centroid decomposition.",
+      "'Merge child structures, keep largest' -> small-to-large."
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Dynamic Programming I: Foundations",
+    "phase": "Phase 3 · Dynamic Programming",
+    "count": 33,
+    "budget": "18.1 h",
+    "patterns": [
+      "Write recurrence in words first: 'dp[i][j] = best answer using first i items with capacity j'.",
+      "'Number of ways' -> add; 'min/max' -> min/max; 'is it possible' -> boolean/bitset.",
+      "Order of loops matters: combinations (items outer) vs permutations (target outer).",
+      "If dp[i] depends only on dp[i-1], dp[i-2]... keep variables, not an array."
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Dynamic Programming II: Intermediate (Stocks, Intervals, Bitmask, Digit, Trees, Probability)",
+    "phase": "Phase 3 · Dynamic Programming",
+    "count": 35,
+    "budget": "27.1 h",
+    "patterns": [
+      "Interval DP: iterate by length, choose the LAST operation to split the interval.",
+      "Bitmask DP state: dp[mask][last]; transitions add one element; complexity O(2^n * n^2).",
+      "Digit DP: always carry a 'tight' flag; memoise only when not tight.",
+      "State machine: draw states as circles, transitions as arrows, then write dp per state."
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Dynamic Programming III: Advanced Optimisation",
+    "phase": "Phase 4 · Advanced",
+    "count": 12,
+    "budget": "11.2 h",
+    "patterns": [
+      "cost(j,i) contains product a_j * b_i -> CHT. Sum of squares partition -> CHT / D&C.",
+      "Partition into K groups with Monge cost -> D&C optimisation O(K n log n) or Knuth O(n^2).",
+      "'Exactly K' with convex/concave answer in K -> aliens trick (binary search on lambda).",
+      "Window/range max in transitions -> monotone deque; arbitrary range -> segment tree."
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Range Queries & Advanced Data Structures",
+    "phase": "Phase 4 · Advanced",
+    "count": 23,
+    "budget": "19.8 h",
+    "patterns": [
+      "'Point updates + range sum' -> BIT. 'Range updates + range queries' -> segment tree with lazy.",
+      "'Static array, many min/max queries' -> sparse table. 'Distinct in range / offline' -> BIT + last occurrence, or Mo.",
+      "'k-th smallest in range / version history' -> persistent segment tree / wavelet tree.",
+      "'Insert/delete/reverse a segment, index by position' -> implicit treap."
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Advanced Strings",
+    "phase": "Phase 4 · Advanced",
+    "count": 15,
+    "budget": "12.2 h",
+    "patterns": [
+      "'Find pattern(s) in text' -> KMP/Z (one), Aho-Corasick (many), hashing (many, probabilistic).",
+      "'Number of distinct substrings / k-th substring / LCP queries' -> suffix array or automaton.",
+      "'Palindromic substrings' -> Manacher / hashing / eertree. 'Periodic / border' -> prefix function.",
+      "'Count strings of length n avoiding patterns' -> Aho-Corasick + DP."
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Computational Geometry",
+    "phase": "Phase 4 · Advanced",
+    "count": 15,
+    "budget": "10.3 h",
+    "patterns": [
+      "Always prefer integer cross products; compare with 0, never with doubles when input is integral.",
+      "Convex hull + rotating calipers for 'farthest pair / minimum bounding box' queries.",
+      "Manhattan distance -> transform (x+y, x-y) and use Chebyshev distance."
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Game Theory",
+    "phase": "Phase 4 · Advanced",
+    "count": 11,
+    "budget": "6.5 h",
+    "patterns": [
+      "Compute win/lose for small n by brute force, write table, look for pattern (period / mod k / XOR).",
+      "Independent sub-games -> XOR of Grundy values. Single pile with move sets -> mex over reachable Grundy values.",
+      "Optimal-play array games -> dp[l][r] = best score difference for current player."
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Design & Implementation Problems",
+    "phase": "Phase 3 · Applied",
+    "count": 15,
+    "budget": "10.8 h",
+    "patterns": [
+      "O(1) get/put with eviction order -> hash map + linked list.",
+      "O(1) getRandom -> array + hash map of value->index with swap-delete.",
+      "'Top K at any time / trending' -> heap + lazy deletion or ordered set.",
+      "Read required complexity carefully; it dictates data structure."
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Simulation, Constructive, Ad-hoc & Interactive",
+    "phase": "Phase 4 · Contest Skills",
+    "count": 19,
+    "budget": "10.2 h",
+    "patterns": [
+      "Small cases first: brute-force n=1..8, print outputs, look for pattern, then prove.",
+      "Constructive: try greedy building from largest/smallest, pair elements, or use parity classes.",
+      "Interactive: binary search on answer with at most ceil(log2 n) queries; always flush."
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Mixed Contest Sets & Advanced Math",
+    "phase": "Phase 4 · Contest Skills",
+    "count": 2,
+    "budget": "0.9 h",
+    "patterns": [
+      "Keep an 'error log': problem, why you failed (idea / proof / bug / speed), what to practise.",
+      "Re-solve every failed problem after 1 day, 1 week and 1 month (spaced repetition)."
+    ]
+  }
+]

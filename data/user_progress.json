@@ -1,0 +1,24 @@
+{
+  "current_problem_id": 1,
+  "daily_goal": 3,
+  "pace": "all",
+  "brave_path": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+  "streak": 1,
+  "last_active_date": "2026-11-15",
+  "today_solved_count": 1,
+  "history": {
+    "2026-11-15": [
+      1
+    ]
+  },
+  "problems": {
+    "1": {
+      "status": "clean",
+      "time_spent": 350,
+      "pattern": "Loops + Conditions",
+      "scratchpad": "Updated note: O(1) space, O(N) time",
+      "solved_at": "2026-11-15"
+    }
+  },
+  "sound_enabled": true
+}
