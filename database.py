@@ -76,7 +76,9 @@ def init_db():
         ("github_username", "TEXT"),
         ("leetcode_username", "TEXT"),
         ("preferred_browser", "TEXT DEFAULT 'auto'"),
-        ("session_token", "TEXT")
+        ("session_token", "TEXT"),
+        ("reset_code", "TEXT"),
+        ("reset_expires_at", "TEXT")
     ]:
         try:
             c.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}")
@@ -164,6 +166,7 @@ def init_db():
 
     conn.commit()
     conn.close()
+    restore_users_from_vault_json()
 
 # Migration helper from user_progress.json - Runs safely exactly once
 def migrate_json_to_sqlite():
@@ -297,18 +300,81 @@ def delete_custom_sheet(user_id: int, slug: str):
     conn.commit()
     conn.close()
 
+USERS_VAULT_FILE = os.path.join(DATA_DIR, "users_vault.json")
+
+def sync_users_to_vault_json():
+    """Persists user accounts to disk so registrations survive across restarts and deployments."""
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT id, username, email, password_hash, daily_goal, streak, last_active_date, today_solved_count, brave_path, current_problem_id, active_sheet, sound_enabled, github_username, leetcode_username, preferred_browser, session_token, reset_code, reset_expires_at, created_at FROM users")
+        rows = [dict(r) for r in c.fetchall()]
+        conn.close()
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(USERS_VAULT_FILE, "w", encoding="utf-8") as f:
+            json.dump(rows, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"Warning: could not sync users to vault json: {e}")
+
+def restore_users_from_vault_json():
+    """Restores user accounts from users_vault.json if users table is reset (e.g., ephemeral cloud disk)."""
+    if os.environ.get("PYTEST_CURRENT_TEST") or os.environ.get("TESTING") == "1":
+        return
+    if not os.path.exists(USERS_VAULT_FILE):
+        return
+    try:
+        with open(USERS_VAULT_FILE, "r", encoding="utf-8") as f:
+            users_list = json.load(f)
+        if not users_list:
+            return
+        conn = get_connection()
+        c = conn.cursor()
+        for u in users_list:
+            email_u = str(u.get("email") or "").strip().lower()
+            user_u = str(u.get("username") or "").strip()
+            if not email_u and not user_u:
+                continue
+            c.execute("SELECT id FROM users WHERE (email IS NOT NULL AND LOWER(email) = ?) OR LOWER(username) = ?", 
+                      (email_u, user_u.lower()))
+            if not c.fetchone():
+                c.execute("""
+                INSERT INTO users (username, email, password_hash, session_token, daily_goal, streak, last_active_date, today_solved_count, brave_path, current_problem_id, active_sheet, sound_enabled, github_username, leetcode_username, preferred_browser, reset_code, reset_expires_at, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    user_u, email_u or None, u.get("password_hash"), u.get("session_token"),
+                    u.get("daily_goal", 3), u.get("streak", 1), u.get("last_active_date"), u.get("today_solved_count", 0),
+                    u.get("brave_path"), u.get("current_problem_id", 1), u.get("active_sheet", "core-path"),
+                    u.get("sound_enabled", 1), u.get("github_username"), u.get("leetcode_username"),
+                    u.get("preferred_browser", "auto"), u.get("reset_code"), u.get("reset_expires_at"), u.get("created_at")
+                ))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Warning: could not restore users from vault json: {e}")
+
 def register_user(email: str, password: str, username: str = None):
     conn = get_connection()
     c = conn.cursor()
     email_clean = email.strip().lower()
-    if not username:
-        username = email_clean.split('@')[0]
     
-    # Check if user already exists
-    c.execute("SELECT id FROM users WHERE email = ? OR username = ?", (email_clean, username))
+    # Check if user already exists by email (case-insensitive)
+    c.execute("SELECT id FROM users WHERE LOWER(email) = ?", (email_clean,))
     if c.fetchone():
         conn.close()
-        return None, "User with this email or username already exists"
+        return None, "USER_EXISTS"
+
+    if not username:
+        base_username = email_clean.split('@')[0]
+        c.execute("SELECT id FROM users WHERE LOWER(username) = ?", (base_username.lower(),))
+        if c.fetchone():
+            username = f"{base_username}_{secrets.token_hex(2)}"
+        else:
+            username = base_username
+    else:
+        username = username.strip()
+        c.execute("SELECT id FROM users WHERE LOWER(username) = ?", (username.lower(),))
+        if c.fetchone():
+            username = f"{username}_{secrets.token_hex(2)}"
 
     today_str = datetime.now().strftime("%Y-%m-%d")
     pwd_hash = hash_password(password)
@@ -326,6 +392,7 @@ def register_user(email: str, password: str, username: str = None):
     c.execute("SELECT id, username, email, github_username, leetcode_username, preferred_browser, session_token FROM users WHERE id = ?", (user_id,))
     row = dict(c.fetchone())
     conn.close()
+    sync_users_to_vault_json()
     return row, None
 
 def authenticate_user(email_or_username: str, password: str):
@@ -333,16 +400,17 @@ def authenticate_user(email_or_username: str, password: str):
     c = conn.cursor()
     clean_identifier = email_or_username.strip().lower()
 
-    c.execute("SELECT * FROM users WHERE email = ? OR username = ?", (clean_identifier, clean_identifier))
+    # Search case-insensitively across both email and username
+    c.execute("SELECT * FROM users WHERE LOWER(email) = ? OR LOWER(username) = ?", (clean_identifier, clean_identifier))
     user_row = c.fetchone()
     if not user_row:
         conn.close()
-        return None, "Invalid email or password"
+        return None, "USER_NOT_FOUND"
 
     user = dict(user_row)
     if not verify_password(user["password_hash"], password):
         conn.close()
-        return None, "Invalid email or password"
+        return None, "INCORRECT_PASSWORD"
 
     # Automatically upgrade legacy unsalted SHA-256 hashes to PBKDF2
     if not user["password_hash"].startswith("pbkdf2:sha256:"):
@@ -355,7 +423,90 @@ def authenticate_user(email_or_username: str, password: str):
     conn.commit()
     user["session_token"] = token
     conn.close()
+    sync_users_to_vault_json()
     return user, None
+
+def request_password_reset(email_or_username: str):
+    """
+    Generates a secure 6-digit verification reset code valid for 20 minutes.
+    """
+    conn = get_connection()
+    c = conn.cursor()
+    clean_id = email_or_username.strip().lower()
+
+    c.execute("SELECT id, email, username FROM users WHERE LOWER(email) = ? OR LOWER(username) = ?", (clean_id, clean_id))
+    user_row = c.fetchone()
+    if not user_row:
+        conn.close()
+        return None, "No account found with this email or username."
+
+    user = dict(user_row)
+    # Generate 6-digit numeric verification code
+    reset_code = f"{secrets.randbelow(900000) + 100000}"
+    expires_at = (datetime.now() + timedelta(minutes=20)).strftime("%Y-%m-%d %H:%M:%S")
+
+    c.execute("UPDATE users SET reset_code = ?, reset_expires_at = ? WHERE id = ?", (reset_code, expires_at, user["id"]))
+    conn.commit()
+    conn.close()
+    sync_users_to_vault_json()
+    return {
+        "email": user["email"],
+        "username": user["username"],
+        "reset_code": reset_code,
+        "expires_in_minutes": 20
+    }, None
+
+def reset_password(email_or_username: str, reset_code: str, new_password: str):
+    """
+    Verifies reset code and updates password with slow PBKDF2 hash.
+    """
+    conn = get_connection()
+    c = conn.cursor()
+    clean_id = email_or_username.strip().lower()
+    clean_code = str(reset_code).strip()
+
+    c.execute("SELECT * FROM users WHERE LOWER(email) = ? OR LOWER(username) = ?", (clean_id, clean_id))
+    user_row = c.fetchone()
+    if not user_row:
+        conn.close()
+        return None, "No account found with this email."
+
+    user = dict(user_row)
+    stored_code = user.get("reset_code")
+    expires_at = user.get("reset_expires_at")
+
+    if not stored_code or stored_code != clean_code:
+        conn.close()
+        return None, "Invalid reset code. Please check your 6-digit code."
+
+    if expires_at:
+        try:
+            exp_dt = datetime.strptime(expires_at, "%Y-%m-%d %H:%M:%S")
+            if datetime.now() > exp_dt:
+                conn.close()
+                return None, "Reset code has expired. Please request a new code."
+        except Exception:
+            pass
+
+    if len(new_password) < 6:
+        conn.close()
+        return None, "Password must be at least 6 characters."
+
+    new_hash = hash_password(new_password)
+    new_token = secrets.token_hex(32)
+
+    c.execute("""
+    UPDATE users 
+    SET password_hash = ?, session_token = ?, reset_code = NULL, reset_expires_at = NULL 
+    WHERE id = ?
+    """, (new_hash, new_token, user["id"]))
+    conn.commit()
+
+    c.execute("SELECT id, username, email, github_username, leetcode_username, preferred_browser, session_token FROM users WHERE id = ?", (user["id"],))
+    updated_user = dict(c.fetchone())
+    conn.close()
+    sync_users_to_vault_json()
+    return updated_user, None
 
 def get_user_by_token(token: str):
     if not token:

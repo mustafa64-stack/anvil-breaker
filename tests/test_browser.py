@@ -21,3 +21,4 @@ def test_open_browser_endpoint_cses_resolution():
     assert res["status"] == "ok"
     assert "cses.fi" in res["url"]
     assert "weird-algorithm" in res["url"]
+

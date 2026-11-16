@@ -16,6 +16,14 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    reset_code: str
+    new_password: str
+
 class ConnectRequest(BaseModel):
     github_username: Optional[str] = None
     leetcode_username: Optional[str] = None
@@ -30,7 +38,9 @@ def register_endpoint(payload: RegisterRequest):
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
     
     user, err = database.register_user(email, payload.password, payload.username)
-    if err:
+    if err == "USER_EXISTS":
+        raise HTTPException(status_code=400, detail="USER_EXISTS: An account with this email already exists. Switched to Sign In.")
+    elif err:
         raise HTTPException(status_code=400, detail=err)
     
     token = user.pop("session_token", "")
@@ -48,13 +58,55 @@ def login_endpoint(payload: LoginRequest):
         raise HTTPException(status_code=400, detail="Email and password are required")
     
     user, err = database.authenticate_user(identifier, payload.password)
-    if err:
+    if err == "USER_NOT_FOUND":
+        raise HTTPException(status_code=404, detail="USER_NOT_FOUND: No account found with this email. Would you like to create one?")
+    elif err == "INCORRECT_PASSWORD":
+        raise HTTPException(status_code=401, detail="INCORRECT_PASSWORD: Incorrect password. Click 'Forgot password?' below to reset it.")
+    elif err:
         raise HTTPException(status_code=401, detail=err)
     
     token = user.pop("session_token", "")
     user.pop("password_hash", None)
     return {
         "status": "ok",
+        "user": user,
+        "token": token
+    }
+
+@router.post("/forgot-password")
+def forgot_password_endpoint(payload: ForgotPasswordRequest):
+    clean_email = payload.email.strip().lower()
+    if not clean_email or "@" not in clean_email:
+        raise HTTPException(status_code=400, detail="Valid email address is required")
+    
+    res, err = database.request_password_reset(clean_email)
+    if err:
+        raise HTTPException(status_code=404, detail=err)
+    
+    return {
+        "status": "ok",
+        "message": f"Verification code generated for {clean_email}. Valid for 20 minutes.",
+        "reset_code": res["reset_code"],
+        "email": res["email"]
+    }
+
+@router.post("/reset-password")
+def reset_password_endpoint(payload: ResetPasswordRequest):
+    clean_email = payload.email.strip().lower()
+    if not clean_email or not payload.reset_code:
+        raise HTTPException(status_code=400, detail="Email and 6-digit reset code are required")
+    if not payload.new_password or len(payload.new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+    
+    user, err = database.reset_password(clean_email, payload.reset_code, payload.new_password)
+    if err:
+        raise HTTPException(status_code=400, detail=err)
+    
+    token = user.pop("session_token", "")
+    user.pop("password_hash", None)
+    return {
+        "status": "ok",
+        "message": "Password reset successfully! Vault unlocked.",
         "user": user,
         "token": token
     }

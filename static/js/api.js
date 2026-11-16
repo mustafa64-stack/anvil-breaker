@@ -20,14 +20,9 @@ async function apiFetch(url, options = {}) {
 
     // Global 401 Unauthorized Session Handler
     if (response.status === 401) {
-      console.warn("Session expired or unauthorized (401). Clearing credentials.");
+      console.warn("Session unauthenticated or expired (401). Preserving local workspace view.");
       localStorage.removeItem('anvil_token');
       localStorage.removeItem('anvil_user');
-      
-      const currentPath = window.location.pathname.toLowerCase();
-      if (currentPath.startsWith('/app') || currentPath.startsWith('/workspace')) {
-        window.location.replace('/?session_expired=true');
-      }
     }
 
     return response;

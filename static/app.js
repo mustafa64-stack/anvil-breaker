@@ -2135,6 +2135,125 @@ function setupEventListeners() {
   const btnGuest = document.getElementById('btn-auth-guest');
   if (btnGuest) btnGuest.addEventListener('click', () => closeModals());
 
+  // Modal Forgot Password Handlers
+  const modalForgotPwBtn = document.getElementById('modal-forgot-pw-btn');
+  const modalCancelResetBtn = document.getElementById('modal-cancel-reset-btn');
+  const modalResetBox = document.getElementById('modal-auth-reset-box');
+  const formAuthModal = document.getElementById('form-auth');
+  const modalBtnReqCode = document.getElementById('modal-btn-req-code');
+  const modalBtnCopyCode = document.getElementById('modal-btn-copy-code');
+  const modalBtnExecReset = document.getElementById('modal-btn-exec-reset');
+
+  if (modalForgotPwBtn && modalResetBox && formAuthModal) {
+    modalForgotPwBtn.addEventListener('click', () => {
+      formAuthModal.classList.add('hidden');
+      modalResetBox.classList.remove('hidden');
+      const step1 = document.getElementById('modal-reset-step1');
+      const step2 = document.getElementById('modal-reset-step2');
+      if (step1) step1.classList.remove('hidden');
+      if (step2) step2.classList.add('hidden');
+      const curEmail = document.getElementById('auth-email-input')?.value.trim();
+      const resetEmailInput = document.getElementById('modal-reset-email');
+      if (resetEmailInput && curEmail) resetEmailInput.value = curEmail;
+    });
+  }
+
+  if (modalCancelResetBtn && modalResetBox && formAuthModal) {
+    modalCancelResetBtn.addEventListener('click', () => {
+      modalResetBox.classList.add('hidden');
+      formAuthModal.classList.remove('hidden');
+    });
+  }
+
+  if (modalBtnReqCode) {
+    modalBtnReqCode.addEventListener('click', async () => {
+      const email = document.getElementById('modal-reset-email')?.value.trim().toLowerCase();
+      if (!email) {
+        showNotification("Please enter your registered email address.");
+        return;
+      }
+      modalBtnReqCode.disabled = true;
+      modalBtnReqCode.textContent = "Generating Code...";
+      try {
+        const res = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Could not generate reset code.");
+
+        const step1 = document.getElementById('modal-reset-step1');
+        const step2 = document.getElementById('modal-reset-step2');
+        if (step1) step1.classList.add('hidden');
+        if (step2) step2.classList.remove('hidden');
+        const codeDisp = document.getElementById('modal-reset-code-disp');
+        const codeVal = document.getElementById('modal-reset-code-val');
+        if (codeDisp) codeDisp.textContent = data.reset_code;
+        if (codeVal) codeVal.value = data.reset_code;
+        showNotification("Verification code generated! Enter your new password.");
+      } catch (err) {
+        showNotification(err.message || "Failed to generate code.");
+      } finally {
+        modalBtnReqCode.disabled = false;
+        modalBtnReqCode.textContent = "Generate 6-Digit Code ➔";
+      }
+    });
+  }
+
+  if (modalBtnCopyCode) {
+    modalBtnCopyCode.addEventListener('click', () => {
+      const code = document.getElementById('modal-reset-code-disp')?.textContent.trim();
+      if (code && code !== '------') {
+        navigator.clipboard.writeText(code);
+        modalBtnCopyCode.textContent = "Copied!";
+        setTimeout(() => { modalBtnCopyCode.textContent = "Copy"; }, 2000);
+      }
+    });
+  }
+
+  if (modalBtnExecReset) {
+    modalBtnExecReset.addEventListener('click', async () => {
+      const email = document.getElementById('modal-reset-email')?.value.trim().toLowerCase();
+      const reset_code = document.getElementById('modal-reset-code-val')?.value.trim();
+      const new_password = document.getElementById('modal-reset-newpass-val')?.value;
+
+      if (!reset_code || reset_code.length !== 6) {
+        showNotification("Please enter the 6-digit verification code.");
+        return;
+      }
+      if (!new_password || new_password.length < 6) {
+        showNotification("New password must be at least 6 characters.");
+        return;
+      }
+
+      modalBtnExecReset.disabled = true;
+      modalBtnExecReset.textContent = "Resetting Password...";
+      try {
+        const res = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, reset_code, new_password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Reset failed.");
+
+        state.token = data.token;
+        state.user = data.user;
+        localStorage.setItem('anvil_token', data.token);
+        updateUserUI(data.user);
+        closeModals();
+        showNotification("Password reset successfully! Vault unlocked.");
+        await initApp();
+      } catch (err) {
+        showNotification(err.message || "Reset failed.");
+      } finally {
+        modalBtnExecReset.disabled = false;
+        modalBtnExecReset.textContent = "Update Password & Unlock Vault ➔";
+      }
+    });
+  }
+
   // Preferred Browser Selector change
   const browserSelect = document.getElementById('setting-browser-select');
   if (browserSelect) {
@@ -2627,7 +2746,11 @@ function switchAuthTab(tab) {
   const regTab = document.getElementById('tab-auth-register');
   const submitBtnText = document.getElementById('btn-submit-auth-text');
   const errBox = document.getElementById('auth-error-msg');
+  const formAuth = document.getElementById('form-auth');
+  const resetBox = document.getElementById('modal-auth-reset-box');
   if (errBox) errBox.classList.add('hidden');
+  if (formAuth) formAuth.classList.remove('hidden');
+  if (resetBox) resetBox.classList.add('hidden');
 
   if (tab === 'login') {
     if (loginTab) {
@@ -2670,8 +2793,43 @@ async function handleAuthSubmit(e) {
     const data = await res.json();
 
     if (!res.ok) {
+      const detail = String(data.detail || '');
+
+      // Smart Auto-Switching in Modal
+      if (state.authMode === 'register' && (detail.includes('USER_EXISTS') || detail.includes('already exists'))) {
+        switchAuthTab('login');
+        if (errBox) {
+          errBox.textContent = "Account already exists! Switched to Sign In — enter password or click Forgot Password.";
+          errBox.className = "text-xs text-amber-400 font-medium";
+          errBox.classList.remove('hidden');
+        }
+        document.getElementById('auth-password-input').focus();
+        return;
+      }
+
+      if (state.authMode === 'login' && (detail.includes('USER_NOT_FOUND') || detail.includes('No account found'))) {
+        switchAuthTab('register');
+        if (errBox) {
+          errBox.textContent = "No vault found with this email. Switched to Create Account to set up your vault.";
+          errBox.className = "text-xs text-amber-400 font-medium";
+          errBox.classList.remove('hidden');
+        }
+        document.getElementById('auth-password-input').focus();
+        return;
+      }
+
+      if (detail.includes('INCORRECT_PASSWORD') || detail.includes('Incorrect password')) {
+        if (errBox) {
+          errBox.textContent = "Incorrect password. Click 'Forgot password?' above to reset it in seconds.";
+          errBox.className = "text-xs text-rose-400 font-medium";
+          errBox.classList.remove('hidden');
+        }
+        return;
+      }
+
       if (errBox) {
-        errBox.textContent = data.detail || 'Authentication failed. Please check credentials.';
+        errBox.textContent = detail || 'Authentication failed. Please check credentials.';
+        errBox.className = "text-xs text-rose-400 font-medium";
         errBox.classList.remove('hidden');
       }
       return;
@@ -2692,6 +2850,7 @@ async function handleAuthSubmit(e) {
   } catch (err) {
     if (errBox) {
       errBox.textContent = 'Network error. Please try again.';
+      errBox.className = "text-xs text-rose-400 font-medium";
       errBox.classList.remove('hidden');
     }
   } finally {

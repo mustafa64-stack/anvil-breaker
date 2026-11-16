@@ -174,23 +174,23 @@
             </div>
 
             <!-- Tab Switcher (Sign Up vs Sign In) -->
-            <div class="grid grid-cols-2 p-1 bg-surface2 rounded-xl border border-borderDefault text-xs font-semibold">
-              <button id="btn-tab-register" class="py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm">
-                Create Account
-              </button>
-              <button id="btn-tab-login" class="py-2 rounded-lg text-zinc-400 hover:text-white transition">
+            <div id="auth-tab-bar" class="grid grid-cols-2 p-1 bg-surface2 rounded-xl border border-borderDefault text-xs font-semibold">
+              <button id="btn-tab-login" class="py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm">
                 Sign In
+              </button>
+              <button id="btn-tab-register" class="py-2 rounded-lg text-zinc-400 hover:text-white transition">
+                Create Account
               </button>
             </div>
 
-            <!-- Alert Box (Errors / Success) -->
+            <!-- Alert Box (Errors / Success / Auto-Switch Info) -->
             <div id="auth-alert" class="hidden p-3 rounded-xl text-xs font-medium border"></div>
 
             <!-- Interactive Auth Form -->
             <form id="home-auth-form" class="space-y-3.5 text-left">
               
               <!-- Username Field (Sign Up mode only) -->
-              <div id="field-group-username" class="space-y-1">
+              <div id="field-group-username" class="space-y-1 hidden">
                 <label class="text-[11px] font-mono font-semibold text-zinc-400 block">Developer Username:</label>
                 <div class="relative">
                   <span class="absolute left-3 top-2.5 text-zinc-500 font-mono text-xs">@</span>
@@ -207,16 +207,72 @@
 
               <!-- Password Field -->
               <div class="space-y-1">
-                <label class="text-[11px] font-mono font-semibold text-zinc-400 block">Password:</label>
+                <div class="flex items-center justify-between">
+                  <label class="text-[11px] font-mono font-semibold text-zinc-400 block">Password:</label>
+                  <button type="button" id="btn-forgot-pw-link" class="text-[11px] text-amber-400 hover:text-amber-300 font-medium transition">
+                    Forgot password?
+                  </button>
+                </div>
                 <input type="password" id="auth-password" required placeholder="••••••••" minlength="6" class="w-full bg-surface2 text-xs text-zinc-100 rounded-lg px-3 py-2.5 border border-borderDefault focus:border-amber-500 focus:outline-none transition">
               </div>
 
               <!-- Submit Button -->
               <button type="submit" id="btn-auth-submit" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition flex items-center justify-center space-x-2 shadow-lg active:scale-98">
-                <span id="btn-submit-text">Create Private Vault & Enter ➔</span>
+                <span id="btn-submit-text">Sign In & Enter Command Center ➔</span>
               </button>
 
             </form>
+
+            <!-- Password Reset Flow Container -->
+            <div id="auth-reset-container" class="hidden space-y-3.5 text-left">
+              <div class="flex items-center justify-between pb-2 border-b border-borderSubtle">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                  Reset Vault Password
+                </span>
+                <button type="button" id="btn-cancel-reset" class="text-[11px] text-zinc-400 hover:text-white transition">Back to Sign In</button>
+              </div>
+
+              <!-- Step 1: Request Code -->
+              <div id="reset-step-1" class="space-y-3">
+                <p class="text-xs text-zinc-400 leading-relaxed">Enter your registered email to generate an instant 6-digit recovery code.</p>
+                <div class="space-y-1">
+                  <label class="text-[11px] font-mono font-semibold text-zinc-400 block">Registered Email / Username:</label>
+                  <input type="text" id="reset-email-input" placeholder="alex@gmail.com" class="w-full bg-surface2 text-xs text-zinc-100 rounded-lg px-3 py-2.5 border border-borderDefault focus:border-amber-500 focus:outline-none transition">
+                </div>
+                <button type="button" id="btn-request-reset-code" class="w-full py-2.5 rounded-xl bg-surface3 hover:bg-surface4 text-amber-400 font-bold border border-amber-500/30 text-xs transition flex items-center justify-center space-x-1.5 shadow-sm active:scale-98">
+                  <span id="btn-req-code-text">Generate 6-Digit Code ➔</span>
+                </button>
+              </div>
+
+              <!-- Step 2: Code Verification + New Password -->
+              <div id="reset-step-2" class="hidden space-y-3">
+                <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider">Your Reset Code:</span>
+                    <span class="text-[10px] text-zinc-400 font-mono">Valid for 20m</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span id="reset-code-badge" class="text-xl font-mono font-black text-amber-400 tracking-widest">------</span>
+                    <button type="button" id="btn-copy-code" class="px-2 py-0.5 rounded bg-surface3 text-[10px] font-mono text-zinc-200 hover:text-white border border-white/10 transition">Copy</button>
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-[11px] font-mono font-semibold text-zinc-400 block">6-Digit Code:</label>
+                  <input type="text" id="reset-code-input" maxlength="6" placeholder="123456" class="w-full bg-surface2 text-xs text-zinc-100 font-mono tracking-widest text-center rounded-lg px-3 py-2.5 border border-borderDefault focus:border-amber-500 focus:outline-none transition">
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-[11px] font-mono font-semibold text-zinc-400 block">New Password:</label>
+                  <input type="password" id="reset-new-password" minlength="6" placeholder="••••••••" class="w-full bg-surface2 text-xs text-zinc-100 rounded-lg px-3 py-2.5 border border-borderDefault focus:border-amber-500 focus:outline-none transition">
+                </div>
+
+                <button type="button" id="btn-perform-reset" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition flex items-center justify-center space-x-2 shadow-lg active:scale-98">
+                  <span id="btn-perform-reset-text">Reset Password & Enter Vault ➔</span>
+                </button>
+              </div>
+            </div>
 
             <!-- Active Logged In Session State (Shown if user already has token) -->
             <div id="logged-in-box" class="hidden space-y-4 pt-1 text-left">
@@ -507,9 +563,10 @@
       }
     })();
 
-    let authMode = 'register'; // 'register' or 'login'
+    let authMode = 'login'; // Default to login so returning users are never misled into create account
 
     const form = document.getElementById('home-auth-form');
+    const authTabBar = document.getElementById('auth-tab-bar');
     const btnTabRegister = document.getElementById('btn-tab-register');
     const btnTabLogin = document.getElementById('btn-tab-login');
     const boxTitle = document.getElementById('auth-box-title');
@@ -520,6 +577,22 @@
     const loggedInBox = document.getElementById('logged-in-box');
     const headerAuthContainer = document.getElementById('header-auth-container');
 
+    // Forgot Password DOM Elements
+    const authResetContainer = document.getElementById('auth-reset-container');
+    const btnForgotPwLink = document.getElementById('btn-forgot-pw-link');
+    const btnCancelReset = document.getElementById('btn-cancel-reset');
+    const resetStep1 = document.getElementById('reset-step-1');
+    const resetStep2 = document.getElementById('reset-step-2');
+    const resetEmailInput = document.getElementById('reset-email-input');
+    const btnRequestResetCode = document.getElementById('btn-request-reset-code');
+    const btnReqCodeText = document.getElementById('btn-req-code-text');
+    const resetCodeBadge = document.getElementById('reset-code-badge');
+    const resetCodeInput = document.getElementById('reset-code-input');
+    const resetNewPassword = document.getElementById('reset-new-password');
+    const btnPerformReset = document.getElementById('btn-perform-reset');
+    const btnPerformResetText = document.getElementById('btn-perform-reset-text');
+    const btnCopyCode = document.getElementById('btn-copy-code');
+
     function showAlert(msg, isError = true) {
       alertBox.textContent = msg;
       alertBox.className = `p-3 rounded-xl text-xs font-medium border ${isError ? 'bg-rose-500/10 text-rose-300 border-rose-500/30' : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'}`;
@@ -529,6 +602,10 @@
     function switchMode(mode) {
       authMode = mode;
       alertBox.classList.add('hidden');
+      if (authResetContainer) authResetContainer.classList.add('hidden');
+      if (form) form.classList.remove('hidden');
+      if (authTabBar) authTabBar.classList.remove('hidden');
+
       if (mode === 'register') {
         btnTabRegister.className = "py-2 rounded-lg bg-surface3 text-amber-400 font-bold transition shadow-sm";
         btnTabLogin.className = "py-2 rounded-lg text-zinc-400 hover:text-white transition";
@@ -549,6 +626,127 @@
     btnTabRegister.addEventListener('click', () => switchMode('register'));
     btnTabLogin.addEventListener('click', () => switchMode('login'));
 
+    // Wire Forgot Password & Reset Handlers
+    if (btnForgotPwLink) {
+      btnForgotPwLink.addEventListener('click', () => {
+        alertBox.classList.add('hidden');
+        form.classList.add('hidden');
+        authTabBar.classList.add('hidden');
+        authResetContainer.classList.remove('hidden');
+        resetStep1.classList.remove('hidden');
+        resetStep2.classList.add('hidden');
+
+        const currentEmail = document.getElementById('auth-email').value.trim();
+        if (currentEmail) {
+          resetEmailInput.value = currentEmail;
+        }
+        resetEmailInput.focus();
+      });
+    }
+
+    if (btnCancelReset) {
+      btnCancelReset.addEventListener('click', () => {
+        authResetContainer.classList.add('hidden');
+        form.classList.remove('hidden');
+        authTabBar.classList.remove('hidden');
+        alertBox.classList.add('hidden');
+      });
+    }
+
+    if (btnRequestResetCode) {
+      btnRequestResetCode.addEventListener('click', async () => {
+        const email = resetEmailInput.value.trim().toLowerCase();
+        if (!email) {
+          showAlert("Please enter your registered email address.", true);
+          return;
+        }
+
+        btnRequestResetCode.disabled = true;
+        btnReqCodeText.textContent = "Generating Code...";
+
+        try {
+          const res = await fetch('/api/auth/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.detail || "Could not generate reset code.");
+          }
+
+          resetStep1.classList.add('hidden');
+          resetStep2.classList.remove('hidden');
+          resetCodeBadge.textContent = data.reset_code;
+          resetCodeInput.value = data.reset_code;
+          resetNewPassword.focus();
+          showAlert("6-digit verification code generated! Enter your new password below.", false);
+        } catch (err) {
+          showAlert(err.message, true);
+        } finally {
+          btnRequestResetCode.disabled = false;
+          btnReqCodeText.textContent = "Generate 6-Digit Code ➔";
+        }
+      });
+    }
+
+    if (btnCopyCode) {
+      btnCopyCode.addEventListener('click', () => {
+        const code = resetCodeBadge.textContent.trim();
+        if (code && code !== '------') {
+          navigator.clipboard.writeText(code);
+          btnCopyCode.textContent = "Copied!";
+          setTimeout(() => { btnCopyCode.textContent = "Copy"; }, 2000);
+        }
+      });
+    }
+
+    if (btnPerformReset) {
+      btnPerformReset.addEventListener('click', async () => {
+        const email = resetEmailInput.value.trim().toLowerCase();
+        const reset_code = resetCodeInput.value.trim();
+        const new_password = resetNewPassword.value;
+
+        if (!reset_code || reset_code.length !== 6) {
+          showAlert("Please enter the 6-digit verification code.", true);
+          return;
+        }
+        if (!new_password || new_password.length < 6) {
+          showAlert("New password must be at least 6 characters.", true);
+          return;
+        }
+
+        btnPerformReset.disabled = true;
+        btnPerformResetText.textContent = "Resetting Password...";
+
+        try {
+          const res = await fetch('/api/auth/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, reset_code, new_password })
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.detail || "Failed to reset password.");
+          }
+
+          // Save session
+          localStorage.setItem('anvil_token', data.token);
+          localStorage.setItem('anvil_user', JSON.stringify(data.user));
+
+          showAlert("Password reset successfully! Launching your private vault...", false);
+          setTimeout(() => {
+            window.location.href = '/app';
+          }, 600);
+        } catch (err) {
+          showAlert(err.message, true);
+        } finally {
+          btnPerformReset.disabled = false;
+          btnPerformResetText.textContent = "Reset Password & Enter Vault ➔";
+        }
+      });
+    }
+
     // Check existing login session on home page load
     async function checkExistingSession() {
       const token = localStorage.getItem('anvil_token');
@@ -560,7 +758,6 @@
         });
         if (res.ok) {
           const data = await res.json();
-          const user = data.user;
           // Session is valid — immediately route to private workspace preserving deep link
           const hash = window.location.hash || '';
           window.location.replace('/app' + hash);
@@ -582,12 +779,12 @@
         localStorage.removeItem('anvil_user');
         loggedInBox.classList.add('hidden');
         form.classList.remove('hidden');
-        btnTabRegister.parentElement.classList.remove('hidden');
+        authTabBar.classList.remove('hidden');
         switchMode('login');
       });
     }
 
-    // Handle Form Submit (Register or Login)
+    // Handle Form Submit with Smart Tab Auto-Switching
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       alertBox.classList.add('hidden');
@@ -612,8 +809,38 @@
         });
 
         const data = await res.json();
+        
+        // Smart Tab Auto-Switching Logic
         if (!res.ok) {
-          throw new Error(data.detail || "Authentication failed");
+          const detail = String(data.detail || '');
+
+          // Case 1: Tried to register but user already exists -> auto-switch to Login
+          if (authMode === 'register' && (detail.includes('USER_EXISTS') || detail.includes('already exists'))) {
+            switchMode('login');
+            document.getElementById('auth-email').value = email;
+            document.getElementById('auth-password').value = password;
+            showAlert("Account already exists for this email! Switched to Sign In — click Sign In below or reset your password if forgotten.", false);
+            document.getElementById('auth-password').focus();
+            return;
+          }
+
+          // Case 2: Tried to login but account not found -> auto-switch to Register
+          if (authMode === 'login' && (detail.includes('USER_NOT_FOUND') || detail.includes('No account found'))) {
+            switchMode('register');
+            document.getElementById('auth-email').value = email;
+            document.getElementById('auth-password').value = password;
+            showAlert("No vault found with this email. Switched to Create Account to set up your private vault.", false);
+            document.getElementById('auth-password').focus();
+            return;
+          }
+
+          // Case 3: Incorrect password
+          if (detail.includes('INCORRECT_PASSWORD') || detail.includes('Incorrect password')) {
+            showAlert("Incorrect password. Click 'Forgot password?' above to reset it in seconds.", true);
+            return;
+          }
+
+          throw new Error(detail || "Authentication failed");
         }
 
         // Save session
@@ -637,6 +864,9 @@
         btnSubmitText.textContent = origText;
       }
     });
+
+    // Initialize with login mode
+    switchMode('login');
 
     // Handle clicks on curriculum sheet cards
     document.querySelectorAll('.sheet-launch-card').forEach(card => {
